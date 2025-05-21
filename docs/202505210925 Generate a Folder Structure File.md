@@ -1,6 +1,7 @@
 # Generate a Folder Structure File
 
 ```sh
-tree -I 'build|.gradle|.git|*.class|*.jar' -a > project-structure.txt
+tree -I 'node_modules|.next|.git|*.log|*.lock|.DS_Store|.env*' -a > tree.txt
+
 
 ```

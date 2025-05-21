@@ -1,0 +1,30 @@
+.
+├── .gitignore
+├── .vscode
+│   └── settings.json
+├── README.md
+├── docs
+│   ├── 202505210921 Install Next.js.md
+│   └── 202505210925 Generate a Folder Structure File.md
+├── eslint.config.mjs
+├── next-env.d.ts
+├── next.config.ts
+├── package-lock.json
+├── package.json
+├── postcss.config.mjs
+├── public
+│   ├── file.svg
+│   ├── globe.svg
+│   ├── next.svg
+│   ├── vercel.svg
+│   └── window.svg
+├── src
+│   └── app
+│       ├── favicon.ico
+│       ├── globals.css
+│       ├── layout.tsx
+│       └── page.tsx
+├── tree.txt
+└── tsconfig.json
+
+5 directories, 22 files
