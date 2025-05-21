@@ -45,5 +45,6 @@
       "t"
     ],
     "ai-project-brief": null
-  }
+  },
+  "css.lint.unknownAtRules": "ignore"
 }
