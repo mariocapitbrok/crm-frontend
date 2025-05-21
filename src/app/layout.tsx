@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,6 +29,15 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+
+
+        { /* <-- conditionally include the Piny script */ }
+        {process.env.NODE_ENV === 'development' && process.env.PINY_VISUAL_SELECT === 'true' && (
+        <Script
+          src="/_piny/piny.phone.js"
+          strategy="beforeInteractive" 
+        />)} 
+        { /* <-- conditionally include the Piny script */ }
       </body>
     </html>
   );

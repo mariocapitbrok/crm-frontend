@@ -9,5 +9,41 @@
     "**/*tsconfig.json": true,
     ".cache": true,
     "retool.config.json": true
+  },
+  "piny.project_settings": {
+    "open-pages": ["index.html"],
+    "component-settings": {
+      "src/app/dashboard/page.tsx:::Temp": {
+        "route": "/dashboard"
+      }
+    },
+    "app-routes": {
+      "routes": ["/", "/dashboard"],
+      "current_route": "/dashboard"
+    },
+    "tw-external-config": {
+      "external_source_url": null
+    },
+    "source-folders": null,
+    "preview-url": "http://localhost:3000",
+    "recent-classes": [
+      "b",
+      "h",
+      "s",
+      "d",
+      "0",
+      "4",
+      "n",
+      "a",
+      "r",
+      "o",
+      "g",
+      "l",
+      "-",
+      "x",
+      "e",
+      "t"
+    ],
+    "ai-project-brief": null
   }
 }
