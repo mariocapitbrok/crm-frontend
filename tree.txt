@@ -5,14 +5,19 @@
 ├── README.md
 ├── docs
 │   ├── 202505210921 Install Next.js.md
-│   └── 202505210925 Generate a Folder Structure File.md
+│   ├── 202505210925 Project Tree.md
+│   ├── 202505210939 Dashboard page.md
+│   └── 202505211535 Install DaisyUI.md
 ├── eslint.config.mjs
 ├── next-env.d.ts
 ├── next.config.ts
 ├── package-lock.json
 ├── package.json
+├── pnpm-lock.yaml
 ├── postcss.config.mjs
 ├── public
+│   ├── _piny
+│   │   └── piny.phone.js
 │   ├── file.svg
 │   ├── globe.svg
 │   ├── next.svg
@@ -20,6 +25,12 @@
 │   └── window.svg
 ├── src
 │   └── app
+│       ├── components
+│       │   └── SidebarToggle
+│       │       └── page.tsx
+│       ├── dashboard
+│       │   ├── layout.tsx
+│       │   └── page.tsx
 │       ├── favicon.ico
 │       ├── globals.css
 │       ├── layout.tsx
@@ -27,4 +38,4 @@
 ├── tree.txt
 └── tsconfig.json
 
-5 directories, 22 files
+9 directories, 29 files
