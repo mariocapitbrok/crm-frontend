@@ -15,11 +15,28 @@
     "component-settings": {
       "src/app/dashboard/page.tsx:::Temp": {
         "route": "/dashboard"
+      },
+      "src/app/components/SidebarToggle/page.tsx:::SidebarToggle": {
+        "route": "/preview"
+      },
+      "src/app/layout.tsx:::RootLayout": {
+        "route": "/preview",
+        "black-box": false
+      },
+      "src/app/preview/page.tsx:::Temp": {
+        "black-box": false,
+        "route": "/preview"
+      },
+      "src/components/SidebarToggle.tsx:::Temp": {
+        "route": "/preview"
+      },
+      "src/app/dashboard/page.tsx:::Home": {
+        "route": "/preview"
       }
     },
     "app-routes": {
-      "routes": ["/", "/dashboard"],
-      "current_route": "/dashboard"
+      "routes": ["/", "/dashboard", "/preview"],
+      "current_route": "/preview"
     },
     "tw-external-config": {
       "external_source_url": null
@@ -27,6 +44,12 @@
     "source-folders": null,
     "preview-url": "http://localhost:3000",
     "recent-classes": [
+      "i",
+      "w",
+      ":",
+      "v",
+      "f",
+      "c",
       "b",
       "h",
       "s",
@@ -44,7 +67,17 @@
       "e",
       "t"
     ],
-    "ai-project-brief": null
+    "ai-project-brief": null,
+    "urls": {
+      "index.html": {
+        "open-page-views": [
+          {
+            "w": 768,
+            "h": 0
+          }
+        ]
+      }
+    }
   },
   "css.lint.unknownAtRules": "ignore"
 }
