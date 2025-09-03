@@ -217,7 +217,7 @@ Confirm no Tailwind build errors.
 Use the CLI to copy components into your project:
 
 ```bash
-pnpm dlx shadcn@latest add button input label textarea select switch dialog dropdown-menu popover tooltip tabs sheet scroll-area table form calendar command badge breadcrumb
+pnpm dlx shadcn@latest add button input label textarea select switch dialog dropdown-menu popover tooltip tabs sheet scroll-area table form calendar command badge breadcrumb sonner
 ```
 
 This copies **source code** into `components/ui/` so you fully own them.
