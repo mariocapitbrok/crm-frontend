@@ -1,11 +1,9 @@
-import SidebarToggle from "@/components/SidebarToggle";
-import ThemeSwitcher from "@/components/ThemeSwitcher";
+import NavBar from "@/components/NavBar"
 
-export default function() {
+export default function () {
   return (
     <>
-      <SidebarToggle />
-      <ThemeSwitcher isDark={true} />
+      <NavBar />
     </>
   )
 }
