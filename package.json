@@ -11,7 +11,11 @@
     "dev:api": "json-server db.json --port 3001",
     "dev:api:routes": "json-server db.json --routes routes.json --port 3001",
     "dev:api:regen": "node scripts/generate-db.js && json-server db.json --port 3001",
-    "dev:api:routes:regen": "node scripts/generate-db.js && json-server db.json --routes routes.json --port 3001"
+    "dev:api:routes:regen": "node scripts/generate-db.js && json-server db.json --routes routes.json --port 3001",
+    "shadcn": "pnpm dlx shadcn-ui@latest",
+    "shadcn:list": "pnpm dlx shadcn-ui@latest list",
+    "shadcn:add": "pnpm dlx shadcn-ui@latest add",
+    "shadcn:diff": "pnpm dlx shadcn-ui@latest diff"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.3",
