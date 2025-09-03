@@ -217,10 +217,14 @@ Confirm no Tailwind build errors.
 Use the CLI to copy components into your project:
 
 ```bash
-pnpm dlx shadcn@latest add button input label textarea select switch dialog dropdown-menu popover tooltip tabs sheet scroll-area table form calendar command badge breadcrumb toast
+pnpm dlx shadcn@latest add button input label textarea select switch dialog dropdown-menu popover tooltip tabs sheet scroll-area table form calendar command badge breadcrumb
 ```
 
 This copies **source code** into `components/ui/` so you fully own them.
+
+Note:
+The toast component is deprecated. Use the sonner component instead.
+You can also use the official sonner library and use its `<Toaster />` and `toast()` API
 
 Test if they are imported and available as expected
 
