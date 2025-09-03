@@ -11,15 +11,19 @@ This repo includes a deterministic mock‐data generator and convenient scripts 
 ## Package Scripts
 
 - `gen:db`: Generates `db.json` from the generator
+
   - Command: `node scripts/generate-db.js`
 
 - `dev:api`: Serves static `db.json` on port 3001
+
   - Command: `json-server db.json --port 3001`
 
 - `dev:api:routes`: Serves static `db.json` using custom routes
+
   - Command: `json-server db.json --routes routes.json --port 3001`
 
 - `dev:api:regen`: Regenerate `db.json` then serve it
+
   - Command: `node scripts/generate-db.js && json-server db.json --port 3001`
 
 - `dev:api:routes:regen`: Regenerate `db.json` then serve with routes
@@ -29,13 +33,13 @@ Note: Replace `pnpm` with `npm run` or `yarn` as needed for your environment.
 
 ## Quick Start
 
-1) Generate a fresh database snapshot
+Generate a fresh database snapshot
 
 ```sh
 pnpm gen:db
 ```
 
-2) Serve the API from the static file (default port `3001`)
+Serve the API from the static file (default port `3001`)
 
 ```sh
 pnpm dev:api
@@ -43,7 +47,7 @@ pnpm dev:api
 pnpm dev:api:routes
 ```
 
-3) One‑shot regenerate and serve
+One‑shot regenerate and serve
 
 ```sh
 pnpm dev:api:regen
@@ -73,4 +77,3 @@ After changes, regenerate with `pnpm gen:db` (or use the `:regen` scripts) to ap
 - Default port is `3001`. Change with `--port` if needed.
 - If using `routes.json`, keep it in the project root and call the `:routes` variants.
 - The generator uses neutral, Lorem‑Ipsum–style names and placeholder addresses, avoiding domain‑specific or real data.
-
