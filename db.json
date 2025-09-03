@@ -1,0 +1,1449 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "dout",
+      "first_name": "Do",
+      "last_name": "Ut",
+      "email": "do.ut@example.com",
+      "role": "Account Executive",
+      "is_active": true
+    },
+    {
+      "id": 2,
+      "username": "utlabore",
+      "first_name": "Ut",
+      "last_name": "Labore",
+      "email": "ut.labore@example.com",
+      "role": "Sales Manager",
+      "is_active": true
+    },
+    {
+      "id": 3,
+      "username": "utaliqua",
+      "first_name": "Ut",
+      "last_name": "Aliqua",
+      "email": "ut.aliqua@example.com",
+      "role": "Support",
+      "is_active": true
+    },
+    {
+      "id": 4,
+      "username": "ametveniam",
+      "first_name": "Amet",
+      "last_name": "Veniam",
+      "email": "amet.veniam@example.com",
+      "role": "Account Executive",
+      "is_active": true
+    }
+  ],
+  "organizations": [
+    {
+      "id": 1001,
+      "accountname": "Labore Consectetur",
+      "website": "https://example.com/org-1001",
+      "phone": "+1-000-000-1001",
+      "industry": "General",
+      "rating": "Cold",
+      "ownership": "Private",
+      "assigned_user_id": 3,
+      "billing_address": {
+        "street": "559 Ipsum St",
+        "city": "Smallville",
+        "state": "Province",
+        "postalcode": "21732",
+        "country": "N/A"
+      },
+      "shipping_address": {
+        "street": "164 Veniam St",
+        "city": "Star City",
+        "state": "Province",
+        "postalcode": "28451",
+        "country": "N/A"
+      },
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 1002,
+      "accountname": "Labore Incididunt",
+      "website": "https://example.com/org-1002",
+      "phone": "+1-000-000-1002",
+      "industry": "General",
+      "rating": "Cold",
+      "ownership": "Public",
+      "assigned_user_id": 2,
+      "billing_address": {
+        "street": "560 Adipiscing St",
+        "city": "Central City",
+        "state": "Region",
+        "postalcode": "80982",
+        "country": "N/A"
+      },
+      "shipping_address": {
+        "street": "277 Veniam St",
+        "city": "Smallville",
+        "state": "Province",
+        "postalcode": "81301",
+        "country": "N/A"
+      },
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 1003,
+      "accountname": "Aliqua Ipsum",
+      "website": "https://example.com/org-1003",
+      "phone": "+1-000-000-1003",
+      "industry": "General",
+      "rating": "Hot",
+      "ownership": "Private",
+      "assigned_user_id": 2,
+      "billing_address": {
+        "street": "122 Aliqua St",
+        "city": "Smallville",
+        "state": "Province",
+        "postalcode": "97996",
+        "country": "N/A"
+      },
+      "shipping_address": {
+        "street": "509 Ut St",
+        "city": "Smallville",
+        "state": "State",
+        "postalcode": "34926",
+        "country": "N/A"
+      },
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 1004,
+      "accountname": "Sit Labore",
+      "website": "https://example.com/org-1004",
+      "phone": "+1-000-000-1004",
+      "industry": "General",
+      "rating": "Hot",
+      "ownership": "Public",
+      "assigned_user_id": 1,
+      "billing_address": {
+        "street": "178 Do St",
+        "city": "Metropolis",
+        "state": "Region",
+        "postalcode": "63920",
+        "country": "N/A"
+      },
+      "shipping_address": {
+        "street": "80 Sit St",
+        "city": "Metropolis",
+        "state": "Region",
+        "postalcode": "69293",
+        "country": "N/A"
+      },
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 1005,
+      "accountname": "Ipsum Lorem",
+      "website": "https://example.com/org-1005",
+      "phone": "+1-000-000-1005",
+      "industry": "General",
+      "rating": "Hot",
+      "ownership": "Private",
+      "assigned_user_id": 1,
+      "billing_address": {
+        "street": "909 Labore St",
+        "city": "Smallville",
+        "state": "Region",
+        "postalcode": "91347",
+        "country": "N/A"
+      },
+      "shipping_address": {
+        "street": "607 Consectetur St",
+        "city": "Gotham",
+        "state": "State",
+        "postalcode": "60849",
+        "country": "N/A"
+      },
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 1006,
+      "accountname": "Sed Sit",
+      "website": "https://example.com/org-1006",
+      "phone": "+1-000-000-1006",
+      "industry": "General",
+      "rating": "Hot",
+      "ownership": "Cooperative",
+      "assigned_user_id": 1,
+      "billing_address": {
+        "street": "36 Ut St",
+        "city": "Smallville",
+        "state": "Province",
+        "postalcode": "34124",
+        "country": "N/A"
+      },
+      "shipping_address": {
+        "street": "195 Tempor St",
+        "city": "Harbor City",
+        "state": "Province",
+        "postalcode": "94304",
+        "country": "N/A"
+      },
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    }
+  ],
+  "contacts": [
+    {
+      "id": 2001,
+      "firstname": "Incididunt",
+      "lastname": "Adipiscing",
+      "email": "incididunt.adipiscing@example.com",
+      "phone": "+1-000-000-2001",
+      "title": "Site Supervisor",
+      "account_id": 1001,
+      "assigned_user_id": 1,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 2002,
+      "firstname": "Veniam",
+      "lastname": "Tempor",
+      "email": "veniam.tempor@example.com",
+      "phone": "+1-000-000-2002",
+      "title": "Site Supervisor",
+      "account_id": 1002,
+      "assigned_user_id": 4,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 2003,
+      "firstname": "Minim",
+      "lastname": "Veniam",
+      "email": "minim.veniam@example.com",
+      "phone": "+1-000-000-2003",
+      "title": "Site Supervisor",
+      "account_id": 1004,
+      "assigned_user_id": 4,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 2004,
+      "firstname": "Magna",
+      "lastname": "Veniam",
+      "email": "magna.veniam@example.com",
+      "phone": "+1-000-000-2004",
+      "title": "Procurement Coordinator",
+      "account_id": 1001,
+      "assigned_user_id": 2,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 2005,
+      "firstname": "Ut",
+      "lastname": "Ut",
+      "email": "ut.ut@example.com",
+      "phone": "+1-000-000-2005",
+      "title": "Field Coordinator",
+      "account_id": 1003,
+      "assigned_user_id": 1,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 2006,
+      "firstname": "Ipsum",
+      "lastname": "Adipiscing",
+      "email": "ipsum.adipiscing@example.com",
+      "phone": "+1-000-000-2006",
+      "title": "Field Coordinator",
+      "account_id": 1004,
+      "assigned_user_id": 1,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    }
+  ],
+  "leads": [
+    {
+      "id": 3001,
+      "firstname": "Ipsum",
+      "lastname": "Dolor",
+      "company": "Labore Amet Co",
+      "email": "ipsum.dolor@example.com",
+      "phone": "+1-000-000-3001",
+      "leadsource": "Referral",
+      "leadstatus": "New",
+      "industry": "General",
+      "annualrevenue": 5762237,
+      "rating": "Hot",
+      "assigned_user_id": 4,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 3002,
+      "firstname": "Minim",
+      "lastname": "Consectetur",
+      "company": "Lorem Magna Co",
+      "email": "minim.consectetur@example.com",
+      "phone": "+1-000-000-3002",
+      "leadsource": "Campaign",
+      "leadstatus": "New",
+      "industry": "General",
+      "annualrevenue": 2345463,
+      "rating": "Warm",
+      "assigned_user_id": 1,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 3003,
+      "firstname": "Amet",
+      "lastname": "Tempor",
+      "company": "Lorem Veniam Co",
+      "email": "amet.tempor@example.com",
+      "phone": "+1-000-000-3003",
+      "leadsource": "Website",
+      "leadstatus": "Contacted",
+      "industry": "General",
+      "annualrevenue": 2657877,
+      "rating": "Cold",
+      "assigned_user_id": 4,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 3004,
+      "firstname": "Dolor",
+      "lastname": "Adipiscing",
+      "company": "Adipiscing Magna Co",
+      "email": "dolor.adipiscing@example.com",
+      "phone": "+1-000-000-3004",
+      "leadsource": "Referral",
+      "leadstatus": "Qualified",
+      "industry": "General",
+      "annualrevenue": 2863204,
+      "rating": "Hot",
+      "assigned_user_id": 1,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 3005,
+      "firstname": "Tempor",
+      "lastname": "Amet",
+      "company": "Incididunt Amet Co",
+      "email": "tempor.amet@example.com",
+      "phone": "+1-000-000-3005",
+      "leadsource": "Website",
+      "leadstatus": "Qualified",
+      "industry": "General",
+      "annualrevenue": 566544,
+      "rating": "Hot",
+      "assigned_user_id": 1,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 3006,
+      "firstname": "Adipiscing",
+      "lastname": "Incididunt",
+      "company": "Sed Enim Co",
+      "email": "adipiscing.incididunt@example.com",
+      "phone": "+1-000-000-3006",
+      "leadsource": "Campaign",
+      "leadstatus": "Contacted",
+      "industry": "General",
+      "annualrevenue": 1977978,
+      "rating": "Cold",
+      "assigned_user_id": 3,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    }
+  ],
+  "deals": [
+    {
+      "id": 4001,
+      "potentialname": "Amet Opportunity 2026",
+      "amount": 14827,
+      "currency": "USD",
+      "closingdate": "2025-11-14",
+      "sales_stage": "Proposal",
+      "probability": 15,
+      "account_id": 1002,
+      "contact_id": 2002,
+      "lead_id": null,
+      "assigned_user_id": 3,
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 4002,
+      "potentialname": "Incididunt Opportunity 2025",
+      "amount": 2970,
+      "currency": "USD",
+      "closingdate": "2025-04-14",
+      "sales_stage": "Negotiation",
+      "probability": 23,
+      "account_id": 1003,
+      "contact_id": 2005,
+      "lead_id": 3003,
+      "assigned_user_id": 3,
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 4003,
+      "potentialname": "Minim Opportunity 2024",
+      "amount": 16360,
+      "currency": "USD",
+      "closingdate": "2025-12-09",
+      "sales_stage": "Qualification",
+      "probability": 58,
+      "account_id": 1001,
+      "contact_id": 2004,
+      "lead_id": 3001,
+      "assigned_user_id": 1,
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 4004,
+      "potentialname": "Ipsum Opportunity 2024",
+      "amount": 11781,
+      "currency": "USD",
+      "closingdate": "2025-11-21",
+      "sales_stage": "Negotiation",
+      "probability": 17,
+      "account_id": 1005,
+      "contact_id": 2002,
+      "lead_id": 3006,
+      "assigned_user_id": 1,
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 4005,
+      "potentialname": "Aliqua Opportunity 2024",
+      "amount": 7102,
+      "currency": "USD",
+      "closingdate": "2025-04-24",
+      "sales_stage": "Proposal",
+      "probability": 18,
+      "account_id": 1002,
+      "contact_id": 2002,
+      "lead_id": null,
+      "assigned_user_id": 1,
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    }
+  ],
+  "tickets": [
+    {
+      "id": 5001,
+      "ticket_no": "TCK-5001",
+      "ticket_title": "Adipiscing request",
+      "status": "Closed",
+      "priority": "Low",
+      "category": "General",
+      "hours": 1.9,
+      "related_to_type": "Accounts",
+      "related_to_id": 1006,
+      "contact_id": 2003,
+      "assigned_user_id": 4,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 5002,
+      "ticket_no": "TCK-5002",
+      "ticket_title": "Elit request",
+      "status": "Open",
+      "priority": "Low",
+      "category": "General",
+      "hours": 0.6,
+      "related_to_type": "Accounts",
+      "related_to_id": 1003,
+      "contact_id": 2002,
+      "assigned_user_id": 4,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 5003,
+      "ticket_no": "TCK-5003",
+      "ticket_title": "Incididunt request",
+      "status": "In Progress",
+      "priority": "Low",
+      "category": "General",
+      "hours": 0.5,
+      "related_to_type": "Accounts",
+      "related_to_id": 1005,
+      "contact_id": 2005,
+      "assigned_user_id": 2,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 5004,
+      "ticket_no": "TCK-5004",
+      "ticket_title": "Eiusmod request",
+      "status": "Closed",
+      "priority": "Low",
+      "category": "General",
+      "hours": 0.3,
+      "related_to_type": "Accounts",
+      "related_to_id": 1001,
+      "contact_id": 2001,
+      "assigned_user_id": 3,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    }
+  ],
+  "products": [
+    {
+      "id": 6001,
+      "productname": "Product Minim (Roll)",
+      "productcode": "P-6001",
+      "commissionrate": 4,
+      "qtyinstock": 374,
+      "usageunit": "kit",
+      "unit_price": 40.94,
+      "taxclass": "Standard Tax",
+      "vendor_id": 6201,
+      "active": true,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 6002,
+      "productname": "Product Ipsum (Bag)",
+      "productcode": "P-6002",
+      "commissionrate": 3,
+      "qtyinstock": 406,
+      "usageunit": "roll",
+      "unit_price": 88.94,
+      "taxclass": "Standard Tax",
+      "vendor_id": 6204,
+      "active": true,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 6003,
+      "productname": "Product Minim (Roll)",
+      "productcode": "P-6003",
+      "commissionrate": 7,
+      "qtyinstock": 168,
+      "usageunit": "kit",
+      "unit_price": 34.01,
+      "taxclass": "Standard Tax",
+      "vendor_id": 6201,
+      "active": true,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 6004,
+      "productname": "Product Eiusmod (Bag)",
+      "productcode": "P-6004",
+      "commissionrate": 7,
+      "qtyinstock": 811,
+      "usageunit": "pack",
+      "unit_price": 98.07,
+      "taxclass": "Standard Tax",
+      "vendor_id": 6203,
+      "active": true,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 6005,
+      "productname": "Product Ut (Bag)",
+      "productcode": "P-6005",
+      "commissionrate": 7,
+      "qtyinstock": 195,
+      "usageunit": "bag",
+      "unit_price": 62.05,
+      "taxclass": "Standard Tax",
+      "vendor_id": 6204,
+      "active": true,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    }
+  ],
+  "services": [
+    {
+      "id": 6101,
+      "servicename": "Service Minim",
+      "service_no": "SRV-101",
+      "servicecategory": "General",
+      "unit_price": 51.87,
+      "taxclass": "Standard Tax",
+      "commissionrate": 15,
+      "active": true,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 6102,
+      "servicename": "Service Tempor",
+      "service_no": "SRV-102",
+      "servicecategory": "General",
+      "unit_price": 361.97,
+      "taxclass": "Standard Tax",
+      "commissionrate": 15,
+      "active": true,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 6103,
+      "servicename": "Service Aliqua",
+      "service_no": "SRV-103",
+      "servicecategory": "General",
+      "unit_price": 80.26,
+      "taxclass": "Standard Tax",
+      "commissionrate": 11,
+      "active": true,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 6104,
+      "servicename": "Service Dolor",
+      "service_no": "SRV-104",
+      "servicecategory": "General",
+      "unit_price": 397.83,
+      "taxclass": "Standard Tax",
+      "commissionrate": 5,
+      "active": true,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    }
+  ],
+  "vendors": [
+    {
+      "id": 6201,
+      "vendorname": "Vendor Lorem",
+      "phone": "+1-000-000-6201",
+      "email": "vendor.6201@example.com",
+      "website": "https://example.com/vendor-6201",
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 6202,
+      "vendorname": "Vendor Tempor",
+      "phone": "+1-000-000-6202",
+      "email": "vendor.6202@example.com",
+      "website": "https://example.com/vendor-6202",
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 6203,
+      "vendorname": "Vendor Sit",
+      "phone": "+1-000-000-6203",
+      "email": "vendor.6203@example.com",
+      "website": "https://example.com/vendor-6203",
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 6204,
+      "vendorname": "Vendor Ut",
+      "phone": "+1-000-000-6204",
+      "email": "vendor.6204@example.com",
+      "website": "https://example.com/vendor-6204",
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    }
+  ],
+  "pricebooks": [
+    {
+      "id": 6301,
+      "bookname": "Pricebook Adipiscing",
+      "currency": "USD",
+      "active": true,
+      "description": "Demo pricing",
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 6302,
+      "bookname": "Pricebook Consectetur",
+      "currency": "USD",
+      "active": true,
+      "description": "Demo pricing",
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 6303,
+      "bookname": "Pricebook Incididunt",
+      "currency": "USD",
+      "active": true,
+      "description": "Demo pricing",
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    }
+  ],
+  "quotes": [
+    {
+      "id": 7001,
+      "account_id": 1002,
+      "contact_id": 2002,
+      "line_items": [
+        {
+          "type": "Service",
+          "ref_id": 6101,
+          "name": "Service Minim",
+          "qty": 2,
+          "listprice": 51.87,
+          "discount": 0
+        },
+        {
+          "type": "Product",
+          "ref_id": 6003,
+          "name": "Product Minim (Roll)",
+          "qty": 53,
+          "listprice": 34.01,
+          "discount": 0
+        }
+      ],
+      "subtotal": 1906.27,
+      "tax": 305,
+      "adjustment": 0,
+      "total": 2211.27,
+      "assigned_user_id": 3,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z",
+      "subject": "Quote Ipsum",
+      "quotestage": "Created",
+      "validtill": "2025-04-10",
+      "billing_address": {
+        "street": "451 Consectetur St",
+        "city": "Harbor City",
+        "state": "State",
+        "postalcode": "66213",
+        "country": "N/A"
+      },
+      "shipping_address": {
+        "street": "315 Adipiscing St",
+        "city": "Central City",
+        "state": "Region",
+        "postalcode": "41293",
+        "country": "N/A"
+      }
+    },
+    {
+      "id": 7002,
+      "account_id": 1001,
+      "contact_id": 2001,
+      "line_items": [
+        {
+          "type": "Product",
+          "ref_id": 6005,
+          "name": "Product Ut (Bag)",
+          "qty": 27,
+          "listprice": 62.05,
+          "discount": 0
+        },
+        {
+          "type": "Product",
+          "ref_id": 6001,
+          "name": "Product Minim (Roll)",
+          "qty": 40,
+          "listprice": 40.94,
+          "discount": 0
+        }
+      ],
+      "subtotal": 3312.95,
+      "tax": 530.07,
+      "adjustment": 0,
+      "total": 3843.02,
+      "assigned_user_id": 2,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z",
+      "subject": "Quote Aliqua",
+      "quotestage": "Created",
+      "validtill": "2025-04-22",
+      "billing_address": {
+        "street": "849 Lorem St",
+        "city": "Gotham",
+        "state": "State",
+        "postalcode": "92585",
+        "country": "N/A"
+      },
+      "shipping_address": {
+        "street": "357 Sit St",
+        "city": "Harbor City",
+        "state": "Province",
+        "postalcode": "72685",
+        "country": "N/A"
+      }
+    },
+    {
+      "id": 7003,
+      "account_id": 1006,
+      "contact_id": 2001,
+      "line_items": [
+        {
+          "type": "Service",
+          "ref_id": 6101,
+          "name": "Service Minim",
+          "qty": 3,
+          "listprice": 51.87,
+          "discount": 0
+        }
+      ],
+      "subtotal": 155.61,
+      "tax": 24.9,
+      "adjustment": 0,
+      "total": 180.51,
+      "assigned_user_id": 3,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z",
+      "subject": "Quote Dolor",
+      "quotestage": "Created",
+      "validtill": "2025-12-02",
+      "billing_address": {
+        "street": "8 Labore St",
+        "city": "Gotham",
+        "state": "Region",
+        "postalcode": "88021",
+        "country": "N/A"
+      },
+      "shipping_address": {
+        "street": "805 Do St",
+        "city": "Central City",
+        "state": "State",
+        "postalcode": "85057",
+        "country": "N/A"
+      }
+    },
+    {
+      "id": 7004,
+      "account_id": 1003,
+      "contact_id": 2005,
+      "line_items": [
+        {
+          "type": "Service",
+          "ref_id": 6104,
+          "name": "Service Dolor",
+          "qty": 2,
+          "listprice": 397.83,
+          "discount": 0
+        },
+        {
+          "type": "Service",
+          "ref_id": 6103,
+          "name": "Service Aliqua",
+          "qty": 1,
+          "listprice": 80.26,
+          "discount": 0
+        }
+      ],
+      "subtotal": 875.92,
+      "tax": 140.15,
+      "adjustment": 0,
+      "total": 1016.07,
+      "assigned_user_id": 3,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z",
+      "subject": "Quote Consectetur",
+      "quotestage": "Created",
+      "validtill": "2025-07-04",
+      "billing_address": {
+        "street": "187 Amet St",
+        "city": "Smallville",
+        "state": "Region",
+        "postalcode": "50903",
+        "country": "N/A"
+      },
+      "shipping_address": {
+        "street": "123 Lorem St",
+        "city": "Smallville",
+        "state": "State",
+        "postalcode": "74916",
+        "country": "N/A"
+      }
+    }
+  ],
+  "salesorders": [
+    {
+      "id": 7101,
+      "account_id": 1003,
+      "contact_id": 2005,
+      "line_items": [
+        {
+          "type": "Product",
+          "ref_id": 6003,
+          "name": "Product Minim (Roll)",
+          "qty": 40,
+          "listprice": 34.01,
+          "discount": 0
+        }
+      ],
+      "subtotal": 1360.4,
+      "tax": 217.66,
+      "adjustment": 0,
+      "total": 1578.06,
+      "assigned_user_id": 3,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z",
+      "subject": "SO-7101",
+      "sostatus": "Created",
+      "bill_to": {
+        "street": "235 Dolor St",
+        "city": "Central City",
+        "state": "State",
+        "postalcode": "71304",
+        "country": "N/A"
+      },
+      "ship_to": {
+        "street": "257 Aliqua St",
+        "city": "Metropolis",
+        "state": "Region",
+        "postalcode": "85263",
+        "country": "N/A"
+      },
+      "quote_id": 7001
+    },
+    {
+      "id": 7102,
+      "account_id": 1006,
+      "contact_id": 2001,
+      "line_items": [
+        {
+          "type": "Product",
+          "ref_id": 6005,
+          "name": "Product Ut (Bag)",
+          "qty": 3,
+          "listprice": 62.05,
+          "discount": 0
+        }
+      ],
+      "subtotal": 186.15,
+      "tax": 29.78,
+      "adjustment": 0,
+      "total": 215.93,
+      "assigned_user_id": 1,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z",
+      "subject": "SO-7102",
+      "sostatus": "Created",
+      "bill_to": {
+        "street": "345 Ut St",
+        "city": "Harbor City",
+        "state": "Province",
+        "postalcode": "87763",
+        "country": "N/A"
+      },
+      "ship_to": {
+        "street": "868 Labore St",
+        "city": "Gotham",
+        "state": "Province",
+        "postalcode": "56744",
+        "country": "N/A"
+      },
+      "quote_id": 7002
+    },
+    {
+      "id": 7103,
+      "account_id": 1001,
+      "contact_id": 2001,
+      "line_items": [
+        {
+          "type": "Service",
+          "ref_id": 6101,
+          "name": "Service Minim",
+          "qty": 3,
+          "listprice": 51.87,
+          "discount": 0
+        },
+        {
+          "type": "Product",
+          "ref_id": 6002,
+          "name": "Product Ipsum (Bag)",
+          "qty": 53,
+          "listprice": 88.94,
+          "discount": 0
+        }
+      ],
+      "subtotal": 4869.43,
+      "tax": 779.11,
+      "adjustment": 0,
+      "total": 5648.54,
+      "assigned_user_id": 4,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z",
+      "subject": "SO-7103",
+      "sostatus": "Created",
+      "bill_to": {
+        "street": "140 Sed St",
+        "city": "Star City",
+        "state": "Province",
+        "postalcode": "45601",
+        "country": "N/A"
+      },
+      "ship_to": {
+        "street": "34 Tempor St",
+        "city": "Central City",
+        "state": "State",
+        "postalcode": "69229",
+        "country": "N/A"
+      },
+      "quote_id": 7002
+    },
+    {
+      "id": 7104,
+      "account_id": 1003,
+      "contact_id": 2005,
+      "line_items": [
+        {
+          "type": "Service",
+          "ref_id": 6101,
+          "name": "Service Minim",
+          "qty": 5,
+          "listprice": 51.87,
+          "discount": 0
+        },
+        {
+          "type": "Product",
+          "ref_id": 6003,
+          "name": "Product Minim (Roll)",
+          "qty": 51,
+          "listprice": 34.01,
+          "discount": 0
+        }
+      ],
+      "subtotal": 1993.86,
+      "tax": 319.02,
+      "adjustment": 0,
+      "total": 2312.88,
+      "assigned_user_id": 4,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z",
+      "subject": "SO-7104",
+      "sostatus": "Created",
+      "bill_to": {
+        "street": "998 Sit St",
+        "city": "Smallville",
+        "state": "Region",
+        "postalcode": "73642",
+        "country": "N/A"
+      },
+      "ship_to": {
+        "street": "913 Tempor St",
+        "city": "Metropolis",
+        "state": "Province",
+        "postalcode": "53775",
+        "country": "N/A"
+      },
+      "quote_id": 7003
+    }
+  ],
+  "purchaseorders": [
+    {
+      "id": 7201,
+      "subject": "PO-7201",
+      "postatus": "Created",
+      "vendor_id": 6201,
+      "requisition_no": "REQ-3966",
+      "due_date": "2025-01-13",
+      "line_items": [
+        {
+          "type": "Product",
+          "ref_id": 6002,
+          "name": "Product Ipsum (Bag)",
+          "qty": 411,
+          "costprice": 69.6
+        },
+        {
+          "type": "Product",
+          "ref_id": 6004,
+          "name": "Product Eiusmod (Bag)",
+          "qty": 397,
+          "costprice": 63.05
+        }
+      ],
+      "subtotal": 53636.45,
+      "tax": 8581.83,
+      "adjustment": 0,
+      "total": 62218.28,
+      "assigned_user_id": 3,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 7202,
+      "subject": "PO-7202",
+      "postatus": "Created",
+      "vendor_id": 6203,
+      "requisition_no": "REQ-1420",
+      "due_date": "2025-04-13",
+      "line_items": [
+        {
+          "type": "Product",
+          "ref_id": 6005,
+          "name": "Product Ut (Bag)",
+          "qty": 134,
+          "costprice": 46.47
+        },
+        {
+          "type": "Product",
+          "ref_id": 6001,
+          "name": "Product Minim (Roll)",
+          "qty": 179,
+          "costprice": 26.36
+        }
+      ],
+      "subtotal": 10945.42,
+      "tax": 1751.27,
+      "adjustment": 0,
+      "total": 12696.69,
+      "assigned_user_id": 3,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 7203,
+      "subject": "PO-7203",
+      "postatus": "Created",
+      "vendor_id": 6201,
+      "requisition_no": "REQ-9990",
+      "due_date": "2025-04-17",
+      "line_items": [
+        {
+          "type": "Product",
+          "ref_id": 6001,
+          "name": "Product Minim (Roll)",
+          "qty": 325,
+          "costprice": 26.82
+        },
+        {
+          "type": "Product",
+          "ref_id": 6003,
+          "name": "Product Minim (Roll)",
+          "qty": 77,
+          "costprice": 26.05
+        }
+      ],
+      "subtotal": 10722.35,
+      "tax": 1715.58,
+      "adjustment": 0,
+      "total": 12437.93,
+      "assigned_user_id": 3,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    }
+  ],
+  "invoices": [
+    {
+      "id": 7301,
+      "account_id": 1005,
+      "contact_id": 2003,
+      "line_items": [
+        {
+          "type": "Product",
+          "ref_id": 6004,
+          "name": "Product Eiusmod (Bag)",
+          "qty": 63,
+          "listprice": 98.07,
+          "discount": 0
+        },
+        {
+          "type": "Service",
+          "ref_id": 6102,
+          "name": "Service Tempor",
+          "qty": 1,
+          "listprice": 361.97,
+          "discount": 0
+        }
+      ],
+      "subtotal": 6540.38,
+      "tax": 1046.46,
+      "adjustment": 0,
+      "total": 7586.84,
+      "assigned_user_id": 1,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z",
+      "subject": "INV-7301",
+      "invoicestatus": "Created",
+      "salesorder_id": 7104
+    },
+    {
+      "id": 7302,
+      "account_id": 1001,
+      "contact_id": 2004,
+      "line_items": [
+        {
+          "type": "Service",
+          "ref_id": 6101,
+          "name": "Service Minim",
+          "qty": 3,
+          "listprice": 51.87,
+          "discount": 0
+        },
+        {
+          "type": "Product",
+          "ref_id": 6004,
+          "name": "Product Eiusmod (Bag)",
+          "qty": 50,
+          "listprice": 98.07,
+          "discount": 0
+        }
+      ],
+      "subtotal": 5059.11,
+      "tax": 809.46,
+      "adjustment": 0,
+      "total": 5868.57,
+      "assigned_user_id": 4,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z",
+      "subject": "INV-7302",
+      "invoicestatus": "Created",
+      "salesorder_id": 7104
+    },
+    {
+      "id": 7303,
+      "account_id": 1006,
+      "contact_id": 2002,
+      "line_items": [
+        {
+          "type": "Service",
+          "ref_id": 6102,
+          "name": "Service Tempor",
+          "qty": 4,
+          "listprice": 361.97,
+          "discount": 0
+        }
+      ],
+      "subtotal": 1447.88,
+      "tax": 231.66,
+      "adjustment": 0,
+      "total": 1679.54,
+      "assigned_user_id": 4,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z",
+      "subject": "INV-7303",
+      "invoicestatus": "Created",
+      "salesorder_id": 7104
+    },
+    {
+      "id": 7304,
+      "account_id": 1004,
+      "contact_id": 2006,
+      "line_items": [
+        {
+          "type": "Product",
+          "ref_id": 6004,
+          "name": "Product Eiusmod (Bag)",
+          "qty": 83,
+          "listprice": 98.07,
+          "discount": 0
+        },
+        {
+          "type": "Product",
+          "ref_id": 6002,
+          "name": "Product Ipsum (Bag)",
+          "qty": 77,
+          "listprice": 88.94,
+          "discount": 0
+        }
+      ],
+      "subtotal": 14988.19,
+      "tax": 2398.11,
+      "adjustment": 0,
+      "total": 17386.3,
+      "assigned_user_id": 4,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z",
+      "subject": "INV-7304",
+      "invoicestatus": "Created",
+      "salesorder_id": 7101
+    }
+  ],
+  "campaigns": [
+    {
+      "id": 7401,
+      "campaignname": "Tempor Campaign",
+      "campaigntype": "Webinar",
+      "campaignstatus": "In Progress",
+      "targetaudience": "Prospects",
+      "expectedrevenue": 64997,
+      "budgetcost": 8830,
+      "actualcost": 512,
+      "numsent": 3263,
+      "expectedresponse": 8,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 7402,
+      "campaignname": "Dolor Campaign",
+      "campaigntype": "Webinar",
+      "campaignstatus": "Completed",
+      "targetaudience": "Prospects",
+      "expectedrevenue": 98096,
+      "budgetcost": 1475,
+      "actualcost": 2985,
+      "numsent": 1881,
+      "expectedresponse": 15,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 7403,
+      "campaignname": "Sit Campaign",
+      "campaigntype": "Webinar",
+      "campaignstatus": "Planning",
+      "targetaudience": "Prospects",
+      "expectedrevenue": 86449,
+      "budgetcost": 2794,
+      "actualcost": 1499,
+      "numsent": 601,
+      "expectedresponse": 18,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    }
+  ],
+  "activities": [
+    {
+      "id": 8001,
+      "activitytype": "Email",
+      "subject": "Tempor review",
+      "date_start": "2025-07-01",
+      "time_start": "14:46",
+      "due_date": "2025-10-22",
+      "time_end": "08:16",
+      "status": "Scheduled",
+      "location": "Office",
+      "account_id": 1001,
+      "contact_id": 2002,
+      "deal_id": 4001,
+      "assigned_user_id": 4,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 8002,
+      "activitytype": "Email",
+      "subject": "Ipsum review",
+      "date_start": "2025-05-07",
+      "time_start": "08:38",
+      "due_date": "2025-02-12",
+      "time_end": "18:54",
+      "status": "Scheduled",
+      "location": "Customer HQ",
+      "account_id": 1001,
+      "contact_id": 2006,
+      "deal_id": 4005,
+      "assigned_user_id": 3,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 8003,
+      "activitytype": "Task",
+      "subject": "Adipiscing follow-up",
+      "date_start": "2025-05-15",
+      "time_start": "13:26",
+      "due_date": "2025-11-07",
+      "time_end": "09:35",
+      "status": "Scheduled",
+      "location": "Phone",
+      "account_id": 1004,
+      "contact_id": 2001,
+      "deal_id": 4005,
+      "assigned_user_id": 2,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 8004,
+      "activitytype": "Meeting",
+      "subject": "Aliqua follow-up",
+      "date_start": "2025-12-21",
+      "time_start": "10:12",
+      "due_date": "2025-04-16",
+      "time_end": "16:08",
+      "status": "Planned",
+      "location": "Customer HQ",
+      "account_id": 1005,
+      "contact_id": 2003,
+      "deal_id": 4005,
+      "assigned_user_id": 1,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 8005,
+      "activitytype": "Meeting",
+      "subject": "Do review",
+      "date_start": "2025-02-06",
+      "time_start": "13:24",
+      "due_date": "2025-05-04",
+      "time_end": "16:47",
+      "status": "Scheduled",
+      "location": "Google Meet",
+      "account_id": 1005,
+      "contact_id": 2001,
+      "deal_id": 4005,
+      "assigned_user_id": 4,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    }
+  ],
+  "documents": [
+    {
+      "id": 9001,
+      "title": "Dolor-9001.pdf",
+      "filetype": "application/pdf",
+      "filesize": 151727,
+      "path": "/files/9001.pdf",
+      "notes": "Demo document",
+      "related_to_type": "Accounts",
+      "related_to_id": 1006,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 9002,
+      "title": "Consectetur-9002.pdf",
+      "filetype": "application/pdf",
+      "filesize": 127361,
+      "path": "/files/9002.pdf",
+      "notes": "Demo document",
+      "related_to_type": "Accounts",
+      "related_to_id": 1004,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    },
+    {
+      "id": 9003,
+      "title": "Enim-9003.pdf",
+      "filetype": "application/pdf",
+      "filesize": 170777,
+      "path": "/files/9003.pdf",
+      "notes": "Demo document",
+      "related_to_type": "Quotes",
+      "related_to_id": 7004,
+      "created_at": "2025-09-03T07:32:07.576Z",
+      "updated_at": "2025-09-03T07:32:07.576Z"
+    }
+  ]
+}

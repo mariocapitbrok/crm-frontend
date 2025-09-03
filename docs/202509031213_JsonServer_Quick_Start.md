@@ -65,5 +65,40 @@ pnpm dev:api
 
 ---
 
-✅ You now have a mock REST API running in seconds!
+## 7. Using routes.json (Custom Routes)
+If you want pretty or legacy-style endpoints that map to resources in `db.json`, add a `routes.json` file.
 
+Example `routes.json`:
+```json
+{
+  "/Accounts": "/organizations",
+  "/Contacts": "/contacts",
+  "/Deals": "/deals"
+}
+```
+
+Run with routes enabled:
+```bash
+pnpm json-server --watch db.json --routes routes.json --port 3001
+```
+
+Add a convenient script to `package.json`:
+```json
+{
+  "scripts": {
+    "dev:api:routes": "json-server --watch db.json --routes routes.json --port 3001"
+  }
+}
+```
+Then start it with:
+```bash
+pnpm dev:api:routes
+```
+
+Notes:
+- Keys in `routes.json` are matched as paths and are case-sensitive.
+- Mapped values must point to collections present in `db.json`.
+
+---
+
+✅ You now have a mock REST API running in seconds!

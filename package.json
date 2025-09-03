@@ -7,7 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "dev:api": "json-server --watch db.json --port 3001"
+    "gen:db": "node scripts/generate-db.js",
+    "dev:api": "json-server db.json --port 3001",
+    "dev:api:routes": "json-server db.json --routes routes.json --port 3001",
+    "dev:api:regen": "node scripts/generate-db.js && json-server db.json --port 3001",
+    "dev:api:routes:regen": "node scripts/generate-db.js && json-server db.json --routes routes.json --port 3001"
   },
   "dependencies": {
     "clsx": "^2.1.1",

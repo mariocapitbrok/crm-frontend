@@ -1,0 +1,20 @@
+{
+  "/Accounts": "/organizations",
+  "/Organizations": "/organizations",
+  "/Contacts": "/contacts",
+  "/Leads": "/leads",
+  "/Potentials": "/deals",
+  "/Deals": "/deals",
+  "/HelpDesk": "/tickets",
+  "/Products": "/products",
+  "/Services": "/services",
+  "/Vendors": "/vendors",
+  "/PriceBooks": "/pricebooks",
+  "/Quotes": "/quotes",
+  "/SalesOrder": "/salesorders",
+  "/PurchaseOrder": "/purchaseorders",
+  "/Invoice": "/invoices",
+  "/Campaigns": "/campaigns",
+  "/Calendar": "/activities",
+  "/Documents": "/documents"
+}
