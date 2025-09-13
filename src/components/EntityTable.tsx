@@ -108,8 +108,8 @@ export default function EntityTable<T>({
     if (!sort) return filtered
     const col = columns.find((c) => c.id === sort.columnId)
     if (!col) return filtered
-    const getVal = (r: T) =>
-      col.sortAccessor ? col.sortAccessor(r) : (col.accessor(r) as any)
+    const getVal = (r: T): unknown =>
+      col.sortAccessor ? col.sortAccessor(r) : col.accessor(r)
     const arr = [...filtered]
     arr.sort((a, b) => {
       const av = getVal(a)
