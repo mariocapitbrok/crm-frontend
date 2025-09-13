@@ -19,8 +19,8 @@ const Leads = () => {
 
         {/* Right: action buttons */}
         <div className="flex items-center gap-2">
-          <AddRecord entity="Lead" />
-          <ImportRecords entity="Leads" buttonText="Import" />
+          <AddRecord entity="Lead" buttonProps={{ className: "text-[13px]" }} />
+          <ImportRecords entity="Leads" buttonText="Import" buttonProps={{ className: "text-[13px]" }} />
         </div>
       </div>
     </section>
