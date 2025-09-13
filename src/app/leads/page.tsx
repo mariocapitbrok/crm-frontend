@@ -1,10 +1,5 @@
-import AiIcon from "@/components/AiIcon"
 import EntityTitle from "@/components/EntityTitle"
-import JoinACall from "@/components/JoinACall"
 import LeadsMenu from "@/components/LeadsMenu"
-import Share from "@/components/Share"
-import ShowComments from "@/components/ShowComments"
-import ShowHistory from "@/components/ShowHistory"
 import { FileSpreadsheet } from "lucide-react"
 
 const Leads = () => {
@@ -22,11 +17,7 @@ const Leads = () => {
 
         {/* Right: icons, Share button, star, avatar */}
         <div className="flex items-center gap-2">
-          <ShowHistory />
-          <ShowComments />
-          <JoinACall />
-          <Share />
-          <AiIcon />
+          {/* More icons here... */}
         </div>
       </div>
     </section>

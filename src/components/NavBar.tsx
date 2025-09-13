@@ -1,10 +1,15 @@
 "use client"
 
 import AppSidebar from "@/components/AppSidebar"
-import ThemeSwitcher from "@/components/ThemeSwitcher"
-import { NotificationsIcon } from "@/components/NotificationsIcon"
 import LanguageSelector from "@/components/LanguageSelector"
+import { NotificationsIcon } from "@/components/NotificationsIcon"
+import ThemeSwitcher from "@/components/ThemeSwitcher"
 import UserProfileMenu from "@/components/UserProfileMenu"
+import AiIcon from "./AiIcon"
+import JoinACall from "./JoinACall"
+import Share from "./Share"
+import ShowComments from "./ShowComments"
+import ShowHistory from "./ShowHistory"
 
 export default function NavBar() {
   return (
@@ -15,10 +20,15 @@ export default function NavBar() {
       </div>
 
       {/* Right side: all other controls */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2">
         <ThemeSwitcher />
+        <ShowHistory />
+        <ShowComments />
+        <AiIcon />
         <NotificationsIcon />
+        <JoinACall />
         <LanguageSelector />
+        <Share />
         <UserProfileMenu />
       </div>
     </section>
