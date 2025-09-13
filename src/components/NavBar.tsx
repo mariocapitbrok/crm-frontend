@@ -8,7 +8,7 @@ import UserProfileMenu from "@/components/UserProfileMenu"
 
 export default function NavBar() {
   return (
-    <header className="w-full px-4 py-2 flex items-center justify-between border-b bg-background text-foreground">
+    <section className="w-full px-4 py-2 flex items-center justify-between border-b bg-background text-foreground">
       {/* Left side: Sidebar toggle */}
       <div className="flex items-center gap-4">
         <AppSidebar />
@@ -21,6 +21,6 @@ export default function NavBar() {
         <LanguageSelector />
         <UserProfileMenu />
       </div>
-    </header>
+    </section>
   )
 }
