@@ -1,7 +1,12 @@
 "use client"
 
-import React from "react"
-import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import {
   Table,
   TableBody,
@@ -10,10 +15,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { ChevronDown, ChevronUp, MoreHorizontal, Search, Star, Filter } from "lucide-react"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { cn } from "@/lib/utils"
+import {
+  ChevronDown,
+  ChevronUp,
+  Filter,
+  MoreHorizontal,
+  Search,
+  Star,
+} from "lucide-react"
+import React from "react"
 
 export type EntityColumn<T> = {
   id: string
@@ -49,7 +60,9 @@ export default function EntityTable<T>({
   title,
   headerLayout = "split",
 }: EntityTableProps<T>) {
-  const [selected, setSelected] = React.useState<Set<string | number>>(new Set())
+  const [selected, setSelected] = React.useState<Set<string | number>>(
+    new Set()
+  )
   const [sort, setSort] = React.useState<SortState>(null)
   const [filters, setFilters] = React.useState<Record<string, string>>({})
   const [q, setQ] = React.useState("")
@@ -80,7 +93,8 @@ export default function EntityTable<T>({
       for (const col of columns) {
         const f = filters[col.id]
         if (!f) continue
-        const val = (col.sortAccessor ? col.sortAccessor(row) : col.accessor(row)) ?? ""
+        const val =
+          (col.sortAccessor ? col.sortAccessor(row) : col.accessor(row)) ?? ""
         const s = String(val).toLowerCase()
         if (!s.includes(f.toLowerCase())) return false
       }
@@ -92,7 +106,8 @@ export default function EntityTable<T>({
     if (!sort) return filtered
     const col = columns.find((c) => c.id === sort.columnId)
     if (!col) return filtered
-    const getVal = (r: T) => (col.sortAccessor ? col.sortAccessor(r) : (col.accessor(r) as any))
+    const getVal = (r: T) =>
+      col.sortAccessor ? col.sortAccessor(r) : (col.accessor(r) as any)
     const arr = [...filtered]
     arr.sort((a, b) => {
       const av = getVal(a)
@@ -125,7 +140,12 @@ export default function EntityTable<T>({
     <div className={cn("flex flex-col gap-2", className)}>
       <div className="flex items-center justify-between gap-3 px-2">
         <div className="flex items-center gap-2">
-          <Button variant="secondary" size="sm" className="text-[13px]" onClick={() => setPage(0)}>
+          <Button
+            variant="secondary"
+            size="sm"
+            className="text-[13px]"
+            onClick={() => setPage(0)}
+          >
             <Search className="size-4" />
             Search
           </Button>
@@ -137,7 +157,9 @@ export default function EntityTable<T>({
           />
         </div>
         <div className="text-xs text-muted-foreground">
-          {total === 0 ? "0 of 0" : `${pageStart + 1} to ${pageEnd} of ${total}`}
+          {total === 0
+            ? "0 of 0"
+            : `${pageStart + 1} to ${pageEnd} of ${total}`}
         </div>
       </div>
 
@@ -165,13 +187,12 @@ export default function EntityTable<T>({
                         className="inline-flex items-center gap-1 hover:underline"
                       >
                         <span>{col.header}</span>
-                        {sort?.columnId === col.id && (
-                          sort.dir === "asc" ? (
+                        {sort?.columnId === col.id &&
+                          (sort.dir === "asc" ? (
                             <ChevronUp className="size-3" />
                           ) : (
                             <ChevronDown className="size-3" />
-                          )
-                        )}
+                          ))}
                       </button>
                     </TableHead>
                   ))}
@@ -189,7 +210,10 @@ export default function EntityTable<T>({
                           value={filters[col.id] ?? ""}
                           onChange={(e) => {
                             setPage(0)
-                            setFilters((f) => ({ ...f, [col.id]: e.target.value }))
+                            setFilters((f) => ({
+                              ...f,
+                              [col.id]: e.target.value,
+                            }))
                           }}
                           className="h-7"
                           placeholder={col.filter?.placeholder ?? "Filter"}
@@ -213,7 +237,11 @@ export default function EntityTable<T>({
                 </TableHead>
                 <TableHead className="w-[36px] align-middle"></TableHead>
                 {columns.map((col) => (
-                  <TableHead key={col.id} style={{ width: col.width }} className="relative align-middle">
+                  <TableHead
+                    key={col.id}
+                    style={{ width: col.width }}
+                    className="relative align-middle"
+                  >
                     <div className="group/col">
                       <button
                         type="button"
@@ -221,13 +249,12 @@ export default function EntityTable<T>({
                         className="inline-flex items-center gap-1 hover:underline"
                       >
                         <span>{col.header}</span>
-                        {sort?.columnId === col.id && (
-                          sort.dir === "asc" ? (
+                        {sort?.columnId === col.id &&
+                          (sort.dir === "asc" ? (
                             <ChevronUp className="size-3" />
                           ) : (
                             <ChevronDown className="size-3" />
-                          )
-                        )}
+                          ))}
                       </button>
                       {col.filter?.type === "text" && (
                         <div className="pointer-events-none absolute left-0 right-0 top-full z-10 mt-1 opacity-0 transition-opacity group-hover/col:opacity-100 group-focus-within/col:opacity-100">
@@ -235,7 +262,10 @@ export default function EntityTable<T>({
                             value={filters[col.id] ?? ""}
                             onChange={(e) => {
                               setPage(0)
-                              setFilters((f) => ({ ...f, [col.id]: e.target.value }))
+                              setFilters((f) => ({
+                                ...f,
+                                [col.id]: e.target.value,
+                              }))
                             }}
                             className="pointer-events-auto h-7"
                             placeholder={col.filter?.placeholder ?? "Filter"}
@@ -262,7 +292,11 @@ export default function EntityTable<T>({
                 </TableHead>
                 <TableHead className="w-[36px] align-middle"></TableHead>
                 {columns.map((col) => (
-                  <TableHead key={col.id} style={{ width: col.width }} className="align-middle">
+                  <TableHead
+                    key={col.id}
+                    style={{ width: col.width }}
+                    className="align-middle"
+                  >
                     <div className="flex items-center gap-1">
                       <button
                         type="button"
@@ -270,18 +304,21 @@ export default function EntityTable<T>({
                         className="inline-flex items-center gap-1 hover:underline"
                       >
                         <span>{col.header}</span>
-                        {sort?.columnId === col.id && (
-                          sort.dir === "asc" ? (
+                        {sort?.columnId === col.id &&
+                          (sort.dir === "asc" ? (
                             <ChevronUp className="size-3" />
                           ) : (
                             <ChevronDown className="size-3" />
-                          )
-                        )}
+                          ))}
                       </button>
                       {col.filter?.type && (
                         <Popover>
                           <PopoverTrigger asChild>
-                            <Button variant="ghost" size="icon" className="size-6">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="size-6"
+                            >
                               <Filter className="size-3.5" />
                             </Button>
                           </PopoverTrigger>
@@ -292,10 +329,15 @@ export default function EntityTable<T>({
                                 value={filters[col.id] ?? ""}
                                 onChange={(e) => {
                                   setPage(0)
-                                  setFilters((f) => ({ ...f, [col.id]: e.target.value }))
+                                  setFilters((f) => ({
+                                    ...f,
+                                    [col.id]: e.target.value,
+                                  }))
                                 }}
                                 className="h-8"
-                                placeholder={col.filter?.placeholder ?? "Filter value"}
+                                placeholder={
+                                  col.filter?.placeholder ?? "Filter value"
+                                }
                               />
                             )}
                           </PopoverContent>
@@ -315,7 +357,10 @@ export default function EntityTable<T>({
               const id = getRowId(row)
               const isSelected = selected.has(id)
               return (
-                <TableRow key={String(id)} className={isSelected ? "bg-accent/30" : undefined}>
+                <TableRow
+                  key={String(id)}
+                  className={isSelected ? "bg-accent/30" : undefined}
+                >
                   <TableCell className="align-top">
                     <input
                       type="checkbox"
@@ -330,7 +375,10 @@ export default function EntityTable<T>({
                     />
                   </TableCell>
                   <TableCell className="align-top">
-                    <button className="text-muted-foreground hover:text-foreground" aria-label="Toggle favorite">
+                    <button
+                      className="text-muted-foreground hover:text-foreground"
+                      aria-label="Toggle favorite"
+                    >
                       <Star className="size-4" />
                     </button>
                   </TableCell>
