@@ -12,7 +12,8 @@ import {
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { ChevronDown, ChevronUp, MoreHorizontal, Search, Star } from "lucide-react"
+import { ChevronDown, ChevronUp, MoreHorizontal, Search, Star, Filter } from "lucide-react"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 export type EntityColumn<T> = {
   id: string
@@ -34,6 +35,7 @@ export type EntityTableProps<T> = {
   className?: string
   pageSize?: number
   title?: string
+  headerLayout?: "split" | "stacked" | "inline" | "popover"
 }
 
 type SortState = { columnId: string; dir: "asc" | "desc" } | null
@@ -45,6 +47,7 @@ export default function EntityTable<T>({
   className,
   pageSize = 20,
   title,
+  headerLayout = "split",
 }: EntityTableProps<T>) {
   const [selected, setSelected] = React.useState<Set<string | number>>(new Set())
   const [sort, setSort] = React.useState<SortState>(null)
@@ -141,59 +144,171 @@ export default function EntityTable<T>({
       <div className="overflow-auto rounded-md border">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead className="w-[44px]">
-                <input
-                  type="checkbox"
-                  aria-label="Select page"
-                  checked={allOnPageSelected && pageRows.length > 0}
-                  onChange={toggleAllOnPage}
-                  className="size-4 accent-foreground"
-                />
-              </TableHead>
-              <TableHead className="w-[36px]"></TableHead>
-              {columns.map((col) => (
-                <TableHead key={col.id} style={{ width: col.width }}>
-                  <button
-                    type="button"
-                    onClick={() => toggleSort(col.id)}
-                    className="inline-flex items-center gap-1 hover:underline"
-                  >
-                    <span>{col.header}</span>
-                    {sort?.columnId === col.id && (
-                      sort.dir === "asc" ? (
-                        <ChevronUp className="size-3" />
-                      ) : (
-                        <ChevronDown className="size-3" />
-                      )
-                    )}
-                  </button>
-                </TableHead>
-              ))}
-              <TableHead className="w-[44px] text-right">
-                <MoreHorizontal className="ml-auto size-4" />
-              </TableHead>
-            </TableRow>
-            <TableRow>
-              <TableHead></TableHead>
-              <TableHead></TableHead>
-              {columns.map((col) => (
-                <TableHead key={col.id}>
-                  {col.filter?.type === "text" && (
-                    <Input
-                      value={filters[col.id] ?? ""}
-                      onChange={(e) => {
-                        setPage(0)
-                        setFilters((f) => ({ ...f, [col.id]: e.target.value }))
-                      }}
-                      className="h-7"
-                      placeholder={col.filter?.placeholder ?? "Filter"}
+            {headerLayout === "split" ? (
+              <>
+                <TableRow>
+                  <TableHead className="w-[44px]">
+                    <input
+                      type="checkbox"
+                      aria-label="Select page"
+                      checked={allOnPageSelected && pageRows.length > 0}
+                      onChange={toggleAllOnPage}
+                      className="size-4 accent-foreground"
                     />
-                  )}
+                  </TableHead>
+                  <TableHead className="w-[36px]"></TableHead>
+                  {columns.map((col) => (
+                    <TableHead key={col.id} style={{ width: col.width }}>
+                      <button
+                        type="button"
+                        onClick={() => toggleSort(col.id)}
+                        className="inline-flex items-center gap-1 hover:underline"
+                      >
+                        <span>{col.header}</span>
+                        {sort?.columnId === col.id && (
+                          sort.dir === "asc" ? (
+                            <ChevronUp className="size-3" />
+                          ) : (
+                            <ChevronDown className="size-3" />
+                          )
+                        )}
+                      </button>
+                    </TableHead>
+                  ))}
+                  <TableHead className="w-[44px] text-right">
+                    <MoreHorizontal className="ml-auto size-4" />
+                  </TableHead>
+                </TableRow>
+                <TableRow>
+                  <TableHead></TableHead>
+                  <TableHead></TableHead>
+                  {columns.map((col) => (
+                    <TableHead key={col.id}>
+                      {col.filter?.type === "text" && (
+                        <Input
+                          value={filters[col.id] ?? ""}
+                          onChange={(e) => {
+                            setPage(0)
+                            setFilters((f) => ({ ...f, [col.id]: e.target.value }))
+                          }}
+                          className="h-7"
+                          placeholder={col.filter?.placeholder ?? "Filter"}
+                        />
+                      )}
+                    </TableHead>
+                  ))}
+                  <TableHead></TableHead>
+                </TableRow>
+              </>
+            ) : headerLayout === "inline" ? (
+              <TableRow>
+                <TableHead className="w-[44px] align-middle">
+                  <input
+                    type="checkbox"
+                    aria-label="Select page"
+                    checked={allOnPageSelected && pageRows.length > 0}
+                    onChange={toggleAllOnPage}
+                    className="size-4 accent-foreground"
+                  />
                 </TableHead>
-              ))}
-              <TableHead></TableHead>
-            </TableRow>
+                <TableHead className="w-[36px] align-middle"></TableHead>
+                {columns.map((col) => (
+                  <TableHead key={col.id} style={{ width: col.width }} className="relative align-middle">
+                    <div className="group/col">
+                      <button
+                        type="button"
+                        onClick={() => toggleSort(col.id)}
+                        className="inline-flex items-center gap-1 hover:underline"
+                      >
+                        <span>{col.header}</span>
+                        {sort?.columnId === col.id && (
+                          sort.dir === "asc" ? (
+                            <ChevronUp className="size-3" />
+                          ) : (
+                            <ChevronDown className="size-3" />
+                          )
+                        )}
+                      </button>
+                      {col.filter?.type === "text" && (
+                        <div className="pointer-events-none absolute left-0 right-0 top-full z-10 mt-1 opacity-0 transition-opacity group-hover/col:opacity-100 group-focus-within/col:opacity-100">
+                          <Input
+                            value={filters[col.id] ?? ""}
+                            onChange={(e) => {
+                              setPage(0)
+                              setFilters((f) => ({ ...f, [col.id]: e.target.value }))
+                            }}
+                            className="pointer-events-auto h-7"
+                            placeholder={col.filter?.placeholder ?? "Filter"}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </TableHead>
+                ))}
+                <TableHead className="w-[44px] align-middle text-right">
+                  <MoreHorizontal className="ml-auto size-4" />
+                </TableHead>
+              </TableRow>
+            ) : (
+              <TableRow>
+                <TableHead className="w-[44px] align-middle">
+                  <input
+                    type="checkbox"
+                    aria-label="Select page"
+                    checked={allOnPageSelected && pageRows.length > 0}
+                    onChange={toggleAllOnPage}
+                    className="size-4 accent-foreground"
+                  />
+                </TableHead>
+                <TableHead className="w-[36px] align-middle"></TableHead>
+                {columns.map((col) => (
+                  <TableHead key={col.id} style={{ width: col.width }} className="align-middle">
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => toggleSort(col.id)}
+                        className="inline-flex items-center gap-1 hover:underline"
+                      >
+                        <span>{col.header}</span>
+                        {sort?.columnId === col.id && (
+                          sort.dir === "asc" ? (
+                            <ChevronUp className="size-3" />
+                          ) : (
+                            <ChevronDown className="size-3" />
+                          )
+                        )}
+                      </button>
+                      {col.filter?.type && (
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button variant="ghost" size="icon" className="size-6">
+                              <Filter className="size-3.5" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent align="start" className="w-56 p-2">
+                            {col.filter?.type === "text" && (
+                              <Input
+                                autoFocus
+                                value={filters[col.id] ?? ""}
+                                onChange={(e) => {
+                                  setPage(0)
+                                  setFilters((f) => ({ ...f, [col.id]: e.target.value }))
+                                }}
+                                className="h-8"
+                                placeholder={col.filter?.placeholder ?? "Filter value"}
+                              />
+                            )}
+                          </PopoverContent>
+                        </Popover>
+                      )}
+                    </div>
+                  </TableHead>
+                ))}
+                <TableHead className="w-[44px] align-middle text-right">
+                  <MoreHorizontal className="ml-auto size-4" />
+                </TableHead>
+              </TableRow>
+            )}
           </TableHeader>
           <TableBody>
             {pageRows.map((row) => {
@@ -265,4 +380,3 @@ export default function EntityTable<T>({
     </div>
   )
 }
-

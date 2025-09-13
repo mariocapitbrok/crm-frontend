@@ -99,6 +99,7 @@ const Leads = () => {
         data={rows}
         columns={columns}
         getRowId={(r) => r.id}
+        headerLayout="popover"
       />
     </div>
   )
