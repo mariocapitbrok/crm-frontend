@@ -1,7 +1,8 @@
+import AddRecord from "@/components/AddRecord"
 import EntityTitle from "@/components/EntityTitle"
+import ImportRecords from "@/components/ImportRecords"
 import LeadsMenu from "@/components/LeadsMenu"
-import { Button } from "@/components/ui/button"
-import { FileSpreadsheet, Plus, Download } from "lucide-react"
+import { FileSpreadsheet } from "lucide-react"
 
 const Leads = () => {
   return (
@@ -18,14 +19,8 @@ const Leads = () => {
 
         {/* Right: action buttons */}
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
-            <Plus className="size-4" />
-            Add Lead
-          </Button>
-          <Button variant="outline" size="sm">
-            <Download className="size-4" />
-            Import
-          </Button>
+          <AddRecord entity="Lead" />
+          <ImportRecords entity="Leads" buttonText="Import" />
         </div>
       </div>
     </section>
