@@ -1,6 +1,7 @@
 import EntityTitle from "@/components/EntityTitle"
 import LeadsMenu from "@/components/LeadsMenu"
-import { FileSpreadsheet } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { FileSpreadsheet, Plus, Download } from "lucide-react"
 
 const Leads = () => {
   return (
@@ -15,9 +16,16 @@ const Leads = () => {
           </div>
         </div>
 
-        {/* Right: icons, Share button, star, avatar */}
+        {/* Right: action buttons */}
         <div className="flex items-center gap-2">
-          {/* More icons here... */}
+          <Button variant="outline" size="sm">
+            <Plus className="size-4" />
+            Add Lead
+          </Button>
+          <Button variant="outline" size="sm">
+            <Download className="size-4" />
+            Import
+          </Button>
         </div>
       </div>
     </section>
