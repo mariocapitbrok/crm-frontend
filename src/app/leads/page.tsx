@@ -5,7 +5,7 @@ import { FileSpreadsheet } from "lucide-react"
 const Leads = () => {
   return (
     <section className="w-full border-b bg-background text-foreground">
-      <div className="flex items-center justify-between gap-3 px-4 py-2">
+      <div className="flex items-center justify-between gap-3 px-4 py-1">
         {/* Left: file icon, then a column with title and menus */}
         <div className="flex min-w-0 items-center gap-3">
           <FileSpreadsheet className="size-7" />

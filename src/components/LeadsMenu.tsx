@@ -20,7 +20,7 @@ const LeadsMenu = () => {
           key={label}
           variant="ghost"
           size="sm"
-          className="h-8 px-2 first:pl-0 text-[13px] font-normal"
+          className="h-4 px-2 first:pl-0 text-[13px] font-normal"
         >
           {label}
         </Button>
