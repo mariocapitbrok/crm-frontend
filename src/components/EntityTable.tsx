@@ -25,7 +25,7 @@ import {
   Star,
 } from "lucide-react"
 import React from "react"
-import { Edit, UserPlus, Tags, Trash2 } from "lucide-react"
+import { Edit, UserPlus, Tags, Trash2, X } from "lucide-react"
 
 export type EntityColumn<T> = {
   id: string
@@ -190,23 +190,28 @@ export default function EntityTable<T>({
 
   return (
     <div className={cn("flex flex-col gap-2", className)}>
-      <div className="flex items-center justify-between gap-3 px-2">
+      <div className="flex items-center justify-between gap-3 px-2" role="search">
         <div className="flex items-center gap-2">
-          <Button
-            variant="secondary"
-            size="sm"
-            className="text-[13px]"
-            onClick={() => setPage(0)}
-          >
-            <Search className="size-4" />
-            Search
-          </Button>
-          <Input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder={`Search ${title ?? "records"}...`}
-            className="h-8 w-[320px]"
-          />
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-2 top-2.5 size-4 text-muted-foreground" />
+            <Input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder={`Search ${title ?? "records"}...`}
+              aria-label={`Search ${title ?? "records"}`}
+              className="h-8 w-[420px] pl-8 pr-8 text-[13px]"
+            />
+            {q && (
+              <button
+                type="button"
+                onClick={() => setQ("")}
+                aria-label="Clear search"
+                className="absolute right-1.5 top-1.5 inline-flex size-5 items-center justify-center rounded hover:bg-muted"
+              >
+                <X className="size-3.5 text-muted-foreground" />
+              </button>
+            )}
+          </div>
         </div>
         <div className="text-xs text-muted-foreground">
           {total === 0
