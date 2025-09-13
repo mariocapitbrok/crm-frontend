@@ -68,6 +68,7 @@ export default function EntityTable<T>({
   const [filters, setFilters] = React.useState<Record<string, string>>({})
   const [q, setQ] = React.useState("")
   const [page, setPage] = React.useState(0)
+  const [pageJump, setPageJump] = React.useState<string>("1")
 
   const toggleSort = (columnId: string) => {
     setPage(0)
@@ -125,6 +126,17 @@ export default function EntityTable<T>({
   const pageStart = page * pageSize
   const pageEnd = Math.min(total, pageStart + pageSize)
   const pageRows = sorted.slice(pageStart, pageEnd)
+
+  React.useEffect(() => {
+    setPageJump(String(page + 1))
+  }, [page, pages])
+
+  const goToPage = React.useCallback(() => {
+    const n = parseInt(pageJump, 10)
+    if (Number.isNaN(n)) return
+    const clamped = Math.max(1, Math.min(pages, n))
+    setPage(clamped - 1)
+  }, [pageJump, pages])
 
   const pageRowIds = React.useMemo(
     () => pageRows.map((r) => getRowId(r)),
@@ -511,6 +523,30 @@ export default function EntityTable<T>({
           <span>
             Page {page + 1} / {pages}
           </span>
+          <div className="flex items-center gap-1">
+            <span className="text-[13px]">Go to</span>
+            <Input
+              type="number"
+              inputMode="numeric"
+              min={1}
+              max={pages}
+              value={pageJump}
+              onChange={(e) => setPageJump(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") goToPage()
+              }}
+              aria-label="Go to page"
+              className="h-8 w-[72px] px-2 text-[13px]"
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-[13px]"
+              onClick={goToPage}
+            >
+              Go
+            </Button>
+          </div>
           <Button
             disabled={page === 0}
             variant="outline"
