@@ -1,10 +1,10 @@
 import AiIcon from "@/components/AiIcon"
-import Share from "@/components/Share"
+import EntityTitle from "@/components/EntityTitle"
 import JoinACall from "@/components/JoinACall"
+import LeadsMenu from "@/components/LeadsMenu"
+import Share from "@/components/Share"
 import ShowComments from "@/components/ShowComments"
 import ShowHistory from "@/components/ShowHistory"
-import LeadsMenu from "@/components/LeadsMenu"
-import EntityTitle from "@/components/EntityTitle"
 import { FileSpreadsheet } from "lucide-react"
 
 const Leads = () => {
