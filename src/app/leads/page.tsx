@@ -2,7 +2,9 @@
 
 import EntityNavBar from "@/components/EntityNavBar"
 import EntityTable, { EntityColumn } from "@/components/EntityTable"
-import db from "../../../db.json"
+import { useLeads, useUsers, Lead } from "@/state/queries/leads"
+import { useMemo } from "react"
+import { useLeadsUiStore } from "@/state/stores/leadsUiStore"
 
 type LeadRow = {
   id: number
@@ -15,19 +17,27 @@ type LeadRow = {
 }
 
 const Leads = () => {
-  const users = new Map(
-    (db.users ?? []).map((u: any) => [u.id, `${u.first_name} ${u.last_name}`])
-  )
+  const { data: leads, isLoading: leadsLoading, error: leadsError } = useLeads()
+  const { data: users, isLoading: usersLoading, error: usersError } = useUsers()
+  const headerLayout = useLeadsUiStore((s) => s.headerLayout)
 
-  const rows: LeadRow[] = (db.leads ?? []).map((l: any) => ({
-    id: l.id,
-    firstname: l.firstname,
-    lastname: l.lastname,
-    company: l.company,
-    email: l.email,
-    assignedTo: users.get(l.assigned_user_id),
-    website: null,
-  }))
+  const userMap = useMemo(() => {
+    const map = new Map<number, string>()
+    ;(users ?? []).forEach((u) => map.set(u.id, `${u.first_name} ${u.last_name}`))
+    return map
+  }, [users])
+
+  const rows: LeadRow[] = useMemo(() => {
+    return (leads ?? []).map((l: Lead) => ({
+      id: l.id,
+      firstname: l.firstname,
+      lastname: l.lastname,
+      company: l.company,
+      email: l.email,
+      assignedTo: l.assigned_user_id ? userMap.get(l.assigned_user_id) : undefined,
+      website: null,
+    }))
+  }, [leads, userMap])
 
   const columns: EntityColumn<LeadRow>[] = [
     {
@@ -91,6 +101,26 @@ const Leads = () => {
     },
   ]
 
+  if (leadsLoading || usersLoading) {
+    return (
+      <div className="flex flex-col gap-3">
+        <EntityNavBar />
+        <div className="p-4 text-sm text-muted-foreground">Loading leads…</div>
+      </div>
+    )
+  }
+
+  if (leadsError || usersError) {
+    return (
+      <div className="flex flex-col gap-3">
+        <EntityNavBar />
+        <div className="p-4 text-sm text-red-600">
+          {(leadsError || usersError)?.toString()}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col gap-3">
       <EntityNavBar />
@@ -99,7 +129,7 @@ const Leads = () => {
         data={rows}
         columns={columns}
         getRowId={(r) => r.id}
-        headerLayout="popover"
+        headerLayout={headerLayout}
       />
     </div>
   )

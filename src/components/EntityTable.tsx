@@ -47,7 +47,7 @@ export type EntityTableProps<T> = {
   className?: string
   pageSize?: number
   title?: string
-  headerLayout?: "split" | "stacked" | "inline" | "popover"
+  headerLayout?: "split" | "popover"
 }
 
 type SortState = { columnId: string; dir: "asc" | "desc" } | null
@@ -344,59 +344,6 @@ export default function EntityTable<T>({
                   <TableHead></TableHead>
                 </TableRow>
               </>
-            ) : headerLayout === "inline" ? (
-              <TableRow>
-                <TableHead className="w-[44px] align-middle">
-                  <PageSelectCheckbox
-                    checked={allOnPageSelected}
-                    indeterminate={someOnPageSelected}
-                    onChange={toggleAllOnPage}
-                  />
-                </TableHead>
-                <TableHead className="w-[36px] align-middle"></TableHead>
-                {columns.map((col) => (
-                  <TableHead
-                    key={col.id}
-                    style={{ width: col.width }}
-                    className="relative align-middle"
-                  >
-                    <div className="group/col">
-                      <button
-                        type="button"
-                        onClick={() => toggleSort(col.id)}
-                        className="inline-flex items-center gap-1 hover:underline"
-                      >
-                        <span>{col.header}</span>
-                        {sort?.columnId === col.id &&
-                          (sort.dir === "asc" ? (
-                            <ChevronUp className="size-3" />
-                          ) : (
-                            <ChevronDown className="size-3" />
-                          ))}
-                      </button>
-                      {col.filter?.type === "text" && (
-                        <div className="pointer-events-none absolute left-0 right-0 top-full z-10 mt-1 opacity-0 transition-opacity group-hover/col:opacity-100 group-focus-within/col:opacity-100">
-                          <Input
-                            value={filters[col.id] ?? ""}
-                            onChange={(e) => {
-                              setPage(0)
-                              setFilters((f) => ({
-                                ...f,
-                                [col.id]: e.target.value,
-                              }))
-                            }}
-                            className="pointer-events-auto h-7"
-                            placeholder={col.filter?.placeholder ?? "Filter"}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </TableHead>
-                ))}
-                <TableHead className="w-[44px] align-middle text-right">
-                  <MoreHorizontal className="ml-auto size-4" />
-                </TableHead>
-              </TableRow>
             ) : (
               <TableRow>
                 <TableHead className="w-[44px] align-middle">
