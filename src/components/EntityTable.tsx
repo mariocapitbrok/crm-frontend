@@ -59,7 +59,7 @@ export default function EntityTable<T>({
   className,
   pageSize = 20,
   title,
-  headerLayout = "split",
+  headerLayout = "popover",
 }: EntityTableProps<T>) {
   const [selected, setSelected] = React.useState<Set<string | number>>(
     new Set()
