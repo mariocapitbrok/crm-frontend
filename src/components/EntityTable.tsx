@@ -25,6 +25,7 @@ import {
   Star,
 } from "lucide-react"
 import React from "react"
+import { Edit, UserPlus, Tags, Trash2 } from "lucide-react"
 
 export type EntityColumn<T> = {
   id: string
@@ -125,15 +126,66 @@ export default function EntityTable<T>({
   const pageEnd = Math.min(total, pageStart + pageSize)
   const pageRows = sorted.slice(pageStart, pageEnd)
 
-  const allOnPageSelected = pageRows.every((r) => selected.has(getRowId(r)))
+  const pageRowIds = React.useMemo(
+    () => pageRows.map((r) => getRowId(r)),
+    [pageRows, getRowId]
+  )
+  const selectedOnPageCount = React.useMemo(
+    () => pageRowIds.filter((id) => selected.has(id)).length,
+    [pageRowIds, selected]
+  )
+  const allOnPageSelected = pageRows.length > 0 && selectedOnPageCount === pageRows.length
+  const someOnPageSelected = selectedOnPageCount > 0 && !allOnPageSelected
   const toggleAllOnPage = () => {
     const next = new Set(selected)
     if (allOnPageSelected) {
-      pageRows.forEach((r) => next.delete(getRowId(r)))
+      pageRowIds.forEach((id) => next.delete(id))
     } else {
-      pageRows.forEach((r) => next.add(getRowId(r)))
+      pageRowIds.forEach((id) => next.add(id))
     }
     setSelected(next)
+  }
+
+  const allMatchingIds = React.useMemo(
+    () => sorted.map((r) => getRowId(r)),
+    [sorted, getRowId]
+  )
+  const allMatchingSelected = React.useMemo(
+    () => allMatchingIds.length > 0 && allMatchingIds.every((id) => selected.has(id)),
+    [allMatchingIds, selected]
+  )
+  const selectAllMatching = () => {
+    const next = new Set(selected)
+    allMatchingIds.forEach((id) => next.add(id))
+    setSelected(next)
+  }
+
+  function PageSelectCheckbox({
+    checked,
+    indeterminate,
+    onChange,
+    ariaLabel,
+  }: {
+    checked: boolean
+    indeterminate: boolean
+    onChange: () => void
+    ariaLabel?: string
+  }) {
+    const ref = React.useRef<HTMLInputElement>(null)
+    React.useEffect(() => {
+      if (ref.current) ref.current.indeterminate = indeterminate
+    }, [indeterminate, checked])
+    return (
+      <input
+        ref={ref}
+        type="checkbox"
+        aria-label={ariaLabel ?? "Select page"}
+        aria-checked={indeterminate ? "mixed" : checked}
+        checked={checked}
+        onChange={onChange}
+        className="size-4 accent-foreground"
+      />
+    )
   }
 
   return (
@@ -163,6 +215,59 @@ export default function EntityTable<T>({
         </div>
       </div>
 
+      {selected.size > 0 && (
+        <div className="sticky top-0 z-20 border-b bg-muted/50 px-2 py-2 backdrop-blur supports-[backdrop-filter]:bg-muted/50">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <PageSelectCheckbox
+                checked={allOnPageSelected}
+                indeterminate={someOnPageSelected}
+                onChange={toggleAllOnPage}
+              />
+              <span className="text-[13px] font-medium">{selected.size} selected</span>
+              {!allMatchingSelected && total > 0 && selected.size > 0 && (
+                <button
+                  type="button"
+                  className="text-[13px] text-primary underline"
+                  onClick={selectAllMatching}
+                >
+                  Select all {total} results
+                </button>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <Button size="sm" className="text-[13px]">
+                <Edit className="mr-2 size-4" />
+                Edit
+              </Button>
+              <Button variant="outline" size="sm" className="text-[13px]">
+                <UserPlus className="mr-2 size-4" />
+                Assign
+              </Button>
+              <Button variant="outline" size="sm" className="text-[13px]">
+                <Tags className="mr-2 size-4" />
+                Tags
+              </Button>
+              <Button variant="destructive" size="sm" className="text-[13px]">
+                <Trash2 className="mr-2 size-4" />
+                Delete
+              </Button>
+              <Button variant="ghost" size="sm" className="text-[13px]">
+                <MoreHorizontal className="size-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-[13px] text-muted-foreground"
+                onClick={() => setSelected(new Set())}
+              >
+                Clear selection
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="overflow-auto rounded-md border">
         <Table>
           <TableHeader>
@@ -170,12 +275,10 @@ export default function EntityTable<T>({
               <>
                 <TableRow>
                   <TableHead className="w-[44px]">
-                    <input
-                      type="checkbox"
-                      aria-label="Select page"
-                      checked={allOnPageSelected && pageRows.length > 0}
+                    <PageSelectCheckbox
+                      checked={allOnPageSelected}
+                      indeterminate={someOnPageSelected}
                       onChange={toggleAllOnPage}
-                      className="size-4 accent-foreground"
                     />
                   </TableHead>
                   <TableHead className="w-[36px]"></TableHead>
@@ -227,12 +330,10 @@ export default function EntityTable<T>({
             ) : headerLayout === "inline" ? (
               <TableRow>
                 <TableHead className="w-[44px] align-middle">
-                  <input
-                    type="checkbox"
-                    aria-label="Select page"
-                    checked={allOnPageSelected && pageRows.length > 0}
+                  <PageSelectCheckbox
+                    checked={allOnPageSelected}
+                    indeterminate={someOnPageSelected}
                     onChange={toggleAllOnPage}
-                    className="size-4 accent-foreground"
                   />
                 </TableHead>
                 <TableHead className="w-[36px] align-middle"></TableHead>
@@ -282,12 +383,10 @@ export default function EntityTable<T>({
             ) : (
               <TableRow>
                 <TableHead className="w-[44px] align-middle">
-                  <input
-                    type="checkbox"
-                    aria-label="Select page"
-                    checked={allOnPageSelected && pageRows.length > 0}
+                  <PageSelectCheckbox
+                    checked={allOnPageSelected}
+                    indeterminate={someOnPageSelected}
                     onChange={toggleAllOnPage}
-                    className="size-4 accent-foreground"
                   />
                 </TableHead>
                 <TableHead className="w-[36px] align-middle"></TableHead>
