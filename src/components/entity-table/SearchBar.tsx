@@ -10,8 +10,32 @@ export function SearchBar(props: {
   title?: string
   summary?: string
   className?: string
+  debounceMs?: number
+  onClear?: () => void
 }) {
-  const { q, onChange, title, summary, className } = props
+  const { q, onChange, title, summary, className, debounceMs = 0, onClear } = props
+  const [inner, setInner] = React.useState(q)
+  const tRef = React.useRef<number | null>(null)
+
+  // Keep local state in sync when parent value changes externally
+  React.useEffect(() => {
+    setInner(q)
+  }, [q])
+
+  React.useEffect(() => () => {
+    if (tRef.current) window.clearTimeout(tRef.current)
+  }, [])
+
+  const emit = (value: string) => {
+    if (tRef.current) window.clearTimeout(tRef.current)
+    if (debounceMs > 0) {
+      tRef.current = window.setTimeout(() => {
+        onChange(value)
+      }, debounceMs)
+    } else {
+      onChange(value)
+    }
+  }
   return (
     <div className={className} role="search">
       <div className="flex items-center justify-between gap-3">
@@ -19,16 +43,25 @@ export function SearchBar(props: {
           <div className="relative">
             <Search className="pointer-events-none absolute left-2 top-2.5 size-4 text-muted-foreground" />
             <Input
-              value={q}
-              onChange={(e) => onChange(e.target.value)}
+              value={inner}
+              onChange={(e) => {
+                const v = e.target.value
+                setInner(v)
+                emit(v)
+              }}
               placeholder={`Search ${title ?? "records"}...`}
               aria-label={`Search ${title ?? "records"}`}
               className="h-8 w-[420px] pl-8 pr-8 text-[13px]"
             />
-            {q && (
+            {inner && (
               <button
                 type="button"
-                onClick={() => onChange("")}
+                onClick={() => {
+                  if (tRef.current) window.clearTimeout(tRef.current)
+                  setInner("")
+                  onChange("")
+                  onClear?.()
+                }}
                 aria-label="Clear search"
                 className="absolute right-1.5 top-1.5 inline-flex size-5 items-center justify-center rounded hover:bg-muted"
               >

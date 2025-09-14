@@ -25,6 +25,7 @@ export type EntityTableProps<T> = {
   pageSize?: number
   title?: string
   headerLayout?: HeaderLayout
+  searchDebounceMs?: number
   bulkActions?: React.ReactNode | ((ctx: { selected: Set<ID> }) => React.ReactNode)
   rowActions?: (row: T) => React.ReactNode
   onToggleFavorite?: (id: ID) => void
@@ -46,6 +47,7 @@ export default function EntityTable<T>({
   pageSize = 20,
   title,
   headerLayout = "popover",
+  searchDebounceMs = 150,
   bulkActions,
   rowActions,
   onToggleFavorite,
@@ -118,6 +120,7 @@ export default function EntityTable<T>({
         title={title}
         summary={total === 0 ? "0 of 0" : `${pageStart + 1} to ${pageEnd} of ${total}`}
         className="px-2"
+        debounceMs={searchDebounceMs}
       />
 
       {selected.size > 0 && (
