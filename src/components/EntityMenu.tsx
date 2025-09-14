@@ -79,6 +79,23 @@ const EntityMenu = ({ uiStore, menus }: EntityMenuProps) => {
   const [activeId, setActiveId] = React.useState<string>("")
   // Enable hover-to-switch only after an intentional open
   const hoverSwitchEnabled = React.useRef(false)
+  const closeTimer = React.useRef<number | null>(null)
+
+  const cancelClose = () => {
+    if (closeTimer.current !== null) {
+      window.clearTimeout(closeTimer.current)
+      closeTimer.current = null
+    }
+  }
+
+  const scheduleClose = () => {
+    // close a short moment after pointer leaves, to feel natural
+    cancelClose()
+    closeTimer.current = window.setTimeout(() => {
+      hoverSwitchEnabled.current = false
+      setActiveId("")
+    }, 150) as unknown as number
+  }
 
   const ContentOpenWatcher = (props: React.ComponentProps<typeof MenubarContent>) => {
     const { onEscapeKeyDown, onPointerDownOutside, ...rest } = props
@@ -95,6 +112,8 @@ const EntityMenu = ({ uiStore, menus }: EntityMenuProps) => {
           setActiveId("")
           onPointerDownOutside?.(e)
         }}
+        onMouseEnter={cancelClose}
+        onMouseLeave={scheduleClose}
       />
     )
   }
@@ -107,6 +126,8 @@ const EntityMenu = ({ uiStore, menus }: EntityMenuProps) => {
         // Only allow Menubar to change the active menu while hover-switch is enabled
         if (hoverSwitchEnabled.current) setActiveId(v)
       }}
+      onMouseEnter={cancelClose}
+      onMouseLeave={scheduleClose}
     >
       {items.map((m) => (
         <MenubarMenu key={m.id} value={m.id}>
