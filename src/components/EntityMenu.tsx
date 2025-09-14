@@ -24,7 +24,7 @@ export type MenuSpec = {
 }
 
 export type EntityMenuProps = {
-  uiStore: UiStoreHook
+  uiStore?: UiStoreHook
   menus?: MenuSpec[]
 }
 
@@ -69,8 +69,11 @@ export function buildDefaultMenus(uiStore: UiStoreHook): MenuSpec[] {
   })
 }
 
+import { useDefaultEntityUiStore } from "@/state/stores/defaultEntityUiStore"
+
 const EntityMenu = ({ uiStore, menus }: EntityMenuProps) => {
-  const items = menus ?? buildDefaultMenus(uiStore)
+  const store = uiStore ?? useDefaultEntityUiStore
+  const items = menus ?? buildDefaultMenus(store)
 
   // Controlled active menu; empty string means none open
   const [activeId, setActiveId] = React.useState<string>("")
@@ -120,7 +123,7 @@ const EntityMenu = ({ uiStore, menus }: EntityMenuProps) => {
             {m.label}
           </MenubarTrigger>
           <ContentOpenWatcher align="start">
-            {typeof m.content === "function" ? m.content({ uiStore }) : m.content}
+            {typeof m.content === "function" ? m.content({ uiStore: store }) : m.content}
           </ContentOpenWatcher>
         </MenubarMenu>
       ))}
@@ -129,4 +132,3 @@ const EntityMenu = ({ uiStore, menus }: EntityMenuProps) => {
 }
 
 export default EntityMenu
-

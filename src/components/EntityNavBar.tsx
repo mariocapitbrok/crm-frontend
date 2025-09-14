@@ -2,7 +2,7 @@ import { FileSpreadsheet } from "lucide-react"
 import AddRecord from "./AddRecord"
 import EntityTitle from "./EntityTitle"
 import ImportRecords from "./ImportRecords"
-import LeadsMenu from "./LeadsMenu"
+import EntityMenu from "./EntityMenu"
 import * as React from "react"
 
 type EntityNavBarProps = {
@@ -10,6 +10,8 @@ type EntityNavBarProps = {
   menu?: React.ReactNode
   actions?: React.ReactNode
   icon?: React.ReactNode
+  entitySingular?: string
+  entityPlural?: string
 }
 
 const EntityNavBar: React.FC<EntityNavBarProps> = ({
@@ -17,13 +19,17 @@ const EntityNavBar: React.FC<EntityNavBarProps> = ({
   menu,
   actions,
   icon,
+  entitySingular,
+  entityPlural,
 }) => {
-  const defaultTitle = <EntityTitle>Leads</EntityTitle>
-  const defaultMenu = <LeadsMenu />
+  const singular = entitySingular ?? "Lead"
+  const plural = entityPlural ?? (entitySingular ? `${entitySingular}s` : "Leads")
+  const defaultTitle = <EntityTitle>{plural}</EntityTitle>
+  const defaultMenu = <EntityMenu />
   const defaultActions = (
     <>
-      <AddRecord entity="Lead" buttonProps={{ className: "text-[13px]" }} />
-      <ImportRecords entity="Leads" buttonText="Import" buttonProps={{ className: "text-[13px]" }} />
+      <AddRecord entity={singular} buttonProps={{ className: "text-[13px]" }} />
+      <ImportRecords entity={plural} buttonText="Import" buttonProps={{ className: "text-[13px]" }} />
     </>
   )
 

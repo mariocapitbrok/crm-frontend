@@ -1,5 +1,0 @@
-import { createEntityUiStore, type HeaderLayout } from "./createEntityUiStore"
-
-export type { HeaderLayout }
-
-export const useLeadsUiStore = createEntityUiStore("leads-ui")

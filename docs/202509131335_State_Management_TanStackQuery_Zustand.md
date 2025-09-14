@@ -52,7 +52,7 @@ pnpm dev              # starts Next.js
 - `src/state/queries/keys.ts`: central query keys per domain.
 - `src/state/queries/client.ts`: `apiBase()` and `http()` helper.
 - `src/state/queries/leads.ts`: typed hooks: `useLeads`, `useUsers`, `useCreateLead`, `useUpdateLead`.
-- `src/state/stores/leadsUiStore.ts`: Zustand store for Leads UI preferences (table header layout).
+- `src/state/stores/defaultEntityUiStore.ts`: Base UI store used by default (table header layout, column visibility). Create per-entity stores only when customization is required.
 - `src/components/QueryProvider.tsx`: provides a configured `QueryClient`.
 
 ## 5. How It Works
@@ -72,14 +72,14 @@ Example (`src/state/queries/leads.ts`):
 ### 5.2 UI state (Zustand)
 
 - Keep presentational preferences (e.g., table header layout) out of the server cache.
-- `useLeadsUiStore` holds `headerLayout` (`"split" | "popover"`), defaulting to `split`.
+- `useDefaultEntityUiStore` holds `headerLayout` (`"split" | "popover"`) and `visibleColumns`.
 
 ### 5.3 Wiring in the UI
 
 - Leads page maps server data to the table rows and reads the UI store for the current layout.
   - `src/app/leads/page.tsx`
-- The “View” menu updates `headerLayout` via a dropdown radio group.
-  - `src/components/LeadsMenu.tsx`
+- The “View” menu updates `headerLayout` via the menubar.
+  - `src/components/EntityMenu.tsx`
 - The table supports two header layouts:
   - `split`: two-row header, filters visible in a dedicated second row.
   - `popover`: compact header, filters inside a popover per column.
@@ -155,7 +155,7 @@ Then conditionally include in `QueryProvider` for dev builds.
 - `src/state/queries/client.ts:1`
 - `src/state/queries/keys.ts:1`
 - `src/state/queries/leads.ts:1`
-- `src/state/stores/leadsUiStore.ts:1`
+- `src/state/stores/defaultEntityUiStore.ts:1`
 - `src/app/leads/page.tsx:1`
-- `src/components/LeadsMenu.tsx:1`
+- `src/components/EntityMenu.tsx:1`
 - `src/components/EntityTable.tsx:1`

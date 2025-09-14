@@ -41,7 +41,7 @@ This document summarizes the column visibility selector added to `EntityTable`, 
 - Leads page wiring (example 1)
   - `src/app/leads/page.tsx`
     - Provides `initialState={{ visibleColumns }}` and `onVisibleColumnsChange` to persist.
-    - Uses `useLeadsUiStore` for per-entity persistence.
+    - Uses the default store `useDefaultEntityUiStore` for persistence.
 
 - Contacts page wiring (example 2)
   - `src/app/contacts/page.tsx`
@@ -56,9 +56,9 @@ This document summarizes the column visibility selector added to `EntityTable`, 
       - `visibleColumns`, `setVisibleColumns`
     - Uses `persist(createJSONStorage(() => localStorage))`.
 
-- Per-entity stores
-  - Leads: `src/state/stores/leadsUiStore.ts` → `createEntityUiStore("leads-ui")`
-  - Contacts: `src/state/stores/contactsUiStore.ts` → `createEntityUiStore("contacts-ui")`
+- Default and per-entity stores
+  - Default: `src/state/stores/defaultEntityUiStore.ts` → shared across entities that don’t have a custom store yet.
+  - Optional per-entity example: Contacts → `src/state/stores/contactsUiStore.ts` → `createEntityUiStore("contacts-ui")`
 
 ## EntityTable API additions
 
@@ -109,4 +109,3 @@ This document summarizes the column visibility selector added to `EntityTable`, 
 - Optional per-user storage (server side) instead of localStorage.
 - Reorder and resize columns with persistence.
 - Column metadata helper to generate columns from a compact schema.
-

@@ -1,10 +1,11 @@
 "use client"
 
 import EntityNavBar from "@/components/EntityNavBar"
+import EntityMenu from "@/components/EntityMenu"
 import EntityTable, { EntityColumn } from "@/components/EntityTable"
 import { useLeads, useUsers, Lead } from "@/state/queries/leads"
 import { useMemo } from "react"
-import { useLeadsUiStore } from "@/state/stores/leadsUiStore"
+import { getEntityConfig } from "@/entities/registry"
 
 type LeadRow = {
   id: number
@@ -19,9 +20,10 @@ type LeadRow = {
 const Leads = () => {
   const { data: leads, isLoading: leadsLoading, error: leadsError } = useLeads()
   const { data: users, isLoading: usersLoading, error: usersError } = useUsers()
-  const headerLayout = useLeadsUiStore((s) => s.headerLayout)
-  const visibleColumns = useLeadsUiStore((s) => s.visibleColumns)
-  const setVisibleColumns = useLeadsUiStore((s) => s.setVisibleColumns)
+  const cfg = getEntityConfig("leads")
+  const headerLayout = cfg.uiStore((s: any) => s.headerLayout)
+  const visibleColumns = cfg.uiStore((s: any) => s.visibleColumns)
+  const setVisibleColumns = cfg.uiStore((s: any) => s.setVisibleColumns)
 
   const userMap = useMemo(() => {
     const map = new Map<number, string>()
@@ -106,7 +108,13 @@ const Leads = () => {
   if (leadsLoading || usersLoading) {
     return (
       <div className="flex flex-col gap-3">
-        <EntityNavBar />
+        <EntityNavBar
+          title={cfg.title}
+          icon={cfg.icon}
+          menu={<EntityMenu uiStore={cfg.uiStore} menus={cfg.menus} />}
+          entitySingular="Lead"
+          entityPlural={cfg.title}
+        />
         <div className="p-4 text-sm text-muted-foreground">Loading leads…</div>
       </div>
     )
@@ -115,7 +123,13 @@ const Leads = () => {
   if (leadsError || usersError) {
     return (
       <div className="flex flex-col gap-3">
-        <EntityNavBar />
+        <EntityNavBar
+          title={cfg.title}
+          icon={cfg.icon}
+          menu={<EntityMenu uiStore={cfg.uiStore} menus={cfg.menus} />}
+          entitySingular="Lead"
+          entityPlural={cfg.title}
+        />
         <div className="p-4 text-sm text-red-600">
           {(leadsError || usersError)?.toString()}
         </div>
@@ -125,7 +139,13 @@ const Leads = () => {
 
   return (
     <div className="flex flex-col gap-3">
-      <EntityNavBar />
+      <EntityNavBar
+        title={cfg.title}
+        icon={cfg.icon}
+        menu={<EntityMenu uiStore={cfg.uiStore} menus={cfg.menus} />}
+        entitySingular="Lead"
+        entityPlural={cfg.title}
+      />
       <EntityTable
         title="Leads"
         data={rows}
