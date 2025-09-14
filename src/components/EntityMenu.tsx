@@ -1,10 +1,18 @@
 "use client"
 
-import { Button } from "./ui/button"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { CheckIcon } from "lucide-react"
-import type { EntityUiState, HeaderLayout } from "@/state/stores/createEntityUiStore"
 import * as React from "react"
+import type { EntityUiState, HeaderLayout } from "@/state/stores/createEntityUiStore"
+import {
+  Menubar as UiMenubar,
+  MenubarMenu,
+  MenubarTrigger,
+  MenubarContent,
+  MenubarItem,
+  MenubarSeparator,
+  MenubarRadioGroup,
+  MenubarRadioItem,
+  MenubarLabel,
+} from "@/components/ui/menubar"
 
 type UiStoreHook = <T>(selector: (s: EntityUiState) => T) => T
 
@@ -22,7 +30,7 @@ export type EntityMenuProps = {
 }
 
 export function buildDefaultMenus(uiStore: UiStoreHook): MenuSpec[] {
-  const labels = ["File", "Edit", "Insert", "Format", "Data", "View", "Tools", "Extensions", "Help"]
+  const labels = ["File", "Edit", "View", "Insert", "Format", "Data", "Tools", "Extensions", "Help"]
   const viewSpec: MenuSpec = {
     id: "view",
     label: "View",
@@ -35,34 +43,23 @@ export function buildDefaultMenus(uiStore: UiStoreHook): MenuSpec[] {
       ]
       return (
         <div className="w-56 p-1">
-          <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">Table header</div>
-          <div className="py-1">
-            {layoutOptions.map((opt) => {
-              const selected = headerLayout === opt.value
-              return (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => setHeaderLayout(opt.value as HeaderLayout)}
-                  className="relative flex w-full cursor-pointer select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
-                >
-                  <span className="inline-flex size-4 items-center justify-center">
-                    {selected ? <CheckIcon className="size-4" /> : null}
-                  </span>
-                  <span>{opt.label}</span>
-                </button>
-              )
-            })}
-          </div>
+          <MenubarLabel>Table header</MenubarLabel>
+          <MenubarRadioGroup value={headerLayout} onValueChange={(v) => setHeaderLayout(v as HeaderLayout)}>
+            {layoutOptions.map((opt) => (
+              <MenubarRadioItem key={opt.value} value={opt.value}>
+                {opt.label}
+              </MenubarRadioItem>
+            ))}
+          </MenubarRadioGroup>
         </div>
       )
     },
   }
 
   const defaultContent = (label: string) => (
-    <div className="w-56 p-2">
-      <div className="px-1 pb-2 text-xs font-medium text-muted-foreground">{label}</div>
-      <div className="rounded-md border p-2 text-sm text-muted-foreground">Coming soon</div>
+    <div className="w-56 p-1">
+      <MenubarLabel>{label}</MenubarLabel>
+      <MenubarItem disabled>Coming soon</MenubarItem>
     </div>
   )
 
@@ -75,44 +72,39 @@ export function buildDefaultMenus(uiStore: UiStoreHook): MenuSpec[] {
 
 const EntityMenu = ({ uiStore, menus }: EntityMenuProps) => {
   const items = menus ?? buildDefaultMenus(uiStore)
-  const [openId, setOpenId] = React.useState<string | null>(null)
+  const [anyOpen, setAnyOpen] = React.useState(false)
+
+  const ContentOpenWatcher = (
+    props: React.ComponentProps<typeof MenubarContent>
+  ) => {
+    React.useEffect(() => {
+      setAnyOpen(true)
+      return () => setAnyOpen(false)
+    }, [])
+    return <MenubarContent {...props} />
+  }
 
   return (
-    <div className="flex flex-wrap items-center gap-1 pt-1">
+    <UiMenubar className="gap-1 border-none p-0">
       {items.map((m) => (
-        <Popover
-          key={m.id}
-          open={openId === m.id}
-          onOpenChange={(open) => setOpenId((prev) => (open ? m.id : prev === m.id ? null : prev))}
-        >
-          <PopoverTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="relative z-[60] h-4 px-2 first:pl-0 text-[13px] font-normal hover:bg-transparent data-[state=open]:bg-transparent focus-visible:ring-0 focus-visible:outline-none cursor-pointer"
-              onMouseDown={(e) => {
-                e.preventDefault()
-                setOpenId((prev) => (prev === m.id ? null : m.id))
-              }}
-              onMouseEnter={() => {
-                setOpenId((prev) => (prev && prev !== m.id ? m.id : prev))
-              }}
-              onClick={(e) => {
-                // Prevent Radix toggling after we already set controlled state on mousedown
-                e.preventDefault()
-                e.stopPropagation()
-              }}
-              aria-expanded={openId === m.id}
-            >
-              {m.label}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent align="start" className="z-40 p-0">
+        <MenubarMenu key={m.id}>
+          <MenubarTrigger
+            className="cursor-pointer"
+            onMouseEnter={(e) => {
+              if (anyOpen) {
+                // Open this menu when hovering while another is open
+                e.currentTarget.click()
+              }
+            }}
+          >
+            {m.label}
+          </MenubarTrigger>
+          <ContentOpenWatcher align="start">
             {typeof m.content === "function" ? m.content({ uiStore }) : m.content}
-          </PopoverContent>
-        </Popover>
+          </ContentOpenWatcher>
+        </MenubarMenu>
       ))}
-    </div>
+    </UiMenubar>
   )
 }
 
