@@ -4,6 +4,7 @@ import { useDefaultEntityUiStore } from "@/state/stores/defaultEntityUiStore"
 import { useContactsUiStore } from "@/state/stores/contactsUiStore"
 import type { MenuSpec } from "@/components/entity-menu"
 import { buildDefaultMenus } from "@/components/entity-menu"
+import type { EntityUiState } from "@/state/stores/createEntityUiStore"
 
 export type EntityKey = "leads" | "contacts" | "deals" | "organizations"
 
@@ -11,7 +12,7 @@ export type EntityConfig = {
   key: EntityKey
   title: string
   icon?: ReactNode
-  uiStore: <T>(sel: (s: any) => T) => T
+  uiStore: <T>(sel: (s: EntityUiState) => T) => T
   menus?: MenuSpec[]
   actions?: ReactNode
 }
