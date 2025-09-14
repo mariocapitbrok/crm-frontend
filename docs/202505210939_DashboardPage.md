@@ -26,16 +26,18 @@ export default function Dashboard() {
 
 ## Create the Dashboard Layout file
 
-In src/app/layout.tsx, wrap your content with a layout that later can include a basic navbar or sidebar:
+In `src/app/layout.tsx`, the app shell wraps all routes. The global `NavBar` is rendered here so it appears on every page. The `NavBar` includes the `AppSidebar` (a sheet-based navigation drawer).
+
+When adding or modifying sheets/dialogs, include a title and a description for accessibility (or explicitly opt out). Our components expose `SheetHeader` → `SheetTitle` + `SheetDescription` and the dialog equivalents.
+
+Example minimal layout:
 
 ```tsx
-import Dashboard from "./page"
-
 export default function DashboardLayout() {
-  return (
-    <>
-      <Dashboard />
-    </>
-  )
+  return <>{/* children rendered by Next.js */}</>
 }
 ```
+
+Notes:
+- Global nav: `src/app/layout.tsx` renders `@/components/NavBar` above `{children}`.
+- Sidebar: `src/components/AppSidebar.tsx` uses `SheetHeader` + `SheetTitle` + `SheetDescription` (screen‑reader only) to satisfy Radix Dialog a11y.

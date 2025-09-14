@@ -20,12 +20,13 @@ pnpm add @tanstack/react-query zustand
 
 ## 3. Configuration
 
-### 3.1 Provider
+### 3.1 Provider and App Shell
 
 Wrap the app with a QueryClientProvider. We expose a tiny component for this.
 
 - `src/components/QueryProvider.tsx`
-- `src/app/layout.tsx:20` wraps children with `QueryProvider` inside `ThemeProvider`.
+- `src/app/layout.tsx` wraps children with `QueryProvider` inside `ThemeProvider` and renders the global `NavBar` so it appears on all routes.
+- Accessibility: Radix Dialog/Sheet require a description to avoid dev warnings—include `DialogDescription`/`SheetDescription` with your title or explicitly set `aria-describedby={undefined}` when no description is needed. See also: `docs/202509030141_crm_ui_integration_guide_shadcn_ui_deps.md` (Accessibility section).
 
 ### 3.2 API Base URL
 

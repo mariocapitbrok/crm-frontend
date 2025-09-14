@@ -189,6 +189,49 @@ async function onCreateLead(data: any) {
 
 ---
 
+## 4.1 App Shell: Global Nav + Sidebar
+
+Place shared chrome in the root layout so it renders across routes.
+
+- Global nav: `src/app/layout.tsx` renders `@/components/NavBar` above `{children}`.
+- Sidebar: `src/components/AppSidebar.tsx` is a `Sheet` (Radix Dialog) with a header and a screen‑reader description for accessibility.
+
+```tsx
+// src/app/layout.tsx (excerpt)
+import NavBar from "@/components/NavBar"
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body>
+        <div className="min-h-screen flex flex-col">
+          <NavBar />
+          <main className="flex-1">{children}</main>
+        </div>
+      </body>
+    </html>
+  )
+}
+```
+
+```tsx
+// src/components/AppSidebar.tsx (excerpt)
+<Sheet>
+  <SheetTrigger>{/* button */}</SheetTrigger>
+  <SheetContent side="left" className="p-0 w-72">
+    <SheetHeader className="px-4 py-3 border-b">
+      <SheetTitle>Navigation</SheetTitle>
+      <SheetDescription className="sr-only">
+        Application navigation drawer with links to primary sections.
+      </SheetDescription>
+    </SheetHeader>
+    {/* nav links */}
+  </SheetContent>
+ </Sheet>
+```
+
+---
+
 ## 5) Dates (date-fns): format + filters
 
 Common helpers for formatting and ranges.
@@ -487,3 +530,29 @@ export function DataTableShell({ children, onSearch }: any) {
 ### Done
 
 You now have a cohesive integration plan for **CVA/tv**, **lucide-react**, **sonner**, **date-fns**, and **cmdk** across the CRM modules. Copy the snippets into your project, and iterate module by module.
+---
+
+## 7) Accessibility: Dialog and Sheet
+
+Radix Dialog requires a title and description for accessible labeling. Use shadcn/ui wrappers:
+
+- Dialog: `DialogHeader` → `DialogTitle` + `DialogDescription`
+- Sheet: `SheetHeader` → `SheetTitle` + `SheetDescription`
+
+```tsx
+// Dialog example
+<Dialog>
+  <DialogTrigger>Open</DialogTrigger>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Create Lead</DialogTitle>
+      <DialogDescription className="sr-only">
+        Fill out the fields and save to add the lead.
+      </DialogDescription>
+    </DialogHeader>
+    {/* form */}
+  </DialogContent>
+</Dialog>
+```
+
+Our wrappers also support passing `aria-describedby` manually, but including a `*Description` element is recommended for consistency and a11y.
