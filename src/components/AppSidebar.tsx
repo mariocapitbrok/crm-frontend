@@ -6,6 +6,7 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
+  SheetDescription,
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
@@ -42,6 +43,9 @@ export default function AppSidebar() {
         <div className="h-full flex flex-col">
           <SheetHeader className="px-4 py-3 border-b">
             <SheetTitle>Navigation</SheetTitle>
+            <SheetDescription className="sr-only">
+              Application navigation drawer with links to Home, Dashboard, Leads, Shadcn Test, and Preview pages.
+            </SheetDescription>
           </SheetHeader>
           <nav className="flex-1 py-2">
             {navItems.map(({ href, label, icon: Icon }) => {

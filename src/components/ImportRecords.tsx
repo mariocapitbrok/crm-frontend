@@ -8,6 +8,7 @@ import {
   DialogContent,
   DialogFooter,
   DialogHeader,
+  DialogDescription,
   DialogTitle,
   DialogTrigger,
   DialogClose,
@@ -42,6 +43,9 @@ export default function ImportRecords({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
+          <DialogDescription className="sr-only">
+            Import data for {entity}. Choose a file and confirm to begin the import process.
+          </DialogDescription>
         </DialogHeader>
         {children ?? (
           <div className="text-sm text-muted-foreground">
@@ -60,4 +64,3 @@ export default function ImportRecords({
     </Dialog>
   )
 }
-

@@ -8,6 +8,7 @@ import {
   DialogContent,
   DialogFooter,
   DialogHeader,
+  DialogDescription,
   DialogTitle,
   DialogTrigger,
   DialogClose,
@@ -41,6 +42,9 @@ export default function AddRecord({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{label}</DialogTitle>
+          <DialogDescription className="sr-only">
+            Create a new {entity}. Fill out the fields and save to add it to the system.
+          </DialogDescription>
         </DialogHeader>
         {/* Content slot for the entity creation form */}
         {children ?? (
@@ -61,4 +65,3 @@ export default function AddRecord({
     </Dialog>
   )
 }
-
