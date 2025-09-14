@@ -8,6 +8,6 @@ type LeadsUiState = {
 }
 
 export const useLeadsUiStore = create<LeadsUiState>((set) => ({
-  headerLayout: "split",
+  headerLayout: "popover",
   setHeaderLayout: (v) => set({ headerLayout: v }),
 }))
