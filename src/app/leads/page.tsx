@@ -1,7 +1,7 @@
 "use client"
 
 import EntityNavBar from "@/components/EntityNavBar"
-import EntityMenu from "@/components/EntityMenu"
+import EntityMenu from "@/components/entity-menu"
 import EntityTable, { EntityColumn } from "@/components/EntityTable"
 import { useLeads, useUsers, Lead } from "@/state/queries/leads"
 import { useMemo } from "react"

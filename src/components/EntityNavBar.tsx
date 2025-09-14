@@ -2,7 +2,7 @@ import { FileSpreadsheet } from "lucide-react"
 import AddRecord from "./AddRecord"
 import EntityTitle from "./EntityTitle"
 import ImportRecords from "./ImportRecords"
-import EntityMenu from "./EntityMenu"
+import EntityMenu from "@/components/entity-menu"
 import * as React from "react"
 
 type EntityNavBarProps = {

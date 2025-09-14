@@ -12,8 +12,9 @@ import {
   MenubarRadioItem,
   MenubarLabel,
 } from "@/components/ui/menubar"
+import { useDefaultEntityUiStore } from "@/state/stores/defaultEntityUiStore"
 
-type UiStoreHook = <T>(selector: (s: EntityUiState) => T) => T
+export type UiStoreHook = <T>(selector: (s: EntityUiState) => T) => T
 
 export type MenuRenderCtx = { uiStore: UiStoreHook }
 
@@ -29,13 +30,14 @@ export type EntityMenuProps = {
 }
 
 export function buildDefaultMenus(uiStore: UiStoreHook): MenuSpec[] {
+  const store = uiStore
   const labels = ["File", "Edit", "View", "Insert", "Format", "Data", "Tools", "Extensions", "Help"]
   const viewSpec: MenuSpec = {
     id: "view",
     label: "View",
-    content: ({ uiStore }) => {
-      const headerLayout = uiStore((s) => s.headerLayout)
-      const setHeaderLayout = uiStore((s) => s.setHeaderLayout)
+    content: () => {
+      const headerLayout = store((s) => s.headerLayout)
+      const setHeaderLayout = store((s) => s.setHeaderLayout)
       const layoutOptions: { value: HeaderLayout; label: string }[] = [
         { value: "split", label: "Split filters" },
         { value: "popover", label: "Popover filters" },
@@ -69,8 +71,6 @@ export function buildDefaultMenus(uiStore: UiStoreHook): MenuSpec[] {
   })
 }
 
-import { useDefaultEntityUiStore } from "@/state/stores/defaultEntityUiStore"
-
 const EntityMenu = ({ uiStore, menus }: EntityMenuProps) => {
   const store = uiStore ?? useDefaultEntityUiStore
   const items = menus ?? buildDefaultMenus(store)
@@ -79,23 +79,23 @@ const EntityMenu = ({ uiStore, menus }: EntityMenuProps) => {
   const [activeId, setActiveId] = React.useState<string>("")
   // Enable hover-to-switch only after an intentional open
   const hoverSwitchEnabled = React.useRef(false)
-  const closeTimer = React.useRef<number | null>(null)
+  const closeTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const cancelClose = () => {
+  const cancelClose = React.useCallback(() => {
     if (closeTimer.current !== null) {
-      window.clearTimeout(closeTimer.current)
+      clearTimeout(closeTimer.current)
       closeTimer.current = null
     }
-  }
+  }, [])
 
-  const scheduleClose = () => {
+  const scheduleClose = React.useCallback(() => {
     // close a short moment after pointer leaves, to feel natural
     cancelClose()
-    closeTimer.current = window.setTimeout(() => {
+    closeTimer.current = setTimeout(() => {
       hoverSwitchEnabled.current = false
       setActiveId("")
-    }, 150) as unknown as number
-  }
+    }, 150)
+  }, [cancelClose])
 
   const ContentOpenWatcher = (props: React.ComponentProps<typeof MenubarContent>) => {
     const { onEscapeKeyDown, onPointerDownOutside, ...rest } = props

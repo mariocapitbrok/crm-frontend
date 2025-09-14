@@ -2,8 +2,8 @@ import { createElement, type ReactNode } from "react"
 import { FileSpreadsheet } from "lucide-react"
 import { useDefaultEntityUiStore } from "@/state/stores/defaultEntityUiStore"
 import { useContactsUiStore } from "@/state/stores/contactsUiStore"
-import type { MenuSpec } from "@/components/EntityMenu"
-import { buildDefaultMenus } from "@/components/EntityMenu"
+import type { MenuSpec } from "@/components/entity-menu"
+import { buildDefaultMenus } from "@/components/entity-menu"
 
 export type EntityKey = "leads" | "contacts" | "deals" | "organizations"
 
