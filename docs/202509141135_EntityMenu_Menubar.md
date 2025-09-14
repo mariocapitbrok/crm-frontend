@@ -20,6 +20,7 @@ This document explains the generic `EntityMenu` component, how it’s built on s
 ## Core API
 
 - `buildDefaultMenus(uiStore)` → `MenuSpec[]`
+
   - Returns the standard ordered set: File, Edit, View, Insert, Format, Data, Tools, Extensions, Help.
   - View menu includes a radio group to choose the table header layout (`split` vs `popover`) using the provided entity UI store.
 
@@ -38,6 +39,7 @@ This document explains the generic `EntityMenu` component, how it’s built on s
 ## UX Behavior (Hover Switching)
 
 - Intent-based switching: hover switches menus only after an intentional open.
+
   - Click (pointer down) on a menu label → menu opens and enables hover switching.
   - With a menu open, hovering another label switches the open menu instantly.
   - Closing (Escape or outside click) disables hover switching; hovering does nothing until the next intentional open.
@@ -57,7 +59,7 @@ This document explains the generic `EntityMenu` component, how it’s built on s
 
 ## Example: Default usage
 
-```
+```ts
 import EntityMenu from "./EntityMenu"
 
 export default function MenuBar() {
@@ -68,7 +70,7 @@ export default function MenuBar() {
 
 ## Example: Custom store (optional)
 
-```
+```ts
 import EntityMenu, { buildDefaultMenus } from "./EntityMenu"
 import { useContactsUiStore } from "@/state/stores/contactsUiStore"
 
@@ -96,9 +98,12 @@ Centralize per‑entity wiring (title, icon, UI store, menu overrides, and actio
 
 Suggested file: `src/entities/registry.ts`
 
-```
+```ts
 import { FileSpreadsheet } from "lucide-react"
-import EntityMenu, { buildDefaultMenus, type MenuSpec } from "@/components/EntityMenu"
+import EntityMenu, {
+  buildDefaultMenus,
+  type MenuSpec,
+} from "@/components/EntityMenu"
 import { useDefaultEntityUiStore } from "@/state/stores/defaultEntityUiStore"
 import { useContactsUiStore } from "@/state/stores/contactsUiStore" // optional example
 
@@ -139,7 +144,7 @@ export function getEntityConfig(key: EntityKey): EntityConfig {
 
 Usage in a page:
 
-```
+```ts
 import EntityNavBar from "@/components/EntityNavBar"
 import EntityMenu from "@/components/EntityMenu"
 import { getEntityConfig } from "@/entities/registry"
@@ -156,6 +161,14 @@ const cfg = getEntityConfig("leads")
 ```
 
 Notes
+
 - If an entity has no special needs, point `uiStore` to `useDefaultEntityUiStore` and omit `menus` to use the defaults.
 - When adding custom actions (e.g., Import/Export variants), return them via `cfg.actions` and pass to `EntityNavBar`.
 - Registry can be extended later with routes, permissions, and feature flags per entity.
+
+## Troubleshooting
+
+- Menu closes too aggressively when moving diagonally from the trigger to the content
+  - Increase the close delay in `EntityMenu.tsx` (inside `scheduleClose`, default 150ms). Try 200–250ms.
+- Menu lingers open after leaving the area
+  - Decrease the close delay in `EntityMenu.tsx` (e.g., 80–120ms) so it dismisses faster on pointer leave.
