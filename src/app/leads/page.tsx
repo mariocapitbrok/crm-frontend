@@ -1,11 +1,12 @@
 "use client"
 
-import EntityNavBar from "@/components/EntityNavBar"
 import EntityMenu from "@/components/entity-menu"
+import EntityNavBar from "@/components/EntityNavBar"
 import EntityTable, { EntityColumn } from "@/components/EntityTable"
-import { useLeads, useUsers, Lead } from "@/state/queries/leads"
-import { useMemo } from "react"
 import { getEntityConfig } from "@/entities/registry"
+import { Lead, useLeads, useUsers } from "@/state/queries/leads"
+import { EntityUiState } from "@/state/stores/createEntityUiStore"
+import { useMemo } from "react"
 
 type LeadRow = {
   id: number
@@ -21,13 +22,17 @@ const Leads = () => {
   const { data: leads, isLoading: leadsLoading, error: leadsError } = useLeads()
   const { data: users, isLoading: usersLoading, error: usersError } = useUsers()
   const cfg = getEntityConfig("leads")
-  const headerLayout = cfg.uiStore((s: any) => s.headerLayout)
-  const visibleColumns = cfg.uiStore((s: any) => s.visibleColumns)
-  const setVisibleColumns = cfg.uiStore((s: any) => s.setVisibleColumns)
+  const headerLayout = cfg.uiStore((s: EntityUiState) => s.headerLayout)
+  const visibleColumns = cfg.uiStore((s: EntityUiState) => s.visibleColumns)
+  const setVisibleColumns = cfg.uiStore(
+    (s: EntityUiState) => s.setVisibleColumns
+  )
 
   const userMap = useMemo(() => {
     const map = new Map<number, string>()
-    ;(users ?? []).forEach((u) => map.set(u.id, `${u.first_name} ${u.last_name}`))
+    ;(users ?? []).forEach((u) =>
+      map.set(u.id, `${u.first_name} ${u.last_name}`)
+    )
     return map
   }, [users])
 
@@ -38,7 +43,9 @@ const Leads = () => {
       lastname: l.lastname,
       company: l.company,
       email: l.email,
-      assignedTo: l.assigned_user_id ? userMap.get(l.assigned_user_id) : undefined,
+      assignedTo: l.assigned_user_id
+        ? userMap.get(l.assigned_user_id)
+        : undefined,
       website: null,
     }))
   }, [leads, userMap])
@@ -73,7 +80,12 @@ const Leads = () => {
       header: "Website",
       accessor: (r) =>
         r.website ? (
-          <a className="text-blue-600 hover:underline" href={r.website} target="_blank" rel="noreferrer">
+          <a
+            className="text-blue-600 hover:underline"
+            href={r.website}
+            target="_blank"
+            rel="noreferrer"
+          >
             {r.website}
           </a>
         ) : (
