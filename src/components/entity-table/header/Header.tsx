@@ -8,6 +8,9 @@ import { HeaderPopover } from "./HeaderPopover"
 export function Header<T>(props: {
   layout: HeaderLayout
   columns: EntityColumn<T>[]
+  allColumns: EntityColumn<T>[]
+  visibleIds: Set<string>
+  onToggleVisible: (id: string, checked: boolean) => void
   sort: { columnId: string; dir: "asc" | "desc" } | null
   onToggleSort: (columnId: string) => void
   filters: Record<string, string>

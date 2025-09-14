@@ -21,3 +21,4 @@ export type GetRowId<T> = (row: T) => ID
 
 export type SortState = { columnId: string; dir: "asc" | "desc" } | null
 
+export type ColumnVisibilityState = string[]

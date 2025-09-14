@@ -20,6 +20,8 @@ const Leads = () => {
   const { data: leads, isLoading: leadsLoading, error: leadsError } = useLeads()
   const { data: users, isLoading: usersLoading, error: usersError } = useUsers()
   const headerLayout = useLeadsUiStore((s) => s.headerLayout)
+  const visibleColumns = useLeadsUiStore((s) => s.visibleColumns)
+  const setVisibleColumns = useLeadsUiStore((s) => s.setVisibleColumns)
 
   const userMap = useMemo(() => {
     const map = new Map<number, string>()
@@ -130,6 +132,8 @@ const Leads = () => {
         columns={columns}
         getRowId={(r) => r.id}
         headerLayout={headerLayout}
+        initialState={{ visibleColumns: visibleColumns ?? undefined }}
+        onVisibleColumnsChange={(ids) => setVisibleColumns(ids)}
       />
     </div>
   )

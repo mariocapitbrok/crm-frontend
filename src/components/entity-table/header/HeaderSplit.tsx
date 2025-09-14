@@ -3,12 +3,23 @@
 import * as React from "react"
 import type { EntityColumn } from "../types"
 import { TableRow, TableHead } from "@/components/ui/table"
-import { ChevronDown, ChevronUp, MoreHorizontal } from "lucide-react"
+import { ChevronDown, ChevronUp, Columns3 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { PageSelectCheckbox } from "../PageSelectCheckbox"
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu"
 
 export function HeaderSplit<T>(props: {
   columns: EntityColumn<T>[]
+  allColumns: EntityColumn<T>[]
+  visibleIds: Set<string>
+  onToggleVisible: (id: string, checked: boolean) => void
   sort: { columnId: string; dir: "asc" | "desc" } | null
   onToggleSort: (columnId: string) => void
   filters: Record<string, string>
@@ -19,6 +30,9 @@ export function HeaderSplit<T>(props: {
 }) {
   const {
     columns,
+    allColumns,
+    visibleIds,
+    onToggleVisible,
     sort,
     onToggleSort,
     filters,
@@ -58,7 +72,27 @@ export function HeaderSplit<T>(props: {
           </TableHead>
         ))}
         <TableHead className="w-[44px] text-right">
-          <MoreHorizontal className="ml-auto size-4" />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button type="button" className="ml-auto inline-flex size-6 items-center justify-center rounded-md hover:bg-accent">
+                <Columns3 className="size-4" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-52">
+              <DropdownMenuLabel>Columns</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {allColumns.map((col) => (
+                <DropdownMenuCheckboxItem
+                  key={col.id}
+                  checked={visibleIds.has(col.id)}
+                  onCheckedChange={(checked) => onToggleVisible(col.id, Boolean(checked))}
+                  onSelect={(e) => e.preventDefault()}
+                >
+                  {col.header}
+                </DropdownMenuCheckboxItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </TableHead>
       </TableRow>
       <TableRow>

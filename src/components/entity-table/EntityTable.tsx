@@ -13,7 +13,15 @@ import { useTableSelection } from "./hooks/useTableSelection"
 import { Header as EntityTableHeader } from "./header/Header"
 import { SelectionBar } from "./SelectionBar"
 import { Row as EntityRow } from "./body/Row"
-import type { SortState as HookSortState, EntityColumn, SortState, HeaderLayout, GetRowId, ID } from "./types"
+import type {
+  SortState as HookSortState,
+  EntityColumn,
+  SortState,
+  HeaderLayout,
+  GetRowId,
+  ID,
+  ColumnVisibilityState,
+} from "./types"
 import { Pagination as EntityPagination } from "./Pagination"
 import { SearchBar } from "./SearchBar"
 
@@ -30,12 +38,14 @@ export type EntityTableProps<T> = {
   rowActions?: (row: T) => React.ReactNode
   onToggleFavorite?: (id: ID) => void
   onSelectionChange?: (ids: Set<ID>) => void
+  onVisibleColumnsChange?: (ids: ColumnVisibilityState) => void
   initialState?: {
     q?: string
     filters?: Record<string, string>
     sort?: SortState
     page?: number
     selected?: Set<ID>
+    visibleColumns?: ColumnVisibilityState
   }
 }
 
@@ -52,6 +62,7 @@ export default function EntityTable<T>({
   rowActions,
   onToggleFavorite,
   onSelectionChange,
+  onVisibleColumnsChange,
   initialState,
 }: EntityTableProps<T>) {
   const { q, setQ, filters, setFilters, filtered } = useTableQuery<T>({
@@ -101,6 +112,54 @@ export default function EntityTable<T>({
     initialSelected: initialState?.selected,
     onChange: onSelectionChange,
   })
+
+  // Column visibility
+  const [visibleIds, setVisibleIds] = React.useState<Set<string>>(
+    () => new Set(initialState?.visibleColumns ?? columns.map((c) => c.id))
+  )
+
+  // Track only truly new columns (by id) and auto-add them as visible,
+  // without re-adding columns the user intentionally hid.
+  const prevColumnIdsRef = React.useRef<Set<string>>(new Set(columns.map((c) => c.id)))
+  React.useEffect(() => {
+    const currentIds = new Set(columns.map((c) => c.id))
+    const prevIds = prevColumnIdsRef.current
+    const added: string[] = []
+    for (const id of currentIds) {
+      if (!prevIds.has(id)) added.push(id)
+    }
+    if (added.length > 0) {
+      setVisibleIds((prev) => {
+        const next = new Set(prev)
+        for (const id of added) next.add(id)
+        return next
+      })
+    }
+    prevColumnIdsRef.current = currentIds
+  }, [columns])
+
+  const visibleColumns = React.useMemo(
+    () => columns.filter((c) => visibleIds.has(c.id)),
+    [columns, visibleIds]
+  )
+
+  const setVisible = (id: string, checked: boolean) => {
+    setVisibleIds((prev) => {
+      const next = new Set(prev)
+      if (checked) {
+        next.add(id)
+      } else {
+        if (next.size <= 1) return prev // enforce at least one visible column
+        next.delete(id)
+      }
+      return next
+    })
+  }
+
+  React.useEffect(() => {
+    onVisibleColumnsChange?.(Array.from(visibleIds))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visibleIds])
 
   const handleFilterChange = (columnId: string, value: string) => {
     setPage(0)
@@ -167,7 +226,10 @@ export default function EntityTable<T>({
           <TableHeader>
             <EntityTableHeader
               layout={headerLayout}
-              columns={columns}
+              columns={visibleColumns}
+              allColumns={columns}
+              visibleIds={visibleIds}
+              onToggleVisible={setVisible}
               sort={sort}
               onToggleSort={handleToggleSort}
               filters={filters}
@@ -184,7 +246,7 @@ export default function EntityTable<T>({
                 <EntityRow
                   key={String(id)}
                   row={row}
-                  columns={columns}
+                  columns={visibleColumns}
                   getRowId={getRowId}
                   isSelected={selected.has(id)}
                   onToggleSelected={toggleOne}
