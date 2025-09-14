@@ -8,7 +8,6 @@ import {
   MenubarTrigger,
   MenubarContent,
   MenubarItem,
-  MenubarSeparator,
   MenubarRadioGroup,
   MenubarRadioItem,
   MenubarLabel,
@@ -72,29 +71,50 @@ export function buildDefaultMenus(uiStore: UiStoreHook): MenuSpec[] {
 
 const EntityMenu = ({ uiStore, menus }: EntityMenuProps) => {
   const items = menus ?? buildDefaultMenus(uiStore)
-  const [anyOpen, setAnyOpen] = React.useState(false)
 
-  const ContentOpenWatcher = (
-    props: React.ComponentProps<typeof MenubarContent>
-  ) => {
-    React.useEffect(() => {
-      setAnyOpen(true)
-      return () => setAnyOpen(false)
-    }, [])
-    return <MenubarContent {...props} />
+  // Controlled active menu; empty string means none open
+  const [activeId, setActiveId] = React.useState<string>("")
+  // Enable hover-to-switch only after an intentional open
+  const hoverSwitchEnabled = React.useRef(false)
+
+  const ContentOpenWatcher = (props: React.ComponentProps<typeof MenubarContent>) => {
+    const { onEscapeKeyDown, onPointerDownOutside, ...rest } = props
+    return (
+      <MenubarContent
+        {...rest}
+        onEscapeKeyDown={(e) => {
+          hoverSwitchEnabled.current = false
+          setActiveId("")
+          onEscapeKeyDown?.(e)
+        }}
+        onPointerDownOutside={(e) => {
+          hoverSwitchEnabled.current = false
+          setActiveId("")
+          onPointerDownOutside?.(e)
+        }}
+      />
+    )
   }
 
   return (
-    <UiMenubar className="gap-1 border-none p-0">
+    <UiMenubar
+      className="gap-1 border-none p-0"
+      value={activeId}
+      onValueChange={(v) => {
+        // Only allow Menubar to change the active menu while hover-switch is enabled
+        if (hoverSwitchEnabled.current) setActiveId(v)
+      }}
+    >
       {items.map((m) => (
-        <MenubarMenu key={m.id}>
+        <MenubarMenu key={m.id} value={m.id}>
           <MenubarTrigger
             className="cursor-pointer"
-            onMouseEnter={(e) => {
-              if (anyOpen) {
-                // Open this menu when hovering while another is open
-                e.currentTarget.click()
-              }
+            onPointerDown={() => {
+              hoverSwitchEnabled.current = true
+              setActiveId(m.id)
+            }}
+            onMouseEnter={() => {
+              if (hoverSwitchEnabled.current) setActiveId(m.id)
             }}
           >
             {m.label}
@@ -109,3 +129,4 @@ const EntityMenu = ({ uiStore, menus }: EntityMenuProps) => {
 }
 
 export default EntityMenu
+
