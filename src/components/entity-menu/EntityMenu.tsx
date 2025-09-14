@@ -1,18 +1,21 @@
 "use client"
 
-import * as React from "react"
-import type { EntityUiState, HeaderLayout } from "@/state/stores/createEntityUiStore"
 import {
-  Menubar as UiMenubar,
-  MenubarMenu,
-  MenubarTrigger,
   MenubarContent,
   MenubarItem,
+  MenubarLabel,
+  MenubarMenu,
   MenubarRadioGroup,
   MenubarRadioItem,
-  MenubarLabel,
+  MenubarTrigger,
+  Menubar as UiMenubar,
 } from "@/components/ui/menubar"
+import type {
+  EntityUiState,
+  HeaderLayout,
+} from "@/state/stores/createEntityUiStore"
 import { useDefaultEntityUiStore } from "@/state/stores/defaultEntityUiStore"
+import * as React from "react"
 
 export type UiStoreHook = <T>(selector: (s: EntityUiState) => T) => T
 
@@ -31,7 +34,17 @@ export type EntityMenuProps = {
 
 export function buildDefaultMenus(uiStore: UiStoreHook): MenuSpec[] {
   const store = uiStore
-  const labels = ["File", "Edit", "View", "Insert", "Format", "Data", "Tools", "Extensions", "Help"]
+  const labels = [
+    "File",
+    "Edit",
+    "View",
+    "Insert",
+    "Format",
+    "Data",
+    "Tools",
+    "Extensions",
+    "Help",
+  ]
   const viewSpec: MenuSpec = {
     id: "view",
     label: "View",
@@ -45,7 +58,10 @@ export function buildDefaultMenus(uiStore: UiStoreHook): MenuSpec[] {
       return (
         <div className="w-56 p-1">
           <MenubarLabel>Table header</MenubarLabel>
-          <MenubarRadioGroup value={headerLayout} onValueChange={(v) => setHeaderLayout(v as HeaderLayout)}>
+          <MenubarRadioGroup
+            value={headerLayout}
+            onValueChange={(v) => setHeaderLayout(v as HeaderLayout)}
+          >
             {layoutOptions.map((opt) => (
               <MenubarRadioItem key={opt.value} value={opt.value}>
                 {opt.label}
@@ -97,7 +113,9 @@ const EntityMenu = ({ uiStore, menus }: EntityMenuProps) => {
     }, 150)
   }, [cancelClose])
 
-  const ContentOpenWatcher = (props: React.ComponentProps<typeof MenubarContent>) => {
+  const ContentOpenWatcher = (
+    props: React.ComponentProps<typeof MenubarContent>
+  ) => {
     const { onEscapeKeyDown, onPointerDownOutside, ...rest } = props
     return (
       <MenubarContent
@@ -132,7 +150,7 @@ const EntityMenu = ({ uiStore, menus }: EntityMenuProps) => {
       {items.map((m) => (
         <MenubarMenu key={m.id} value={m.id}>
           <MenubarTrigger
-            className="cursor-pointer"
+            className="cursor-pointer text-sm first:pl-0"
             onPointerDown={() => {
               hoverSwitchEnabled.current = true
               setActiveId(m.id)
@@ -144,7 +162,9 @@ const EntityMenu = ({ uiStore, menus }: EntityMenuProps) => {
             {m.label}
           </MenubarTrigger>
           <ContentOpenWatcher align="start">
-            {typeof m.content === "function" ? m.content({ uiStore: store }) : m.content}
+            {typeof m.content === "function"
+              ? m.content({ uiStore: store })
+              : m.content}
           </ContentOpenWatcher>
         </MenubarMenu>
       ))}
