@@ -1,8 +1,5 @@
 "use client"
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Home, LayoutDashboard, FlaskConical, Eye, Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Sheet,
@@ -12,10 +9,21 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
+import {
+  Eye,
+  FlaskConical,
+  Home,
+  LayoutDashboard,
+  Menu,
+  MessageCircleQuestion,
+} from "lucide-react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 const navItems = [
   { href: "/", label: "Home", icon: Home },
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/leads", label: "Leads", icon: MessageCircleQuestion },
   { href: "/shadcn-test", label: "Shadcn Test", icon: FlaskConical },
   { href: "/next-preview", label: "Preview", icon: Eye },
 ]
@@ -37,7 +45,8 @@ export default function AppSidebar() {
           </SheetHeader>
           <nav className="flex-1 py-2">
             {navItems.map(({ href, label, icon: Icon }) => {
-              const active = pathname === href || (href !== "/" && pathname.startsWith(href))
+              const active =
+                pathname === href || (href !== "/" && pathname.startsWith(href))
               return (
                 <Link
                   key={href}
