@@ -8,6 +8,8 @@ export type EntityUiState = {
   setHeaderLayout: (v: HeaderLayout) => void
   visibleColumns: string[] | null
   setVisibleColumns: (ids: string[] | null) => void
+  columnOrder: string[] | null
+  setColumnOrder: (ids: string[] | null) => void
 }
 
 export function createEntityUiStore(storageKey: string) {
@@ -18,6 +20,8 @@ export function createEntityUiStore(storageKey: string) {
         setHeaderLayout: (v) => set({ headerLayout: v }),
         visibleColumns: null,
         setVisibleColumns: (ids) => set({ visibleColumns: ids }),
+        columnOrder: null,
+        setColumnOrder: (ids) => set({ columnOrder: ids }),
       }),
       {
         name: storageKey,
@@ -26,4 +30,3 @@ export function createEntityUiStore(storageKey: string) {
     )
   )
 }
-

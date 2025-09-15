@@ -22,6 +22,8 @@ export function HeaderPopover<T>(props: {
   allColumns: EntityColumn<T>[]
   visibleIds: Set<string>
   onToggleVisible: (id: string, checked: boolean) => void
+  order: string[]
+  onMoveColumn: (id: string, delta: number) => void
   sort: { columnId: string; dir: "asc" | "desc" } | null
   onToggleSort: (columnId: string) => void
   filters: Record<string, string>
@@ -35,6 +37,8 @@ export function HeaderPopover<T>(props: {
     allColumns,
     visibleIds,
     onToggleVisible,
+    order,
+    onMoveColumn,
     sort,
     onToggleSort,
     filters,
@@ -43,6 +47,8 @@ export function HeaderPopover<T>(props: {
     someOnPageSelected,
     onToggleAllOnPage,
   } = props
+
+  const byId = React.useMemo(() => new Map(allColumns.map((c) => [c.id, c])), [allColumns])
 
   return (
     <TableRow>
@@ -101,19 +107,55 @@ export function HeaderPopover<T>(props: {
               <Columns3 className="size-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-52">
+          <DropdownMenuContent align="end" className="w-60">
             <DropdownMenuLabel>Columns</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {allColumns.map((col) => (
-              <DropdownMenuCheckboxItem
-                key={col.id}
-                checked={visibleIds.has(col.id)}
-                onCheckedChange={(checked) => onToggleVisible(col.id, Boolean(checked))}
-                onSelect={(e) => e.preventDefault()}
-              >
-                {col.header}
-              </DropdownMenuCheckboxItem>
-            ))}
+            {order.map((id, idx) => {
+              const col = byId.get(id)
+              if (!col) return null
+              return (
+                <DropdownMenuCheckboxItem
+                  key={col.id}
+                  checked={visibleIds.has(col.id)}
+                  onCheckedChange={(checked) => onToggleVisible(col.id, Boolean(checked))}
+                  onSelect={(e) => e.preventDefault()}
+                >
+                  <div className="flex w-full items-center gap-2">
+                    <span className="flex-1 truncate">{col.header}</span>
+                    <div className="flex gap-1">
+                      <button
+                        type="button"
+                        className="inline-flex size-6 items-center justify-center rounded hover:bg-accent disabled:opacity-40"
+                        disabled={idx === 0}
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          onMoveColumn(col.id, -1)
+                        }}
+                        aria-label={`Move ${col.header} up`}
+                        title="Move up"
+                      >
+                        <ChevronUp className="size-4" />
+                      </button>
+                      <button
+                        type="button"
+                        className="inline-flex size-6 items-center justify-center rounded hover:bg-accent disabled:opacity-40"
+                        disabled={idx === order.length - 1}
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          onMoveColumn(col.id, 1)
+                        }}
+                        aria-label={`Move ${col.header} down`}
+                        title="Move down"
+                      >
+                        <ChevronDown className="size-4" />
+                      </button>
+                    </div>
+                  </div>
+                </DropdownMenuCheckboxItem>
+              )
+            })}
           </DropdownMenuContent>
         </DropdownMenu>
       </TableHead>

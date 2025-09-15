@@ -11,6 +11,8 @@ export function Header<T>(props: {
   allColumns: EntityColumn<T>[]
   visibleIds: Set<string>
   onToggleVisible: (id: string, checked: boolean) => void
+  order: string[]
+  onMoveColumn: (id: string, delta: number) => void
   sort: { columnId: string; dir: "asc" | "desc" } | null
   onToggleSort: (columnId: string) => void
   filters: Record<string, string>

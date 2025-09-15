@@ -27,6 +27,8 @@ const Leads = () => {
   const setVisibleColumns = cfg.uiStore(
     (s: EntityUiState) => s.setVisibleColumns
   )
+  const columnOrder = cfg.uiStore((s: EntityUiState) => s.columnOrder)
+  const setColumnOrder = cfg.uiStore((s: EntityUiState) => s.setColumnOrder)
 
   const userMap = useMemo(() => {
     const map = new Map<number, string>()
@@ -164,8 +166,12 @@ const Leads = () => {
         columns={columns}
         getRowId={(r) => r.id}
         headerLayout={headerLayout}
-        initialState={{ visibleColumns: visibleColumns ?? undefined }}
+        initialState={{
+          visibleColumns: visibleColumns ?? undefined,
+          columnOrder: columnOrder ?? undefined,
+        }}
         onVisibleColumnsChange={(ids) => setVisibleColumns(ids)}
+        onColumnOrderChange={(ids) => setColumnOrder(ids)}
       />
     </div>
   )

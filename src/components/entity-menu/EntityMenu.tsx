@@ -24,7 +24,7 @@ export type MenuRenderCtx = { uiStore: UiStoreHook }
 export type MenuSpec = {
   id: string
   label: string
-  content?: React.ReactNode | ((ctx: MenuRenderCtx) => React.ReactNode)
+  content?: React.ReactNode | React.ComponentType<MenuRenderCtx>
 }
 
 export type EntityMenuProps = {
@@ -33,7 +33,6 @@ export type EntityMenuProps = {
 }
 
 export function buildDefaultMenus(uiStore: UiStoreHook): MenuSpec[] {
-  const store = uiStore
   const labels = [
     "File",
     "Edit",
@@ -45,32 +44,34 @@ export function buildDefaultMenus(uiStore: UiStoreHook): MenuSpec[] {
     "Extensions",
     "Help",
   ]
+  const ViewMenuContent: React.FC<MenuRenderCtx> = ({ uiStore }) => {
+    const headerLayout = uiStore((s) => s.headerLayout)
+    const setHeaderLayout = uiStore((s) => s.setHeaderLayout)
+    const layoutOptions: { value: HeaderLayout; label: string }[] = [
+      { value: "split", label: "Split filters" },
+      { value: "popover", label: "Popover filters" },
+    ]
+    return (
+      <div className="w-56 p-1">
+        <MenubarLabel>Table header</MenubarLabel>
+        <MenubarRadioGroup
+          value={headerLayout}
+          onValueChange={(v) => setHeaderLayout(v as HeaderLayout)}
+        >
+          {layoutOptions.map((opt) => (
+            <MenubarRadioItem key={opt.value} value={opt.value}>
+              {opt.label}
+            </MenubarRadioItem>
+          ))}
+        </MenubarRadioGroup>
+      </div>
+    )
+  }
+
   const viewSpec: MenuSpec = {
     id: "view",
     label: "View",
-    content: () => {
-      const headerLayout = store((s) => s.headerLayout)
-      const setHeaderLayout = store((s) => s.setHeaderLayout)
-      const layoutOptions: { value: HeaderLayout; label: string }[] = [
-        { value: "split", label: "Split filters" },
-        { value: "popover", label: "Popover filters" },
-      ]
-      return (
-        <div className="w-56 p-1">
-          <MenubarLabel>Table header</MenubarLabel>
-          <MenubarRadioGroup
-            value={headerLayout}
-            onValueChange={(v) => setHeaderLayout(v as HeaderLayout)}
-          >
-            {layoutOptions.map((opt) => (
-              <MenubarRadioItem key={opt.value} value={opt.value}>
-                {opt.label}
-              </MenubarRadioItem>
-            ))}
-          </MenubarRadioGroup>
-        </div>
-      )
-    },
+    content: ViewMenuContent,
   }
 
   const defaultContent = (label: string) => (
@@ -162,9 +163,14 @@ const EntityMenu = ({ uiStore, menus }: EntityMenuProps) => {
             {m.label}
           </MenubarTrigger>
           <ContentOpenWatcher align="start">
-            {typeof m.content === "function"
-              ? m.content({ uiStore: store })
-              : m.content}
+            {typeof m.content === "function" ? (
+              // Treat function content as a React component to respect hooks rules
+              React.createElement(m.content as React.ComponentType<MenuRenderCtx>, {
+                uiStore: store,
+              })
+            ) : (
+              m.content
+            )}
           </ContentOpenWatcher>
         </MenubarMenu>
       ))}

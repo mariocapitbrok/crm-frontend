@@ -21,6 +21,7 @@ import type {
   GetRowId,
   ID,
   ColumnVisibilityState,
+  ColumnOrderState,
 } from "./types"
 import { Pagination as EntityPagination } from "./Pagination"
 import { SearchBar } from "./SearchBar"
@@ -39,6 +40,7 @@ export type EntityTableProps<T> = {
   onToggleFavorite?: (id: ID) => void
   onSelectionChange?: (ids: Set<ID>) => void
   onVisibleColumnsChange?: (ids: ColumnVisibilityState) => void
+  onColumnOrderChange?: (ids: ColumnOrderState) => void
   initialState?: {
     q?: string
     filters?: Record<string, string>
@@ -46,6 +48,7 @@ export type EntityTableProps<T> = {
     page?: number
     selected?: Set<ID>
     visibleColumns?: ColumnVisibilityState
+    columnOrder?: ColumnOrderState
   }
 }
 
@@ -63,6 +66,7 @@ export default function EntityTable<T>({
   onToggleFavorite,
   onSelectionChange,
   onVisibleColumnsChange,
+  onColumnOrderChange,
   initialState,
 }: EntityTableProps<T>) {
   const { q, setQ, filters, setFilters, filtered } = useTableQuery<T>({
@@ -118,11 +122,17 @@ export default function EntityTable<T>({
     () => new Set(initialState?.visibleColumns ?? columns.map((c) => c.id))
   )
 
+  // Column order
+  const [order, setOrder] = React.useState<string[]>(
+    () => initialState?.columnOrder ?? columns.map((c) => c.id)
+  )
+
   // Track only truly new columns (by id) and auto-add them as visible,
   // without re-adding columns the user intentionally hid.
   const prevColumnIdsRef = React.useRef<Set<string>>(new Set(columns.map((c) => c.id)))
   React.useEffect(() => {
-    const currentIds = new Set(columns.map((c) => c.id))
+    const currentIdsArr = columns.map((c) => c.id)
+    const currentIds = new Set(currentIdsArr)
     const prevIds = prevColumnIdsRef.current
     const added: string[] = []
     for (const id of currentIds) {
@@ -135,13 +145,39 @@ export default function EntityTable<T>({
         return next
       })
     }
+    // Reconcile order: drop removed ids, append new ones at the end
+    setOrder((prev) => {
+      const filtered = prev.filter((id) => currentIds.has(id))
+      // Append any new ids in the order they appear in columns
+      for (const id of currentIdsArr) {
+        if (!filtered.includes(id)) filtered.push(id)
+      }
+      // If nothing changed, avoid creating a new array to prevent effect loops
+      if (
+        filtered.length === prev.length &&
+        filtered.every((v, i) => v === prev[i])
+      ) {
+        return prev
+      }
+      return filtered
+    })
     prevColumnIdsRef.current = currentIds
   }, [columns])
 
-  const visibleColumns = React.useMemo(
-    () => columns.filter((c) => visibleIds.has(c.id)),
-    [columns, visibleIds]
+  const columnsById = React.useMemo(
+    () => new Map(columns.map((c) => [c.id, c])),
+    [columns]
   )
+
+  const visibleColumns = React.useMemo(() => {
+    const list: EntityColumn<T>[] = []
+    for (const id of order) {
+      if (!visibleIds.has(id)) continue
+      const c = columnsById.get(id)
+      if (c) list.push(c as EntityColumn<T>)
+    }
+    return list
+  }, [order, visibleIds, columnsById])
 
   const setVisible = (id: string, checked: boolean) => {
     setVisibleIds((prev) => {
@@ -161,6 +197,11 @@ export default function EntityTable<T>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visibleIds])
 
+  React.useEffect(() => {
+    onColumnOrderChange?.(order)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [order])
+
   const handleFilterChange = (columnId: string, value: string) => {
     setPage(0)
     setFilters((f) => ({ ...f, [columnId]: value }))
@@ -170,6 +211,19 @@ export default function EntityTable<T>({
     if (typeof bulkActions === "function") return bulkActions({ selected })
     return bulkActions
   }, [bulkActions, selected])
+
+  const moveColumn = (id: string, delta: number) => {
+    setOrder((prev) => {
+      const idx = prev.indexOf(id)
+      if (idx === -1) return prev
+      const nextIdx = idx + delta
+      if (nextIdx < 0 || nextIdx >= prev.length) return prev
+      const next = prev.slice()
+      const [item] = next.splice(idx, 1)
+      next.splice(nextIdx, 0, item)
+      return next
+    })
+  }
 
   return (
     <div className={cn("flex flex-col gap-2", className)}>
@@ -230,6 +284,8 @@ export default function EntityTable<T>({
               allColumns={columns}
               visibleIds={visibleIds}
               onToggleVisible={setVisible}
+              order={order}
+              onMoveColumn={moveColumn}
               sort={sort}
               onToggleSort={handleToggleSort}
               filters={filters}

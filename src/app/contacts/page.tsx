@@ -26,6 +26,8 @@ const ContactsPage = () => {
   const headerLayout = useContactsUiStore((s) => s.headerLayout)
   const visibleColumns = useContactsUiStore((s) => s.visibleColumns)
   const setVisibleColumns = useContactsUiStore((s) => s.setVisibleColumns)
+  const columnOrder = useContactsUiStore((s) => s.columnOrder)
+  const setColumnOrder = useContactsUiStore((s) => s.setColumnOrder)
 
   const orgMap = useMemo(() => {
     const map = new Map<number, string>()
@@ -89,12 +91,15 @@ const ContactsPage = () => {
         columns={columns}
         getRowId={(r) => r.id}
         headerLayout={headerLayout}
-        initialState={{ visibleColumns: visibleColumns ?? undefined }}
+        initialState={{
+          visibleColumns: visibleColumns ?? undefined,
+          columnOrder: columnOrder ?? undefined,
+        }}
         onVisibleColumnsChange={(ids) => setVisibleColumns(ids)}
+        onColumnOrderChange={(ids) => setColumnOrder(ids)}
       />
     </div>
   )
 }
 
 export default ContactsPage
-
