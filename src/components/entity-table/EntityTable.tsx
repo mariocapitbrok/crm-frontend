@@ -41,6 +41,11 @@ export type EntityTableProps<T> = {
   onSelectionChange?: (ids: Set<ID>) => void
   onVisibleColumnsChange?: (ids: ColumnVisibilityState) => void
   onColumnOrderChange?: (ids: ColumnOrderState) => void
+  onQChange?: (q: string) => void
+  onFiltersChange?: (filters: Record<string, string>) => void
+  onSortChange?: (sort: { columnId: string; dir: "asc" | "desc" } | null) => void
+  headerLeftExtras?: React.ReactNode
+  headerRightExtras?: React.ReactNode
   initialState?: {
     q?: string
     filters?: Record<string, string>
@@ -67,6 +72,11 @@ export default function EntityTable<T>({
   onSelectionChange,
   onVisibleColumnsChange,
   onColumnOrderChange,
+  onQChange,
+  onFiltersChange,
+  onSortChange,
+  headerLeftExtras,
+  headerRightExtras,
   initialState,
 }: EntityTableProps<T>) {
   const { q, setQ, filters, setFilters, filtered } = useTableQuery<T>({
@@ -202,10 +212,21 @@ export default function EntityTable<T>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [order])
 
+  // Emit sort changes to parent for external consumers (e.g., Saved Views)
+  React.useEffect(() => {
+    onSortChange?.(sort)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sort])
+
   const handleFilterChange = (columnId: string, value: string) => {
     setPage(0)
     setFilters((f) => ({ ...f, [columnId]: value }))
   }
+
+  React.useEffect(() => {
+    onFiltersChange?.(filters)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters])
 
   const renderedBulkActions = React.useMemo(() => {
     if (typeof bulkActions === "function") return bulkActions({ selected })
@@ -229,11 +250,16 @@ export default function EntityTable<T>({
     <div className={cn("flex flex-col gap-2", className)}>
       <SearchBar
         q={q}
-        onChange={setQ}
+        onChange={(value) => {
+          setQ(value)
+          onQChange?.(value)
+        }}
         title={title}
         summary={total === 0 ? "0 of 0" : `${pageStart + 1} to ${pageEnd} of ${total}`}
         className="px-2"
         debounceMs={searchDebounceMs}
+        leftExtras={headerLeftExtras}
+        rightExtras={headerRightExtras}
       />
 
       {selected.size > 0 && (

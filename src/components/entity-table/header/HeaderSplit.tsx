@@ -3,7 +3,7 @@
 import * as React from "react"
 import type { EntityColumn } from "../types"
 import { TableRow, TableHead } from "@/components/ui/table"
-import { ChevronDown, ChevronUp, Columns3 } from "lucide-react"
+import { ChevronDown, ChevronUp, Columns3, Funnel } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { PageSelectCheckbox } from "../PageSelectCheckbox"
 import { Button } from "@/components/ui/button"
@@ -55,19 +55,33 @@ export function HeaderSplit<T>(props: {
         <TableHead className="w-[36px]"></TableHead>
         {columns.map((col) => (
           <TableHead key={col.id} style={{ width: col.width }}>
-            <button
-              type="button"
-              onClick={() => onToggleSort(col.id)}
-              className="inline-flex items-center gap-1 hover:underline"
-            >
-              <span>{col.header}</span>
-              {sort?.columnId === col.id &&
-                (sort.dir === "asc" ? (
-                  <ChevronUp className="size-3" />
-                ) : (
-                  <ChevronDown className="size-3" />
-                ))}
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => onToggleSort(col.id)}
+                className="inline-flex items-center gap-1 hover:underline"
+              >
+                <span>{col.header}</span>
+                {sort?.columnId === col.id &&
+                  (sort.dir === "asc" ? (
+                    <ChevronUp className="size-3" />
+                  ) : (
+                    <ChevronDown className="size-3" />
+                  ))}
+              </button>
+              {col.filter?.type && filters[col.id] && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="relative size-6 pointer-events-none"
+                  aria-hidden
+                  title="Filter active"
+                >
+                  <Funnel className="size-3.5" />
+                  <span className="absolute right-0 top-0 inline-block h-1.5 w-1.5 rounded-full bg-foreground" />
+                </Button>
+              )}
+            </div>
           </TableHead>
         ))}
         <TableHead className="w-[44px] text-right">

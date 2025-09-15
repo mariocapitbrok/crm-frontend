@@ -12,8 +12,10 @@ export function SearchBar(props: {
   className?: string
   debounceMs?: number
   onClear?: () => void
+  leftExtras?: React.ReactNode
+  rightExtras?: React.ReactNode
 }) {
-  const { q, onChange, title, summary, className, debounceMs = 0, onClear } = props
+  const { q, onChange, title, summary, className, debounceMs = 0, onClear, leftExtras, rightExtras } = props
   const [inner, setInner] = React.useState(q)
   const tRef = React.useRef<number | null>(null)
 
@@ -69,9 +71,13 @@ export function SearchBar(props: {
               </button>
             )}
           </div>
+          {leftExtras}
         </div>
-        <div className="text-xs text-muted-foreground" aria-live="polite">
-          {summary}
+        <div className="flex items-center gap-2">
+          {rightExtras}
+          <div className="text-xs text-muted-foreground" aria-live="polite">
+            {summary}
+          </div>
         </div>
       </div>
     </div>

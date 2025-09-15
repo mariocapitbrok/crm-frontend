@@ -5,7 +5,7 @@ import type { EntityColumn } from "../types"
 import { TableRow, TableHead } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { ChevronDown, ChevronUp, Filter, Columns3 } from "lucide-react"
+import { ChevronDown, ChevronUp, Funnel, Columns3 } from "lucide-react"
 import { PageSelectCheckbox } from "../PageSelectCheckbox"
 import { Input } from "@/components/ui/input"
 import { ColumnManagerDialog } from "./ColumnManagerDialog"
@@ -73,9 +73,23 @@ export function HeaderPopover<T>(props: {
             {col.filter?.type && (
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="ghost" size="icon" className="size-6">
-                    <Filter className="size-3.5" />
-                  </Button>
+                  {(() => {
+                    const active = Boolean(filters[col.id])
+                    return (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="relative size-6"
+                        aria-label={active ? "Edit filter (active)" : "Add filter"}
+                        title={active ? "Edit filter" : "Add filter"}
+                      >
+                        <Funnel className="size-3.5" />
+                        {active && (
+                          <span className="absolute right-0 top-0 inline-block h-1.5 w-1.5 rounded-full bg-foreground" />
+                        )}
+                      </Button>
+                    )
+                  })()}
                 </PopoverTrigger>
                 <PopoverContent align="start" className="w-56 p-2">
                   {col.filter?.type === "text" && (

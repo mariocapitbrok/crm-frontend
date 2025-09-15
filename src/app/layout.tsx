@@ -4,6 +4,7 @@ import "./globals.css";
 import Script from "next/script";
 import { ThemeProvider } from "@/components/theme-provider";
 import QueryProvider from "@/components/QueryProvider";
+import { ApiProvider } from "@/febe";
 import NavBar from "@/components/NavBar";
 
 const geistSans = Geist({
@@ -33,10 +34,12 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <QueryProvider>
+            <ApiProvider>
             <div className="min-h-screen flex flex-col">
               <NavBar />
               <main className="flex-1">{children}</main>
             </div>
+            </ApiProvider>
           </QueryProvider>
         </ThemeProvider>
 
