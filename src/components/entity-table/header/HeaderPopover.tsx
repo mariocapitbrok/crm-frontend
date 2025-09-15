@@ -8,14 +8,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { ChevronDown, ChevronUp, Filter, Columns3 } from "lucide-react"
 import { PageSelectCheckbox } from "../PageSelectCheckbox"
 import { Input } from "@/components/ui/input"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu"
 import { ColumnManagerDialog } from "./ColumnManagerDialog"
 
 export function HeaderPopover<T>(props: {
@@ -102,71 +94,18 @@ export function HeaderPopover<T>(props: {
         </TableHead>
       ))}
       <TableHead className="w-[44px] align-middle text-right">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+        <ColumnManagerDialog
+          allColumns={allColumns}
+          order={order}
+          visibleIds={visibleIds}
+          onToggleVisible={onToggleVisible}
+          onMoveColumn={onMoveColumn}
+          trigger={
             <Button variant="ghost" size="icon" className="ml-auto size-6">
               <Columns3 className="size-4" />
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-60">
-            <DropdownMenuLabel>Columns</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {order.map((id, idx) => {
-              const col = byId.get(id)
-              if (!col) return null
-              return (
-                <DropdownMenuCheckboxItem
-                  key={col.id}
-                  checked={visibleIds.has(col.id)}
-                  onCheckedChange={(checked) => onToggleVisible(col.id, Boolean(checked))}
-                  onSelect={(e) => e.preventDefault()}
-                >
-                  <div className="flex w-full items-center gap-2">
-                    <span className="flex-1 truncate">{col.header}</span>
-                    <div className="flex gap-1">
-                      <button
-                        type="button"
-                        className="inline-flex size-6 items-center justify-center rounded hover:bg-accent disabled:opacity-40"
-                        disabled={idx === 0}
-                        onClick={(e) => {
-                          e.preventDefault()
-                          e.stopPropagation()
-                          onMoveColumn(col.id, -1)
-                        }}
-                        aria-label={`Move ${col.header} up`}
-                        title="Move up"
-                      >
-                        <ChevronUp className="size-4" />
-                      </button>
-                      <button
-                        type="button"
-                        className="inline-flex size-6 items-center justify-center rounded hover:bg-accent disabled:opacity-40"
-                        disabled={idx === order.length - 1}
-                        onClick={(e) => {
-                          e.preventDefault()
-                          e.stopPropagation()
-                          onMoveColumn(col.id, 1)
-                        }}
-                        aria-label={`Move ${col.header} down`}
-                        title="Move down"
-                      >
-                        <ChevronDown className="size-4" />
-                      </button>
-                    </div>
-                  </div>
-                </DropdownMenuCheckboxItem>
-              )
-            })}
-            <DropdownMenuSeparator />
-            <ColumnManagerDialog
-              allColumns={allColumns}
-              order={order}
-              visibleIds={visibleIds}
-              onToggleVisible={onToggleVisible}
-              onMoveColumn={onMoveColumn}
-            />
-          </DropdownMenuContent>
-        </DropdownMenu>
+          }
+        />
       </TableHead>
     </TableRow>
   )

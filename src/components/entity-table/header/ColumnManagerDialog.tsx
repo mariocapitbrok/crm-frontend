@@ -22,8 +22,9 @@ export function ColumnManagerDialog<T>(props: {
   visibleIds: Set<string>
   onToggleVisible: (id: string, checked: boolean) => void
   onMoveColumn: (id: string, delta: number) => void
+  trigger?: React.ReactNode
 }) {
-  const { allColumns, order, visibleIds, onToggleVisible, onMoveColumn } = props
+  const { allColumns, order, visibleIds, onToggleVisible, onMoveColumn, trigger } = props
   const [open, setOpen] = React.useState(false)
   const [localOrder, setLocalOrder] = React.useState<string[]>(order)
 
@@ -52,9 +53,11 @@ export function ColumnManagerDialog<T>(props: {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" className="w-full justify-start px-2 py-1.5 text-left text-sm">
-          Customize Columns…
-        </Button>
+        {trigger ?? (
+          <Button variant="ghost" className="w-full justify-start px-2 py-1.5 text-left text-sm">
+            Customize Columns…
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="max-w-md">
         <DialogHeader>
@@ -63,25 +66,27 @@ export function ColumnManagerDialog<T>(props: {
             Reorder and toggle column visibility.
           </DialogDescription>
         </DialogHeader>
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
-          <SortableContext items={localOrder} strategy={verticalListSortingStrategy}>
-            <div className="flex flex-col gap-2">
-              {localOrder.map((id) => {
-                const col = byId.get(id)
-                if (!col) return null
-                return (
-                  <SortableRow
-                    key={id}
-                    id={id}
-                    label={col.header}
-                    checked={visibleIds.has(id)}
-                    onToggleVisible={onToggleVisible}
-                  />
-                )
-              })}
-            </div>
-          </SortableContext>
-        </DndContext>
+        <div className="max-h-[60vh] overflow-auto pr-1">
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+            <SortableContext items={localOrder} strategy={verticalListSortingStrategy}>
+              <div className="flex flex-col gap-2 py-1">
+                {localOrder.map((id) => {
+                  const col = byId.get(id)
+                  if (!col) return null
+                  return (
+                    <SortableRow
+                      key={id}
+                      id={id}
+                      label={col.header}
+                      checked={visibleIds.has(id)}
+                      onToggleVisible={onToggleVisible}
+                    />
+                  )
+                })}
+              </div>
+            </SortableContext>
+          </DndContext>
+        </div>
         <div className="mt-3 flex justify-end">
           <Button onClick={() => setOpen(false)} size="sm">
             Done
