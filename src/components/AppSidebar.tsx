@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button"
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetDescription,
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
@@ -17,6 +17,7 @@ import {
   LayoutDashboard,
   Menu,
   MessageCircleQuestion,
+  Users,
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -25,6 +26,7 @@ const navItems = [
   { href: "/", label: "Home", icon: Home },
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/leads", label: "Leads", icon: MessageCircleQuestion },
+  { href: "/contacts", label: "Contacts", icon: Users },
   { href: "/shadcn-test", label: "Shadcn Test", icon: FlaskConical },
   { href: "/next-preview", label: "Preview", icon: Eye },
 ]
@@ -44,7 +46,8 @@ export default function AppSidebar() {
           <SheetHeader className="px-4 py-3 border-b">
             <SheetTitle>Navigation</SheetTitle>
             <SheetDescription className="sr-only">
-              Application navigation drawer with links to Home, Dashboard, Leads, Shadcn Test, and Preview pages.
+              Application navigation drawer with links to Home, Dashboard,
+              Leads, Shadcn Test, and Preview pages.
             </SheetDescription>
           </SheetHeader>
           <nav className="flex-1 py-2">
