@@ -3,12 +3,12 @@
 import EntityMenu from "@/components/entity-menu"
 import EntityNavBar from "@/components/EntityNavBar"
 import EntityTable, { EntityColumn } from "@/components/EntityTable"
+import SavedViewPicker from "@/components/SavedViewPicker"
 import { getEntityConfig } from "@/entities/registry"
 import { Lead, useLeads, useUsers } from "@/state/queries/leads"
 import { EntityUiState } from "@/state/stores/createEntityUiStore"
-import { useMemo } from "react"
 import * as React from "react"
-import SavedViewPicker from "@/components/SavedViewPicker"
+import { useMemo } from "react"
 
 type LeadRow = {
   id: number
@@ -27,7 +27,9 @@ const Leads = () => {
   const headerLayout = cfg.uiStore((s: EntityUiState) => s.headerLayout)
   const setHeaderLayout = cfg.uiStore((s: EntityUiState) => s.setHeaderLayout)
   const visibleColumns = cfg.uiStore((s: EntityUiState) => s.visibleColumns)
-  const setVisibleColumns = cfg.uiStore((s: EntityUiState) => s.setVisibleColumns)
+  const setVisibleColumns = cfg.uiStore(
+    (s: EntityUiState) => s.setVisibleColumns
+  )
   const columnOrder = cfg.uiStore((s: EntityUiState) => s.columnOrder)
   const setColumnOrder = cfg.uiStore((s: EntityUiState) => s.setColumnOrder)
 
@@ -43,10 +45,17 @@ const Leads = () => {
   } | null>(null)
   const [q, setQ] = React.useState<string>("")
   const [filters, setFilters] = React.useState<Record<string, string>>({})
-  const [sort, setSort] = React.useState<{ columnId: string; dir: "asc" | "desc" } | null>(null)
+  const [sort, setSort] = React.useState<{
+    columnId: string
+    dir: "asc" | "desc"
+  } | null>(null)
   const [tableRev, setTableRev] = React.useState(0)
-  const [tempVisibleColumns, setTempVisibleColumns] = React.useState<string[] | null>(null)
-  const [tempColumnOrder, setTempColumnOrder] = React.useState<string[] | null>(null)
+  const [tempVisibleColumns, setTempVisibleColumns] = React.useState<
+    string[] | null
+  >(null)
+  const [tempColumnOrder, setTempColumnOrder] = React.useState<string[] | null>(
+    null
+  )
   const [defaultWorkingDef, setDefaultWorkingDef] = React.useState<{
     q: string
     filters: Record<string, string>
@@ -162,7 +171,10 @@ const Leads = () => {
     }
   }
 
-  function shallowEqualObj(a: Record<string, string>, b: Record<string, string>) {
+  function shallowEqualObj(
+    a: Record<string, string>,
+    b: Record<string, string>
+  ) {
     const ak = Object.keys(a)
     const bk = Object.keys(b)
     if (ak.length !== bk.length) return false
@@ -170,14 +182,19 @@ const Leads = () => {
     return true
   }
 
-  function isSameDef(a: ReturnType<typeof normalizeDef>, b: ReturnType<typeof normalizeDef>) {
+  function isSameDef(
+    a: ReturnType<typeof normalizeDef>,
+    b: ReturnType<typeof normalizeDef>
+  ) {
     if ((a.q ?? "") !== (b.q ?? "")) return false
     if (!!a.sort !== !!b.sort) return false
     if (a.sort && b.sort) {
-      if (a.sort.columnId !== b.sort.columnId || a.sort.dir !== b.sort.dir) return false
+      if (a.sort.columnId !== b.sort.columnId || a.sort.dir !== b.sort.dir)
+        return false
     }
     const arrEq = (x?: string[], y?: string[]) =>
-      (x ?? []).length === (y ?? []).length && (x ?? []).every((v, i) => v === (y ?? [])[i])
+      (x ?? []).length === (y ?? []).length &&
+      (x ?? []).every((v, i) => v === (y ?? [])[i])
     if (!arrEq(a.visibleColumns, b.visibleColumns)) return false
     if (!arrEq(a.columnOrder, b.columnOrder)) return false
     if (!shallowEqualObj(a.filters, b.filters)) return false
@@ -188,11 +205,17 @@ const Leads = () => {
     q,
     filters,
     sort,
-    visibleColumns: (tempVisibleColumns ?? visibleColumns) ?? undefined,
-    columnOrder: (tempColumnOrder ?? columnOrder) ?? undefined,
+    visibleColumns: tempVisibleColumns ?? visibleColumns ?? undefined,
+    columnOrder: tempColumnOrder ?? columnOrder ?? undefined,
   })
   const baselineDefNorm = normalizeDef(
-    activeViewDef ?? { q: "", filters: {}, sort: null, visibleColumns: allColumnIds, columnOrder: allColumnIds }
+    activeViewDef ?? {
+      q: "",
+      filters: {},
+      sort: null,
+      visibleColumns: allColumnIds,
+      columnOrder: allColumnIds,
+    }
   )
   const isDirty = !isSameDef(currentDefNorm, baselineDefNorm)
 
@@ -257,8 +280,8 @@ const Leads = () => {
                 q,
                 filters,
                 sort: sort as any,
-                visibleColumns: (tempVisibleColumns ?? allColumnIds),
-                columnOrder: (tempColumnOrder ?? allColumnIds),
+                visibleColumns: tempVisibleColumns ?? allColumnIds,
+                columnOrder: tempColumnOrder ?? allColumnIds,
               }
         }
         onQChange={setQ}
@@ -285,7 +308,9 @@ const Leads = () => {
                     q,
                     filters,
                     sort,
-                    visibleColumns: (tempVisibleColumns ?? visibleColumns ?? all)!,
+                    visibleColumns: (tempVisibleColumns ??
+                      visibleColumns ??
+                      all)!,
                     columnOrder: (tempColumnOrder ?? columnOrder ?? all)!,
                   })
                 }
@@ -297,8 +322,10 @@ const Leads = () => {
                 setQ(view.definition.q ?? "")
                 setFilters(view.definition.filters ?? {})
                 setSort(view.definition.sort ?? null)
-                if (view.definition.visibleColumns) setVisibleColumns(view.definition.visibleColumns)
-                if (view.definition.columnOrder) setColumnOrder(view.definition.columnOrder)
+                if (view.definition.visibleColumns)
+                  setVisibleColumns(view.definition.visibleColumns)
+                if (view.definition.columnOrder)
+                  setColumnOrder(view.definition.columnOrder)
                 // Force remount to apply selected view's initial state
                 setTableRev((n) => n + 1)
               } else {
@@ -322,8 +349,9 @@ const Leads = () => {
               q,
               filters,
               sort,
-              visibleColumns: (tempVisibleColumns ?? visibleColumns) ?? allColumnIds,
-              columnOrder: (tempColumnOrder ?? columnOrder) ?? allColumnIds,
+              visibleColumns:
+                tempVisibleColumns ?? visibleColumns ?? allColumnIds,
+              columnOrder: tempColumnOrder ?? columnOrder ?? allColumnIds,
               headerLayout,
             })}
             onResetToDefault={() => {
