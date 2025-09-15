@@ -16,6 +16,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
+import { ColumnManagerDialog } from "./ColumnManagerDialog"
 
 export function HeaderPopover<T>(props: {
   columns: EntityColumn<T>[]
@@ -156,6 +157,14 @@ export function HeaderPopover<T>(props: {
                 </DropdownMenuCheckboxItem>
               )
             })}
+            <DropdownMenuSeparator />
+            <ColumnManagerDialog
+              allColumns={allColumns}
+              order={order}
+              visibleIds={visibleIds}
+              onToggleVisible={onToggleVisible}
+              onMoveColumn={onMoveColumn}
+            />
           </DropdownMenuContent>
         </DropdownMenu>
       </TableHead>
