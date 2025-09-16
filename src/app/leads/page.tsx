@@ -20,6 +20,11 @@ type LeadRow = {
   website?: string | null
 }
 
+type SortType = {
+  columnId: string
+  dir: "asc" | "desc"
+}
+
 const Leads = () => {
   const { data: leads, isLoading: leadsLoading, error: leadsError } = useLeads()
   const { data: users, isLoading: usersLoading, error: usersError } = useUsers()
@@ -86,72 +91,75 @@ const Leads = () => {
     }))
   }, [leads, userMap])
 
-  const columns: EntityColumn<LeadRow>[] = [
-    {
-      id: "firstname",
-      header: "First Name",
-      accessor: (r) => r.firstname,
-      sortAccessor: (r) => r.firstname,
-      filter: { type: "text", placeholder: "First name" },
-      width: 180,
-    },
-    {
-      id: "lastname",
-      header: "Last Name",
-      accessor: (r) => r.lastname,
-      sortAccessor: (r) => r.lastname,
-      filter: { type: "text", placeholder: "Last name" },
-      width: 180,
-    },
-    {
-      id: "company",
-      header: "Company",
-      accessor: (r) => r.company,
-      sortAccessor: (r) => r.company,
-      filter: { type: "text", placeholder: "Company" },
-      width: 280,
-    },
-    {
-      id: "website",
-      header: "Website",
-      accessor: (r) =>
-        r.website ? (
-          <a
-            className="text-blue-600 hover:underline"
-            href={r.website}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {r.website}
+  const columns: EntityColumn<LeadRow>[] = useMemo(
+    () => [
+      {
+        id: "firstname",
+        header: "First Name",
+        accessor: (r) => r.firstname,
+        sortAccessor: (r) => r.firstname,
+        filter: { type: "text", placeholder: "First name" },
+        width: 180,
+      },
+      {
+        id: "lastname",
+        header: "Last Name",
+        accessor: (r) => r.lastname,
+        sortAccessor: (r) => r.lastname,
+        filter: { type: "text", placeholder: "Last name" },
+        width: 180,
+      },
+      {
+        id: "company",
+        header: "Company",
+        accessor: (r) => r.company,
+        sortAccessor: (r) => r.company,
+        filter: { type: "text", placeholder: "Company" },
+        width: 280,
+      },
+      {
+        id: "website",
+        header: "Website",
+        accessor: (r) =>
+          r.website ? (
+            <a
+              className="text-blue-600 hover:underline"
+              href={r.website}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {r.website}
+            </a>
+          ) : (
+            <span className="text-muted-foreground">—</span>
+          ),
+        sortAccessor: (r) => r.website ?? "",
+        filter: { type: "text", placeholder: "Website" },
+        width: 260,
+      },
+      {
+        id: "email",
+        header: "Primary Email",
+        accessor: (r) => (
+          <a className="hover:underline" href={`mailto:${r.email}`}>
+            {r.email}
           </a>
-        ) : (
-          <span className="text-muted-foreground">—</span>
         ),
-      sortAccessor: (r) => r.website ?? "",
-      filter: { type: "text", placeholder: "Website" },
-      width: 260,
-    },
-    {
-      id: "email",
-      header: "Primary Email",
-      accessor: (r) => (
-        <a className="hover:underline" href={`mailto:${r.email}`}>
-          {r.email}
-        </a>
-      ),
-      sortAccessor: (r) => r.email,
-      filter: { type: "text", placeholder: "Email" },
-      width: 280,
-    },
-    {
-      id: "assignedTo",
-      header: "Assigned To",
-      accessor: (r) => r.assignedTo ?? "",
-      sortAccessor: (r) => r.assignedTo ?? "",
-      filter: { type: "text", placeholder: "Owner" },
-      width: 220,
-    },
-  ]
+        sortAccessor: (r) => r.email,
+        filter: { type: "text", placeholder: "Email" },
+        width: 280,
+      },
+      {
+        id: "assignedTo",
+        header: "Assigned To",
+        accessor: (r) => r.assignedTo ?? "",
+        sortAccessor: (r) => r.assignedTo ?? "",
+        filter: { type: "text", placeholder: "Owner" },
+        width: 220,
+      },
+    ],
+    []
+  )
 
   const allColumnIds = React.useMemo(() => columns.map((c) => c.id), [columns])
 
@@ -272,14 +280,14 @@ const Leads = () => {
             ? {
                 q: activeViewDef?.q,
                 filters: activeViewDef?.filters,
-                sort: activeViewDef?.sort as any,
+                sort: activeViewDef?.sort as SortType,
                 visibleColumns: activeViewDef?.visibleColumns,
                 columnOrder: activeViewDef?.columnOrder,
               }
             : {
                 q,
                 filters,
-                sort: sort as any,
+                sort: sort as SortType,
                 visibleColumns: tempVisibleColumns ?? allColumnIds,
                 columnOrder: tempColumnOrder ?? allColumnIds,
               }
