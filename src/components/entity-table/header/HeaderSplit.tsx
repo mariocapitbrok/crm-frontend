@@ -1,12 +1,11 @@
 "use client"
 
-import * as React from "react"
-import type { EntityColumn } from "../types"
-import { TableRow, TableHead } from "@/components/ui/table"
-import { ChevronDown, ChevronUp, Columns3, Funnel } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { PageSelectCheckbox } from "../PageSelectCheckbox"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { TableHead, TableRow } from "@/components/ui/table"
+import { ChevronDown, ChevronUp, Columns3, Funnel } from "lucide-react"
+import { PageSelectCheckbox } from "../PageSelectCheckbox"
+import type { EntityColumn } from "../types"
 import { ColumnManagerDialog } from "./ColumnManagerDialog"
 
 export function HeaderSplit<T>(props: {
@@ -39,7 +38,6 @@ export function HeaderSplit<T>(props: {
     someOnPageSelected,
     onToggleAllOnPage,
   } = props
-  const byId = React.useMemo(() => new Map(allColumns.map((c) => [c.id, c])), [allColumns])
 
   return (
     <>
@@ -92,7 +90,10 @@ export function HeaderSplit<T>(props: {
             onToggleVisible={onToggleVisible}
             onMoveColumn={onMoveColumn}
             trigger={
-              <button type="button" className="ml-auto inline-flex size-6 items-center justify-center rounded-md hover:bg-accent">
+              <button
+                type="button"
+                className="ml-auto inline-flex size-6 items-center justify-center rounded-md hover:bg-accent"
+              >
                 <Columns3 className="size-4" />
               </button>
             }

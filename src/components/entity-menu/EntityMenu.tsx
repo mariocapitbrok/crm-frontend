@@ -32,6 +32,7 @@ export type EntityMenuProps = {
   menus?: MenuSpec[]
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function buildDefaultMenus(uiStore: UiStoreHook): MenuSpec[] {
   const labels = [
     "File",
@@ -163,14 +164,15 @@ const EntityMenu = ({ uiStore, menus }: EntityMenuProps) => {
             {m.label}
           </MenubarTrigger>
           <ContentOpenWatcher align="start">
-            {typeof m.content === "function" ? (
-              // Treat function content as a React component to respect hooks rules
-              React.createElement(m.content as React.ComponentType<MenuRenderCtx>, {
-                uiStore: store,
-              })
-            ) : (
-              m.content
-            )}
+            {typeof m.content === "function"
+              ? // Treat function content as a React component to respect hooks rules
+                React.createElement(
+                  m.content as React.ComponentType<MenuRenderCtx>,
+                  {
+                    uiStore: store,
+                  }
+                )
+              : m.content}
           </ContentOpenWatcher>
         </MenubarMenu>
       ))}

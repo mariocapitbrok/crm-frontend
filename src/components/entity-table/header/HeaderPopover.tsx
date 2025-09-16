@@ -1,13 +1,16 @@
 "use client"
 
-import * as React from "react"
-import type { EntityColumn } from "../types"
-import { TableRow, TableHead } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { ChevronDown, ChevronUp, Funnel, Columns3 } from "lucide-react"
-import { PageSelectCheckbox } from "../PageSelectCheckbox"
 import { Input } from "@/components/ui/input"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { TableHead, TableRow } from "@/components/ui/table"
+import { ChevronDown, ChevronUp, Columns3, Funnel } from "lucide-react"
+import { PageSelectCheckbox } from "../PageSelectCheckbox"
+import type { EntityColumn } from "../types"
 import { ColumnManagerDialog } from "./ColumnManagerDialog"
 
 export function HeaderPopover<T>(props: {
@@ -41,8 +44,6 @@ export function HeaderPopover<T>(props: {
     onToggleAllOnPage,
   } = props
 
-  const byId = React.useMemo(() => new Map(allColumns.map((c) => [c.id, c])), [allColumns])
-
   return (
     <TableRow>
       <TableHead className="w-[44px] align-middle">
@@ -55,7 +56,11 @@ export function HeaderPopover<T>(props: {
       </TableHead>
       <TableHead className="w-[36px] align-middle"></TableHead>
       {columns.map((col) => (
-        <TableHead key={col.id} style={{ width: col.width }} className="align-middle">
+        <TableHead
+          key={col.id}
+          style={{ width: col.width }}
+          className="align-middle"
+        >
           <div className="flex items-center gap-1">
             <button
               type="button"
@@ -80,7 +85,9 @@ export function HeaderPopover<T>(props: {
                         variant="ghost"
                         size="icon"
                         className="relative size-6"
-                        aria-label={active ? "Edit filter (active)" : "Add filter"}
+                        aria-label={
+                          active ? "Edit filter (active)" : "Add filter"
+                        }
                         title={active ? "Edit filter" : "Add filter"}
                       >
                         <Funnel className="size-3.5" />
