@@ -1,12 +1,13 @@
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, type FC } from "react"
 import {
   EntityDirectory,
   buildDefaultMenus,
   type EntityColumn,
+  type MenuRenderCtx,
 } from "@/domains/entities/ui"
-import { FileSpreadsheet } from "lucide-react"
+import { FileSpreadsheet, Settings2 } from "lucide-react"
 import {
   useLeadDirectory,
   useLeadOwners,
@@ -15,6 +16,8 @@ import {
 import { useLeadsUiStore } from "./store"
 import CreateLeadButton from "./CreateLeadButton"
 import ImportRecords from "@/domains/entities/ui/EntityDirectory/ImportRecords"
+import ConfigureLeadFieldsDialog from "./ConfigureLeadFieldsDialog"
+import { MenubarItem, MenubarLabel } from "@/components/ui/menubar"
 
 type LeadRow = {
   id: number
@@ -27,7 +30,36 @@ type LeadRow = {
 }
 
 const leadIcon = <FileSpreadsheet className="size-7" />
-const leadMenus = buildDefaultMenus(useLeadsUiStore)
+const leadMenus = buildLeadMenus()
+
+function buildLeadMenus() {
+  const baseMenus = buildDefaultMenus(useLeadsUiStore)
+  return baseMenus.map((menu) => {
+    if (menu.id !== "edit") return menu
+
+    const EditMenuContent: FC<MenuRenderCtx> = () => (
+      <div className="w-56 p-1">
+        <MenubarLabel>Edit</MenubarLabel>
+        <ConfigureLeadFieldsDialog
+          trigger={
+            <MenubarItem
+              className="flex items-center gap-2"
+              onSelect={(event) => event.preventDefault()}
+            >
+              <Settings2 className="size-4" aria-hidden />
+              Configure entity fields…
+            </MenubarItem>
+          }
+        />
+      </div>
+    )
+
+    return {
+      ...menu,
+      content: EditMenuContent,
+    }
+  })
+}
 
 const leadEntity = {
   key: "leads" as const,
