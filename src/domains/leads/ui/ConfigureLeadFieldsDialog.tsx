@@ -28,6 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   coreLeadFieldDefinitions,
   getDefaultRequiredLeadFieldIds,
@@ -123,7 +124,9 @@ export default function ConfigureLeadFieldsDialog({
   }, [sortedDefinitions])
 
   useEffect(() => {
-    setLocalRequired(remoteRequired)
+    setLocalRequired((current) =>
+      arraysEqual(current, remoteRequired) ? current : remoteRequired,
+    )
   }, [remoteRequired])
 
   const triggerDisabled = trigger.props.disabled ?? false
@@ -204,18 +207,19 @@ export default function ConfigureLeadFieldsDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="max-h-[calc(80vh-10rem)] overflow-y-auto pr-2 space-y-6">
-          <section className="space-y-4">
-            <div className="space-y-1">
-              <h3 className="text-sm font-medium">Required fields</h3>
-              <p className="text-xs text-muted-foreground">
-                System fields cannot be deleted. Keep at least one field
-                required.
-              </p>
-            </div>
+        <ScrollArea className="max-h-[calc(80vh-10rem)] pr-1">
+          <div className="space-y-6 pr-2">
+            <section className="space-y-4">
+              <div className="space-y-1">
+                <h3 className="text-sm font-medium">Required fields</h3>
+                <p className="text-xs text-muted-foreground">
+                  System fields cannot be deleted. Keep at least one field
+                  required.
+                </p>
+              </div>
 
-            <div className="space-y-3">
-              {sortedDefinitions.map((field) => {
+              <div className="space-y-3">
+                {sortedDefinitions.map((field) => {
                   const isRequired = localRequired.includes(field.id)
                   const disableToggle =
                     updateConfig.isPending ||
@@ -300,65 +304,66 @@ export default function ConfigureLeadFieldsDialog({
                       ? updateConfig.error.message
                       : String(updateConfig.error)}
                   </p>
-              ) : null}
-            </div>
-          </section>
+                ) : null}
+              </div>
+            </section>
 
-          <section className="space-y-4">
-            <div className="space-y-1">
-              <h3 className="text-sm font-medium">Add custom field</h3>
-              <p className="text-xs text-muted-foreground">
-                Custom fields are optional by default. You can mark them required
-                above after creation.
-              </p>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-[2fr,1fr]">
-              <Input
-                placeholder="Label"
-                value={newFieldLabel}
-                onChange={(event) => setNewFieldLabel(event.target.value)}
-                disabled={createField.isPending}
-              />
-              <Select
-                value={newFieldType}
-                onValueChange={(value) =>
-                  setNewFieldType(value as CreateFieldType)
-                }
-                disabled={createField.isPending}
+            <section className="space-y-4">
+              <div className="space-y-1">
+                <h3 className="text-sm font-medium">Add custom field</h3>
+                <p className="text-xs text-muted-foreground">
+                  Custom fields are optional by default. You can mark them required
+                  above after creation.
+                </p>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-[2fr,1fr]">
+                <Input
+                  placeholder="Label"
+                  value={newFieldLabel}
+                  onChange={(event) => setNewFieldLabel(event.target.value)}
+                  disabled={createField.isPending}
+                />
+                <Select
+                  value={newFieldType}
+                  onValueChange={(value) =>
+                    setNewFieldType(value as CreateFieldType)
+                  }
+                  disabled={createField.isPending}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Field type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {createFieldTypes.map((type) => (
+                      <SelectItem key={type.value} value={type.value}>
+                        {type.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              {createField.error ? (
+                <p className="text-sm text-destructive">
+                  {createField.error instanceof Error
+                    ? createField.error.message
+                    : String(createField.error)}
+                </p>
+              ) : null}
+              <Button
+                type="button"
+                onClick={handleAddField}
+                disabled={creationDisabled}
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="Field type" />
-                </SelectTrigger>
-                <SelectContent>
-                  {createFieldTypes.map((type) => (
-                    <SelectItem key={type.value} value={type.value}>
-                      {type.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            {createField.error ? (
-              <p className="text-sm text-destructive">
-                {createField.error instanceof Error
-                  ? createField.error.message
-                  : String(createField.error)}
-              </p>
-            ) : null}
-            <Button
-              type="button"
-              onClick={handleAddField}
-              disabled={creationDisabled}
-            >
-              {createField.isPending ? (
-                <Loader2 className="mr-2 size-4 animate-spin" aria-hidden />
-              ) : (
-                <Plus className="mr-2 size-4" aria-hidden />
-              )}
-              Add field
-            </Button>
-          </section>
-        </div>
+                {createField.isPending ? (
+                  <Loader2 className="mr-2 size-4 animate-spin" aria-hidden />
+                ) : (
+                  <Plus className="mr-2 size-4" aria-hidden />
+                )}
+                Add field
+              </Button>
+            </section>
+          </div>
+        </ScrollArea>
 
         <DialogFooter className="gap-2 border-t pt-4">
           <DialogClose asChild>
