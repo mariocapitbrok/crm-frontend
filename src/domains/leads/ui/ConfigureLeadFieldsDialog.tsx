@@ -12,7 +12,6 @@ import { Loader2, Plus, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -173,13 +172,45 @@ export default function ConfigureLeadFieldsDialog({
     )
   }, [remoteVisible])
 
-  const triggerDisabled = trigger?.props.disabled ?? false
+  const createField = useCreateEntityField(entityKey)
+  const removeField = useRemoveEntityField(entityKey)
+  const rollbackRemoveField = useRemoveEntityField(entityKey)
+  const [newFieldLabel, setNewFieldLabel] = useState("")
+  const [newFieldType, setNewFieldType] = useState<CreateFieldType>("text")
+  const [removeTarget, setRemoveTarget] = useState<string | null>(null)
+  const [createdFieldIds, setCreatedFieldIds] = useState<string[]>([])
+  const [closePending, setClosePending] = useState(false)
+  const [closeError, setCloseError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!open) {
+      setLocalRequired(remoteRequired)
+      setLocalVisible(remoteVisible)
+      setHasStructureChanges(false)
+      setCreatedFieldIds([])
+      setCloseError(null)
+      setNewFieldLabel("")
+      setNewFieldType("text")
+    }
+  }, [open, remoteRequired, remoteVisible])
+
+  const triggerDisabled =
+    (trigger?.props.disabled ?? false) ||
+    closePending ||
+    createField.isPending ||
+    removeField.isPending ||
+    rollbackRemoveField.isPending
   const removingLocked = localRequired.length <= 1
   const visibleLocked = localVisible.length <= 1
   const requiredDirty = !arraysEqual(localRequired, remoteRequired)
   const visibleDirty = !arraysEqual(localVisible, remoteVisible)
   const disableSave =
-    updateConfig.isPending || (!requiredDirty && !visibleDirty && !hasStructureChanges)
+    updateConfig.isPending ||
+    closePending ||
+    createField.isPending ||
+    removeField.isPending ||
+    rollbackRemoveField.isPending ||
+    (!requiredDirty && !visibleDirty && !hasStructureChanges)
 
   const handleToggleRequired = (fieldId: string, nextValue: boolean) => {
     setLocalRequired((current) => {
@@ -222,15 +253,55 @@ export default function ConfigureLeadFieldsDialog({
     if (requiredDirty || visibleDirty) {
       await updateConfig.mutateAsync(payload)
     }
+    setCreatedFieldIds([])
+    setCloseError(null)
     setHasStructureChanges(false)
     setOpen(false)
   }
 
-  const createField = useCreateEntityField(entityKey)
-  const removeField = useRemoveEntityField(entityKey)
-  const [newFieldLabel, setNewFieldLabel] = useState("")
-  const [newFieldType, setNewFieldType] = useState<CreateFieldType>("text")
-  const [removeTarget, setRemoveTarget] = useState<string | null>(null)
+  const rollbackCreatedFields = useCallback(async () => {
+    for (const id of createdFieldIds) {
+      await rollbackRemoveField.mutateAsync(id)
+    }
+  }, [createdFieldIds, rollbackRemoveField])
+
+  const handleDismiss = useCallback(async () => {
+    if (
+      closePending ||
+      createField.isPending ||
+      removeField.isPending ||
+      rollbackRemoveField.isPending
+    ) {
+      return
+    }
+    setCloseError(null)
+    if (createdFieldIds.length === 0) {
+      setHasStructureChanges(false)
+      setOpen(false)
+      return
+    }
+    setClosePending(true)
+    try {
+      await rollbackCreatedFields()
+      setCreatedFieldIds([])
+      setHasStructureChanges(false)
+      setOpen(false)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+      setCloseError(message)
+    } finally {
+      setClosePending(false)
+    }
+  }, [
+    closePending,
+    createField.isPending,
+    createdFieldIds,
+    rollbackCreatedFields,
+    removeField.isPending,
+    rollbackRemoveField.isPending,
+    setHasStructureChanges,
+    setOpen,
+  ])
 
   const handleAddField = async () => {
     if (!newFieldLabel.trim()) return
@@ -244,6 +315,9 @@ export default function ConfigureLeadFieldsDialog({
         : current,
     )
     setHasStructureChanges(true)
+    setCreatedFieldIds((current) =>
+      current.includes(created.id) ? current : [...current, created.id],
+    )
     setNewFieldLabel("")
     setNewFieldType("text")
   }
@@ -255,24 +329,29 @@ export default function ConfigureLeadFieldsDialog({
       setLocalRequired((current) => current.filter((id) => id !== fieldId))
       setLocalVisible((current) => current.filter((id) => id !== fieldId))
       setHasStructureChanges(true)
+      setCreatedFieldIds((current) => current.filter((id) => id !== fieldId))
     } finally {
       setRemoveTarget(null)
     }
   }
 
   const creationDisabled =
-    createField.isPending || !newFieldLabel.trim() || fieldsFetching
+    createField.isPending ||
+    removeField.isPending ||
+    rollbackRemoveField.isPending ||
+    !newFieldLabel.trim() ||
+    fieldsFetching ||
+    closePending
 
   return (
     <Dialog
       open={open}
       onOpenChange={(next) => {
-        setOpen(next)
-        if (!next) {
-          setLocalRequired(remoteRequired)
-          setLocalVisible(remoteVisible)
-          setHasStructureChanges(false)
+        if (next) {
+          setOpen(true)
+          return
         }
+        void handleDismiss()
       }}
     >
       {trigger ? (
@@ -311,11 +390,19 @@ export default function ConfigureLeadFieldsDialog({
                   updateConfig.isPending ||
                   configFetching ||
                   fieldsFetching ||
+                  createField.isPending ||
+                  removeField.isPending ||
+                  rollbackRemoveField.isPending ||
+                  closePending ||
                   (isRequired && removingLocked)
                 const visibleToggleDisabled =
                   updateConfig.isPending ||
                   configFetching ||
                   fieldsFetching ||
+                  createField.isPending ||
+                  removeField.isPending ||
+                  rollbackRemoveField.isPending ||
+                  closePending ||
                   isRequired ||
                   (isVisible && visibleLocked)
 
@@ -438,14 +525,24 @@ export default function ConfigureLeadFieldsDialog({
                   placeholder="Label"
                   value={newFieldLabel}
                   onChange={(event) => setNewFieldLabel(event.target.value)}
-                  disabled={createField.isPending}
+                  disabled={
+                    createField.isPending ||
+                    removeField.isPending ||
+                    rollbackRemoveField.isPending ||
+                    closePending
+                  }
                 />
                 <Select
                   value={newFieldType}
                   onValueChange={(value) =>
                     setNewFieldType(value as CreateFieldType)
                   }
-                  disabled={createField.isPending}
+                  disabled={
+                    createField.isPending ||
+                    removeField.isPending ||
+                    rollbackRemoveField.isPending ||
+                    closePending
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Field type" />
@@ -466,6 +563,9 @@ export default function ConfigureLeadFieldsDialog({
                     : String(createField.error)}
                 </p>
               ) : null}
+              {closeError ? (
+                <p className="text-sm text-destructive">{closeError}</p>
+              ) : null}
               <Button
                 type="button"
                 onClick={handleAddField}
@@ -483,11 +583,23 @@ export default function ConfigureLeadFieldsDialog({
         </ScrollArea>
 
         <DialogFooter className="gap-2 border-t pt-4">
-          <DialogClose asChild>
-            <Button variant="ghost" type="button" disabled={updateConfig.isPending}>
-              Cancel
-            </Button>
-          </DialogClose>
+          <Button
+            variant="ghost"
+            type="button"
+            onClick={handleDismiss}
+            disabled={
+              updateConfig.isPending ||
+              closePending ||
+              createField.isPending ||
+              removeField.isPending ||
+              rollbackRemoveField.isPending
+            }
+          >
+            {closePending ? (
+              <Loader2 className="mr-2 size-4 animate-spin" aria-hidden />
+            ) : null}
+            Cancel
+          </Button>
           <Button type="button" onClick={handleSave} disabled={disableSave}>
             {updateConfig.isPending ? (
               <Loader2 className="mr-2 size-4 animate-spin" aria-hidden />
