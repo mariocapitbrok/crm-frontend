@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import type { EntityKey } from "@/entities/registry"
+import type { EntityKey } from "@/domains/entityKeys"
 import type { SavedView, ViewDefinition } from "@/febe/types"
 import {
   useCreateSavedView,
@@ -163,8 +163,8 @@ export function SavedViewPicker({
         </Dialog>
       )}
 
-      {/* Reset visible when a view is selected or there are dirty changes */}
-      {(Boolean(isDirty) || activeViewId !== null) && (
+      {/* Reset visible only when dirty changes exist */}
+      {isDirty && (
         <Button
           size="icon"
           variant="outline"
@@ -257,4 +257,3 @@ export function SavedViewPicker({
 }
 
 export default SavedViewPicker
-

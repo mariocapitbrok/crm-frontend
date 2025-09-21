@@ -1,4 +1,4 @@
-import type { EntityKey } from "@/entities/registry"
+import type { EntityKey } from "@/domains/entityKeys"
 import type { ViewDefinition } from "@/febe/types"
 
 export type ViewDef = ViewDefinition
@@ -25,4 +25,3 @@ export type NormalizedDef = {
   visibleColumns: string[]
   columnOrder: string[]
 }
-

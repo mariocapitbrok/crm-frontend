@@ -1,6 +1,2 @@
-import { createEntityUiStore, type HeaderLayout } from "./createEntityUiStore"
-
-export type { HeaderLayout }
-
-export const useContactsUiStore = createEntityUiStore("contacts-ui")
-
+export { type HeaderLayout } from "./createEntityUiStore"
+export { useContactsUiStore } from "@/domains/contacts"

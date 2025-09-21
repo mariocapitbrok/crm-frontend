@@ -1,5 +1,5 @@
 import type { SavedView, ViewDefinition } from "./types"
-import type { EntityKey } from "@/entities/registry"
+import type { EntityKey } from "@/domains/entityKeys"
 
 export type ListViewsOptions = {
   ownerOnly?: boolean
@@ -17,4 +17,3 @@ export interface SavedViewsService {
   update(id: number, patch: Partial<Pick<SavedView, "name" | "scope" | "isDefault" | "definition">>): Promise<SavedView>
   remove(id: number): Promise<void>
 }
-

@@ -1,6 +1,6 @@
 import { getCurrentPrincipal } from "../auth"
 import type { SavedViewsService } from "../savedViews"
-import type { EntityKey } from "@/entities/registry"
+import type { EntityKey } from "@/domains/entityKeys"
 import type { SavedView, ViewDefinition } from "../types"
 
 type Store = Map<string, SavedView[]> // key: tenantId
@@ -111,4 +111,3 @@ export function createInMemorySavedViews(): SavedViewsService {
     },
   }
 }
-

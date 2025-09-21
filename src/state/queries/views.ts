@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import type { EntityKey } from "@/entities/registry"
+import type { EntityKey } from "@/domains/entityKeys"
 import { useApi } from "@/febe"
 import type { SavedView, ViewDefinition } from "@/febe/types"
 
@@ -56,4 +56,3 @@ export function useDeleteSavedView() {
     },
   })
 }
-

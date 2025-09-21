@@ -22,7 +22,7 @@ export type ViewDefinition = {
 
 export type SavedView = {
   id: number
-  entity: import("@/entities/registry").EntityKey
+  entity: import("@/domains/entityKeys").EntityKey
   tenantId: TenantId
   name: string
   ownerId: number
@@ -33,4 +33,3 @@ export type SavedView = {
   updatedAt: string
   version: number
 }
-
