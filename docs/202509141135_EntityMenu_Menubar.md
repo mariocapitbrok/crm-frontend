@@ -10,11 +10,11 @@ This document explains the generic `EntityMenu` component, how it’s built on s
 
 ## Files
 
-- `src/components/EntityMenu.tsx`
+- `src/domains/entities/ui/EntityMenu/EntityMenu.tsx`
   - Generic, config-driven menubar for entities.
 - `src/components/ui/menubar.tsx`
   - shadcn/ui wrapper for `@radix-ui/react-menubar` primitives.
-- `src/components/EntityNavBar.tsx`
+- `src/domains/entities/ui/EntityDirectory/EntityNavBar.tsx`
   - Uses `EntityMenu` as the default menubar.
 
 ## Core API
@@ -60,7 +60,7 @@ This document explains the generic `EntityMenu` component, how it’s built on s
 ## Example: Default usage
 
 ```ts
-import EntityMenu from "./EntityMenu"
+import EntityMenu from "@/domains/entities/ui/EntityMenu"
 
 export default function MenuBar() {
   // Uses the default store under the hood
@@ -71,7 +71,7 @@ export default function MenuBar() {
 ## Example: Custom store (optional)
 
 ```ts
-import EntityMenu, { buildDefaultMenus } from "./EntityMenu"
+import EntityMenu, { buildDefaultMenus } from "@/domains/entities/ui/EntityMenu"
 import { useContactsUiStore } from "@/state/stores/contactsUiStore"
 
 export default function ContactsMenu() {
@@ -103,7 +103,7 @@ import { FileSpreadsheet } from "lucide-react"
 import EntityMenu, {
   buildDefaultMenus,
   type MenuSpec,
-} from "@/components/EntityMenu"
+} from "@/domains/entities/ui/EntityMenu"
 import { useDefaultEntityUiStore } from "@/state/stores/defaultEntityUiStore"
 import { useContactsUiStore } from "@/state/stores/contactsUiStore" // optional example
 
@@ -145,8 +145,8 @@ export function getEntityConfig(key: EntityKey): EntityConfig {
 Usage in a page:
 
 ```ts
-import { EntityNavBar } from "@/components/entity-directory"
-import EntityMenu from "@/components/EntityMenu"
+import { EntityNavBar } from "@/domains/entities/ui/EntityDirectory"
+import EntityMenu from "@/domains/entities/ui/EntityMenu"
 import { getEntityConfig } from "@/entities/registry"
 
 const cfg = getEntityConfig("leads")

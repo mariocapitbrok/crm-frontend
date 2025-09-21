@@ -39,5 +39,5 @@ export default function DashboardLayout() {
 ```
 
 Notes:
-- Global nav: `src/app/layout.tsx` renders `@/components/NavBar` above `{children}`.
-- Sidebar: `src/components/AppSidebar.tsx` uses `SheetHeader` + `SheetTitle` + `SheetDescription` (screen‑reader only) to satisfy Radix Dialog a11y.
+- Global nav: `src/app/layout.tsx` renders `@/app/_components/nav/NavBar` above `{children}`.
+- Sidebar: `src/app/_components/nav/AppSidebar.tsx` uses `SheetHeader` + `SheetTitle` + `SheetDescription` (screen-reader only) to satisfy Radix Dialog a11y.

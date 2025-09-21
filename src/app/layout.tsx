@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
-import { ThemeProvider } from "@/components/theme-provider";
-import QueryProvider from "@/components/QueryProvider";
+import { ThemeProvider } from "@/app/_providers/ThemeProvider";
+import QueryProvider from "@/app/_providers/QueryProvider";
 import { ApiProvider } from "@/febe";
-import NavBar from "@/components/NavBar";
+import NavBar from "@/app/_components/nav/NavBar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,10 +35,10 @@ export default function RootLayout({
         <ThemeProvider>
           <QueryProvider>
             <ApiProvider>
-            <div className="min-h-screen flex flex-col">
-              <NavBar />
-              <main className="flex-1">{children}</main>
-            </div>
+              <div className="min-h-screen flex flex-col">
+                <NavBar />
+                <main className="flex-1">{children}</main>
+              </div>
             </ApiProvider>
           </QueryProvider>
         </ThemeProvider>

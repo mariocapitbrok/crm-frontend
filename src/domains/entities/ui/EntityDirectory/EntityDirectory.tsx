@@ -2,16 +2,16 @@
 
 import { useMemo, useState, type ReactNode } from "react"
 import EntityNavBar from "./EntityNavBar"
-import EntityTable, {
+import {
+  EntityTable,
   type EntityColumn,
   type EntityTableProps,
-} from "@/components/EntityTable"
-import EntityMenu from "@/components/entity-menu"
-import type {
-  MenuSpec,
-  UiStoreHook,
-} from "@/components/entity-menu/EntityMenu"
-import SavedViewPicker from "@/components/SavedViewPicker"
+} from "@/domains/entities/ui/EntityTable"
+import EntityMenu, {
+  type MenuSpec,
+  type UiStoreHook,
+} from "@/domains/entities/ui/EntityMenu"
+import { SavedViewPicker } from "@/domains/entities/ui/EntityViews"
 import type { EntityKey } from "@/domains/entityKeys"
 import type { ViewDefinition, ViewSort } from "@/febe/types"
 import type {

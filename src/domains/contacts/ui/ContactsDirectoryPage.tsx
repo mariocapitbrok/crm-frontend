@@ -1,9 +1,11 @@
 "use client"
 
 import { useMemo } from "react"
-import { EntityDirectory } from "@/components/entity-directory"
-import { buildDefaultMenus } from "@/components/entity-menu"
-import { type EntityColumn } from "@/components/EntityTable"
+import {
+  EntityDirectory,
+  buildDefaultMenus,
+  type EntityColumn,
+} from "@/domains/entities/ui"
 import { FileSpreadsheet } from "lucide-react"
 import { useContactDirectory, type ContactRecord } from "../application/queries"
 import { useOrganizationDirectory } from "@/domains/organizations/application/queries"

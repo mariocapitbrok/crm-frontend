@@ -193,12 +193,12 @@ async function onCreateLead(data: any) {
 
 Place shared chrome in the root layout so it renders across routes.
 
-- Global nav: `src/app/layout.tsx` renders `@/components/NavBar` above `{children}`.
-- Sidebar: `src/components/AppSidebar.tsx` is a `Sheet` (Radix Dialog) with a header and a screen‑reader description for accessibility.
+- Global nav: `src/app/layout.tsx` renders `@/app/_components/nav/NavBar` above `{children}`.
+- Sidebar: `src/app/_components/nav/AppSidebar.tsx` is a `Sheet` (Radix Dialog) with a header and a screen-reader description for accessibility.
 
 ```tsx
 // src/app/layout.tsx (excerpt)
-import NavBar from "@/components/NavBar"
+import NavBar from "@/app/_components/nav/NavBar"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -215,7 +215,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 ```
 
 ```tsx
-// src/components/AppSidebar.tsx (excerpt)
+// src/app/_components/nav/AppSidebar.tsx (excerpt)
 <Sheet>
   <SheetTrigger>{/* button */}</SheetTrigger>
   <SheetContent side="left" className="p-0 w-72">

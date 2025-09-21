@@ -24,7 +24,7 @@ pnpm add @tanstack/react-query zustand
 
 Wrap the app with a QueryClientProvider. We expose a tiny component for this.
 
-- `src/components/QueryProvider.tsx`
+- `src/app/_providers/QueryProvider.tsx`
 - `src/app/layout.tsx` wraps children with `QueryProvider` inside `ThemeProvider` and renders the global `NavBar` so it appears on all routes.
 - Accessibility: Radix Dialog/Sheet require a description to avoid dev warnings—include `DialogDescription`/`SheetDescription` with your title or explicitly set `aria-describedby={undefined}` when no description is needed. See also: `docs/202509030141_crm_ui_integration_guide_shadcn_ui_deps.md` (Accessibility section).
 
@@ -54,7 +54,7 @@ pnpm dev              # starts Next.js
 - `src/state/queries/client.ts`: `apiBase()` and `http()` helper.
 - `src/state/queries/leads.ts`: typed hooks: `useLeads`, `useUsers`, `useCreateLead`, `useUpdateLead`.
 - `src/state/stores/defaultEntityUiStore.ts`: Base UI store used by default (table header layout, column visibility). Create per-entity stores only when customization is required.
-- `src/components/QueryProvider.tsx`: provides a configured `QueryClient`.
+- `src/app/_providers/QueryProvider.tsx`: provides a configured `QueryClient`.
 
 ## 5. How It Works
 
@@ -80,11 +80,11 @@ Example (`src/state/queries/leads.ts`):
 - Leads page maps server data to the table rows and reads the UI store for the current layout.
   - `src/app/leads/page.tsx`
 - The “View” menu updates `headerLayout` via the menubar.
-  - `src/components/EntityMenu.tsx`
+  - `src/domains/entities/ui/EntityMenu/EntityMenu.tsx`
 - The table supports two header layouts:
   - `split`: two-row header, filters visible in a dedicated second row.
   - `popover`: compact header, filters inside a popover per column.
-  - `src/components/EntityTable.tsx`
+  - `src/domains/entities/ui/EntityTable/EntityTable.tsx`
 
 ## 6. Why This Stack
 
@@ -151,12 +151,12 @@ Then conditionally include in `QueryProvider` for dev builds.
 
 ## 12. References (Code)
 
-- `src/components/QueryProvider.tsx`
+- `src/app/_providers/QueryProvider.tsx`
 - `src/app/layout.tsx:20`
 - `src/state/queries/client.ts:1`
 - `src/state/queries/keys.ts:1`
 - `src/state/queries/leads.ts:1`
 - `src/state/stores/defaultEntityUiStore.ts:1`
 - `src/app/leads/page.tsx:1`
-- `src/components/EntityMenu.tsx:1`
-- `src/components/EntityTable.tsx:1`
+- `src/domains/entities/ui/EntityMenu/EntityMenu.tsx:1`
+- `src/domains/entities/ui/EntityTable/EntityTable.tsx:1`
