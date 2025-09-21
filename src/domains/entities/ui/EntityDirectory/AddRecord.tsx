@@ -31,6 +31,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog"
 import { Form } from "@/components/ui/form"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 type AddRecordSubmitHelpers<TValues extends FieldValues> = {
   close: () => void
@@ -227,7 +228,7 @@ export default function AddRecord<TValues extends FieldValues = FieldValues>({
             {label}
           </Button>
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent className="max-w-lg sm:max-w-xl max-h-[80vh] overflow-hidden">
           <DialogHeader>
             <DialogTitle>{dialogTitle}</DialogTitle>
             <DialogDescription className="sr-only">
@@ -262,7 +263,7 @@ export default function AddRecord<TValues extends FieldValues = FieldValues>({
           {label}
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-w-lg sm:max-w-xl max-h-[80vh] overflow-hidden">
         <DialogHeader>
           <DialogTitle>{dialogTitle}</DialogTitle>
           <DialogDescription className="sr-only">
@@ -272,19 +273,23 @@ export default function AddRecord<TValues extends FieldValues = FieldValues>({
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleValidSubmit)}
-            className="space-y-6"
+            className="flex flex-col gap-6"
           >
-            {configuration.renderForm(form)}
+            <ScrollArea className="max-h-[calc(80vh-10rem)] pr-1">
+              <div className="space-y-6 pr-2">
+                {configuration.renderForm(form)}
 
-            {submitError ? (
-              <p role="alert" className="text-sm text-destructive">
-                {submitError}
-              </p>
-            ) : null}
+                {submitError ? (
+                  <p role="alert" className="text-sm text-destructive">
+                    {submitError}
+                  </p>
+                ) : null}
 
-            {renderAfterForm}
+                {renderAfterForm}
+              </div>
+            </ScrollArea>
 
-            <DialogFooter className="gap-2">
+            <DialogFooter className="border-t gap-2 pt-4">
               <DialogClose asChild>
                 <Button
                   type="button"
