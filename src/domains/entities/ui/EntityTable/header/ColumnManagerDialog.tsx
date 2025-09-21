@@ -27,7 +27,6 @@ export function ColumnManagerDialog<T>(props: {
   const { allColumns, order, visibleIds, onToggleVisible, onMoveColumn, trigger } = props
   const [open, setOpen] = React.useState(false)
   const [localOrder, setLocalOrder] = React.useState<string[]>(order)
-  const descriptionId = React.useId()
 
   React.useEffect(() => {
     setLocalOrder(order)
@@ -60,10 +59,10 @@ export function ColumnManagerDialog<T>(props: {
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-w-md" aria-describedby={descriptionId}>
+      <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Customize Columns</DialogTitle>
-          <DialogDescription id={descriptionId}>
+          <DialogDescription>
             Reorder and toggle column visibility.
           </DialogDescription>
         </DialogHeader>
