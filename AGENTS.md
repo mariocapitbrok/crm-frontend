@@ -1,41 +1,36 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-
-- `src/app`: Next.js App Router entry points; pages fold by feature (`contacts`, `leads`, `dashboard`).
-- `src/components`: Reusable UI primitives built around shadcn/ui and Radix.
-- `src/domains`: Bounded contexts (`leads`, `contacts`, `identity`, etc.) with `{application,domain,ui}` folders; legacy shared Zustand hooks remain under `src/state` during migration.
-- `src/lib` & `src/febe`: Shared utilities, data mappers, and API bridges.
-- `public/`: Static assets; keep large fixtures elsewhere. Docs and prototyping notes live in `docs/`.
+- `src/app`: Next.js App Router entry points grouped by feature (`contacts`, `leads`, `dashboard`).
+- `src/components`: Reusable UI primitives composed from shadcn/ui and Radix primitives.
+- `src/domains`: Bounded contexts with `application`, `domain`, and `ui` layers; legacy Zustand hooks remain in `src/state` during migration.
+- `src/lib` & `src/febe`: Shared utilities, API bridges, and data mappers; keep large fixtures out of `public/`.
+- Co-locate tests beside source (`ComponentName.test.tsx`); static assets live under `public/`.
 
 ## Build, Test, and Development Commands
-
-- `pnpm dev` (or `npm run dev`): Start the Next.js dev server with Turbopack.
-- `pnpm build`: Create a production build; run before shipping major UI changes.
-- `pnpm start`: Serve the production build locally.
-- `pnpm lint`: Run the Next.js ESLint config; required pre-commit.
-- `pnpm gen:db`: Regenerate `db.json` fixtures; pair with `pnpm dev:api` to boot the mock API on `:3001` (`dev:api:routes` adds custom routing).
+- `pnpm dev`: Boot the Next.js dev server with Turbopack.
+- `pnpm build`: Generate a production bundle; run before shipping major UI changes.
+- `pnpm start`: Serve the production build locally for smoke checks.
+- `pnpm lint`: Execute the enforced ESLint config; fix or document all warnings before merge.
+- `pnpm gen:db`: Refresh `db.json` fixtures; pair with `pnpm dev:api` to run the mock API on port 3001.
 
 ## Coding Style & Naming Conventions
-
-- TypeScript, React 19, Next.js 15. Use functional components and server components where possible.
-- Follow ESLint output; Tailwind CSS 4 utilities drive styling. Keep class lists stable and sorted by layout → spacing → color.
-- Components live in PascalCase files (`EntityHeader.tsx`), hooks in camelCase (`useLeadDirectory.ts`).
-- Prefer named exports; default exports only for Next.js route components.
+- TypeScript + React 19 + Next.js 15; prefer functional and server components.
+- Tailwind CSS 4 utilities drive styling—order classes by layout → spacing → color.
+- Components live in PascalCase files (e.g., `EntityHeader.tsx`); hooks use camelCase (`useLeadDirectory.ts`).
+- Favor named exports; reserve default exports for route components.
+- Honor ESLint output and keep new files ASCII unless intentional otherwise.
 
 ## Testing Guidelines
-
-- No automated test harness is bundled yet; add React Testing Library or integration tests when modifying critical flows.
-- Co-locate tests alongside source (`ComponentName.test.tsx`) and keep fixtures in `__mocks__/`.
-- For now, validate flows via `pnpm lint`, manual UX verification, and JSON server smoke checks.
+- No global harness yet—add React Testing Library or integration coverage for critical flows.
+- Name tests `ComponentName.test.tsx`; store fixtures in `__mocks__/`.
+- Validate changes with `pnpm lint`, manual UX checks, and JSON server smoke tests.
 
 ## Commit & Pull Request Guidelines
-
-- Write imperative, sentence-case commit messages (e.g., `Add contacts quick filters`). Group related file changes.
-- PRs should: describe the change, link Jira/GitHub issues, list test evidence, and include updated screenshots for UI tweaks.
-- Request review from another engineer; respond to lint/build feedback before merge.
+- Write imperative, sentence-case commits (e.g., `Add contacts quick filters`).
+- PRs should describe changes, link Jira/GitHub issues, list test evidence, and include updated UI screenshots when relevant.
+- Request peer review and resolve lint/build feedback before merging.
 
 ## Local API & Data Tips
-
-- Re-run `pnpm gen:db` after altering schema docs to keep `db.json` in sync.
-- Mock endpoints are defined in `routes.json`; extend them before hitting real services.
+- After schema updates, rerun `pnpm gen:db` and restart the mock API.
+- Extend `routes.json` when adding endpoints; avoid hitting real services during local development.
