@@ -67,6 +67,7 @@ export default function ConfigureLeadFieldsDialog({
   trigger,
 }: ConfigureLeadFieldsDialogProps) {
   const [open, setOpen] = useState(false)
+  const [hasStructureChanges, setHasStructureChanges] = useState(false)
 
   const { data: fetchedFields, isFetching: fieldsFetching } =
     useEntityFields(entityKey)
@@ -131,8 +132,8 @@ export default function ConfigureLeadFieldsDialog({
 
   const triggerDisabled = trigger.props.disabled ?? false
   const removingLocked = localRequired.length <= 1
-  const disableSave =
-    updateConfig.isPending || arraysEqual(localRequired, remoteRequired)
+  const requiredDirty = !arraysEqual(localRequired, remoteRequired)
+  const disableSave = updateConfig.isPending || (!requiredDirty && !hasStructureChanges)
 
   const handleToggle = (fieldId: string, nextValue: boolean) => {
     setLocalRequired((current) => {
@@ -149,7 +150,10 @@ export default function ConfigureLeadFieldsDialog({
   }
 
   const handleSave = async () => {
-    await updateConfig.mutateAsync({ requiredFieldIds: localRequired })
+    if (requiredDirty) {
+      await updateConfig.mutateAsync({ requiredFieldIds: localRequired })
+    }
+    setHasStructureChanges(false)
     setOpen(false)
   }
 
@@ -165,6 +169,7 @@ export default function ConfigureLeadFieldsDialog({
       label: newFieldLabel.trim(),
       dataType: newFieldType,
     })
+    setHasStructureChanges(true)
     setNewFieldLabel("")
     setNewFieldType("text")
   }
@@ -174,6 +179,7 @@ export default function ConfigureLeadFieldsDialog({
     try {
       await removeField.mutateAsync(fieldId)
       setLocalRequired((current) => current.filter((id) => id !== fieldId))
+      setHasStructureChanges(true)
     } finally {
       setRemoveTarget(null)
     }
@@ -189,6 +195,7 @@ export default function ConfigureLeadFieldsDialog({
         setOpen(next)
         if (!next) {
           setLocalRequired(remoteRequired)
+          setHasStructureChanges(false)
         }
       }}
     >
