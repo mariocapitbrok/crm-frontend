@@ -8,6 +8,7 @@ import type { EntityKey } from "@/domains/entityKeys"
 
 type StoredConfig = {
   requiredFieldIds: string[]
+  visibleFieldIds: string[]
   updatedAt: string
   updatedBy: number
 }
@@ -23,7 +24,8 @@ function ensureTenantStore(tenantId: string): TenantStore {
   return store.get(tenantId)!
 }
 
-function normalizeRequiredFieldIds(ids: string[]): string[] {
+function normalizeFieldIds(ids?: string[]): string[] {
+  if (!ids) return []
   const next: string[] = []
   const seen = new Set<string>()
   ids.forEach((id) => {
@@ -46,6 +48,7 @@ export function createInMemoryFieldConfig(): FieldConfigService {
       return {
         entity,
         requiredFieldIds: [...stored.requiredFieldIds],
+        visibleFieldIds: [...stored.visibleFieldIds],
         updatedAt: stored.updatedAt,
         updatedBy: stored.updatedBy,
       }
@@ -56,14 +59,37 @@ export function createInMemoryFieldConfig(): FieldConfigService {
     ): Promise<FieldConfig> {
       const { tenantId, userId } = getCurrentPrincipal()
       const tenantStore = ensureTenantStore(tenantId)
-      const requiredFieldIds = normalizeRequiredFieldIds(
-        input.requiredFieldIds,
+      const existing = tenantStore.get(entity) ?? {
+        requiredFieldIds: [],
+        visibleFieldIds: [],
+        updatedAt: new Date().toISOString(),
+        updatedBy: userId,
+      }
+
+      const nextRequired = normalizeFieldIds(
+        input.requiredFieldIds ?? existing.requiredFieldIds,
       )
-      if (requiredFieldIds.length === 0) {
+      if (nextRequired.length === 0) {
         throw new Error("Select at least one required field")
       }
+
+      const nextVisible = normalizeFieldIds(
+        input.visibleFieldIds ?? existing.visibleFieldIds,
+      )
+      if (nextVisible.length === 0) {
+        throw new Error("Select at least one default-visible field")
+      }
+
+      // Ensure required fields are always visible
+      nextRequired.forEach((id) => {
+        if (!nextVisible.includes(id)) {
+          nextVisible.push(id)
+        }
+      })
+
       const stored: StoredConfig = {
-        requiredFieldIds,
+        requiredFieldIds: nextRequired,
+        visibleFieldIds: nextVisible,
         updatedAt: new Date().toISOString(),
         updatedBy: userId,
       }
@@ -71,10 +97,10 @@ export function createInMemoryFieldConfig(): FieldConfigService {
       return {
         entity,
         requiredFieldIds: [...stored.requiredFieldIds],
+        visibleFieldIds: [...stored.visibleFieldIds],
         updatedAt: stored.updatedAt,
         updatedBy: stored.updatedBy,
       }
     },
   }
 }
-

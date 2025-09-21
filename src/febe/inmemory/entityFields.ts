@@ -51,6 +51,7 @@ function seedToField(entity: EntityKey, def: LeadFieldDefinition): StoredField {
     kind: def.kind,
     requiredBySystem: def.kind === "core",
     defaultRequired: Boolean(def.defaultRequired),
+    defaultVisible: def.defaultVisible ?? true,
     createdAt: now,
     createdBy: 0,
     entity,
@@ -117,6 +118,7 @@ export function createInMemoryEntityFields(): EntityFieldService {
         kind: "custom",
         requiredBySystem: false,
         defaultRequired: false,
+        defaultVisible: input.defaultVisible ?? true,
         createdAt: now,
         createdBy: userId,
         entity,
@@ -142,6 +144,10 @@ export function createInMemoryEntityFields(): EntityFieldService {
         label: patch.label?.trim() || existing.label,
         description: patch.description?.trim() ?? existing.description,
         placeholder: patch.placeholder?.trim() ?? existing.placeholder,
+        defaultVisible:
+          patch.defaultVisible !== undefined
+            ? patch.defaultVisible
+            : existing.defaultVisible,
       }
 
       all[idx] = next

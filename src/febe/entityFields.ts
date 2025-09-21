@@ -12,6 +12,7 @@ export type EntityFieldDefinition = {
   kind: "core" | "custom"
   requiredBySystem: boolean
   defaultRequired: boolean
+  defaultVisible: boolean
   createdAt: string
   createdBy: number
 }
@@ -21,12 +22,14 @@ export type CreateFieldInput = {
   dataType: Exclude<EntityFieldDataType, "user">
   description?: string
   placeholder?: string
+  defaultVisible?: boolean
 }
 
 export type UpdateFieldInput = {
   label?: string
   description?: string
   placeholder?: string
+  defaultVisible?: boolean
 }
 
 export interface EntityFieldService {

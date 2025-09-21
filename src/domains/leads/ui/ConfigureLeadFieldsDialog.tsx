@@ -2,6 +2,7 @@
 
 import {
   cloneElement,
+  useCallback,
   useEffect,
   useMemo,
   useState,
@@ -32,7 +33,9 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   coreLeadFieldDefinitions,
   getDefaultRequiredLeadFieldIds,
+  getDefaultVisibleLeadFieldIds,
   resolveLeadRequiredFields,
+  resolveLeadVisibleFields,
   sanitizeLeadFieldIds,
 } from "../domain/leadSchemas"
 import {
@@ -43,6 +46,7 @@ import {
   useUpdateEntityFieldConfig,
   type EntityFieldDefinition,
 } from "@/domains/entities/ui"
+import type { FieldConfigUpdateInput } from "@/febe/fieldConfig"
 
 const entityKey = "leads" as const
 
@@ -52,7 +56,9 @@ function arraysEqual(a: string[], b: string[]) {
 }
 
 type ConfigureLeadFieldsDialogProps = {
-  trigger: ReactElement<{ disabled?: boolean }>
+  trigger?: ReactElement<{ disabled?: boolean }>
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
 const createFieldTypes = [
@@ -65,8 +71,21 @@ type CreateFieldType = (typeof createFieldTypes)[number]["value"]
 
 export default function ConfigureLeadFieldsDialog({
   trigger,
+  open: openProp,
+  onOpenChange,
 }: ConfigureLeadFieldsDialogProps) {
-  const [open, setOpen] = useState(false)
+  const [internalOpen, setInternalOpen] = useState(false)
+  const isControlled = openProp !== undefined
+  const open = isControlled ? openProp : internalOpen
+  const setOpen = useCallback(
+    (next: boolean) => {
+      if (!isControlled) {
+        setInternalOpen(next)
+      }
+      onOpenChange?.(next)
+    },
+    [isControlled, onOpenChange],
+  )
   const [hasStructureChanges, setHasStructureChanges] = useState(false)
 
   const { data: fetchedFields, isFetching: fieldsFetching } =
@@ -84,6 +103,7 @@ export default function ConfigureLeadFieldsDialog({
       kind: field.kind,
       defaultRequired:
         field.defaultRequired ?? (field.kind === "core" && field.requiredBySystem),
+      defaultVisible: field.defaultVisible ?? true,
     }))
   }, [fetchedFields])
   const sortedDefinitions = useMemo(() => {
@@ -105,9 +125,14 @@ export default function ConfigureLeadFieldsDialog({
     [sortedDefinitions],
   )
 
+  const defaultVisible = useMemo(
+    () => getDefaultVisibleLeadFieldIds(sortedDefinitions),
+    [sortedDefinitions],
+  )
+
   const { data: config, isFetching: configFetching } = useEntityFieldConfig(
     entityKey,
-    { requiredFieldIds: defaultRequired },
+    { requiredFieldIds: defaultRequired, visibleFieldIds: defaultVisible },
   )
   const updateConfig = useUpdateEntityFieldConfig(entityKey)
 
@@ -115,7 +140,12 @@ export default function ConfigureLeadFieldsDialog({
     return resolveLeadRequiredFields(config?.requiredFieldIds, sortedDefinitions)
   }, [config?.requiredFieldIds, sortedDefinitions])
 
+  const remoteVisible = useMemo(() => {
+    return resolveLeadVisibleFields(config?.visibleFieldIds, sortedDefinitions)
+  }, [config?.visibleFieldIds, sortedDefinitions])
+
   const [localRequired, setLocalRequired] = useState<string[]>(remoteRequired)
+  const [localVisible, setLocalVisible] = useState<string[]>(remoteVisible)
 
   useEffect(() => {
     setLocalRequired((current) => {
@@ -130,13 +160,48 @@ export default function ConfigureLeadFieldsDialog({
     )
   }, [remoteRequired])
 
-  const triggerDisabled = trigger.props.disabled ?? false
-  const removingLocked = localRequired.length <= 1
-  const requiredDirty = !arraysEqual(localRequired, remoteRequired)
-  const disableSave = updateConfig.isPending || (!requiredDirty && !hasStructureChanges)
+  useEffect(() => {
+    setLocalVisible((current) => {
+      const sanitized = sanitizeLeadFieldIds(current, sortedDefinitions)
+      return arraysEqual(current, sanitized) ? current : sanitized
+    })
+  }, [sortedDefinitions])
 
-  const handleToggle = (fieldId: string, nextValue: boolean) => {
+  useEffect(() => {
+    setLocalVisible((current) =>
+      arraysEqual(current, remoteVisible) ? current : remoteVisible,
+    )
+  }, [remoteVisible])
+
+  const triggerDisabled = trigger?.props.disabled ?? false
+  const removingLocked = localRequired.length <= 1
+  const visibleLocked = localVisible.length <= 1
+  const requiredDirty = !arraysEqual(localRequired, remoteRequired)
+  const visibleDirty = !arraysEqual(localVisible, remoteVisible)
+  const disableSave =
+    updateConfig.isPending || (!requiredDirty && !visibleDirty && !hasStructureChanges)
+
+  const handleToggleRequired = (fieldId: string, nextValue: boolean) => {
     setLocalRequired((current) => {
+      if (nextValue) {
+        const merged = current.includes(fieldId)
+          ? current
+          : [...current, fieldId]
+        return allowedIds.filter((id) => merged.includes(id))
+      }
+      if (current.length <= 1) return current
+      const filtered = current.filter((id) => id !== fieldId)
+      return filtered.length > 0 ? filtered : current
+    })
+    if (nextValue) {
+      setLocalVisible((current) =>
+        current.includes(fieldId) ? current : [...current, fieldId],
+      )
+    }
+  }
+
+  const handleToggleVisible = (fieldId: string, nextValue: boolean) => {
+    setLocalVisible((current) => {
       if (nextValue) {
         const merged = current.includes(fieldId)
           ? current
@@ -150,8 +215,12 @@ export default function ConfigureLeadFieldsDialog({
   }
 
   const handleSave = async () => {
-    if (requiredDirty) {
-      await updateConfig.mutateAsync({ requiredFieldIds: localRequired })
+    const payload: FieldConfigUpdateInput = {
+      requiredFieldIds: localRequired,
+      visibleFieldIds: localVisible,
+    }
+    if (requiredDirty || visibleDirty) {
+      await updateConfig.mutateAsync(payload)
     }
     setHasStructureChanges(false)
     setOpen(false)
@@ -165,10 +234,15 @@ export default function ConfigureLeadFieldsDialog({
 
   const handleAddField = async () => {
     if (!newFieldLabel.trim()) return
-    await createField.mutateAsync({
+    const created = await createField.mutateAsync({
       label: newFieldLabel.trim(),
       dataType: newFieldType,
     })
+    setLocalVisible((current) =>
+      created.defaultVisible !== false && !current.includes(created.id)
+        ? [...current, created.id]
+        : current,
+    )
     setHasStructureChanges(true)
     setNewFieldLabel("")
     setNewFieldType("text")
@@ -179,6 +253,7 @@ export default function ConfigureLeadFieldsDialog({
     try {
       await removeField.mutateAsync(fieldId)
       setLocalRequired((current) => current.filter((id) => id !== fieldId))
+      setLocalVisible((current) => current.filter((id) => id !== fieldId))
       setHasStructureChanges(true)
     } finally {
       setRemoveTarget(null)
@@ -195,16 +270,19 @@ export default function ConfigureLeadFieldsDialog({
         setOpen(next)
         if (!next) {
           setLocalRequired(remoteRequired)
+          setLocalVisible(remoteVisible)
           setHasStructureChanges(false)
         }
       }}
     >
-      <DialogTrigger asChild>
-        {cloneElement(trigger, {
-          disabled:
-            updateConfig.isPending || createField.isPending || triggerDisabled,
-        })}
-      </DialogTrigger>
+      {trigger ? (
+        <DialogTrigger asChild>
+          {cloneElement(trigger, {
+            disabled:
+              updateConfig.isPending || createField.isPending || triggerDisabled,
+          })}
+        </DialogTrigger>
+      ) : null}
       <DialogContent className="max-w-lg sm:max-w-xl max-h-[80vh] overflow-hidden">
         <DialogHeader>
           <DialogTitle>Configure entity fields</DialogTitle>
@@ -226,26 +304,33 @@ export default function ConfigureLeadFieldsDialog({
               </div>
 
               <div className="space-y-3">
-                {sortedDefinitions.map((field) => {
-                  const isRequired = localRequired.includes(field.id)
-                  const disableToggle =
-                    updateConfig.isPending ||
-                    configFetching ||
-                    fieldsFetching ||
-                    (isRequired && removingLocked)
+              {sortedDefinitions.map((field) => {
+                const isRequired = localRequired.includes(field.id)
+                const isVisible = localVisible.includes(field.id)
+                const requiredToggleDisabled =
+                  updateConfig.isPending ||
+                  configFetching ||
+                  fieldsFetching ||
+                  (isRequired && removingLocked)
+                const visibleToggleDisabled =
+                  updateConfig.isPending ||
+                  configFetching ||
+                  fieldsFetching ||
+                  isRequired ||
+                  (isVisible && visibleLocked)
 
-                  const isRemoving =
-                    removeTarget === field.id && removeField.isPending
+                const isRemoving =
+                  removeTarget === field.id && removeField.isPending
 
-                  return (
-                    <div
-                      key={field.id}
-                      className="flex items-start justify-between gap-4 rounded-md border p-3"
-                    >
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium leading-none">
-                          {field.label}
-                        </p>
+                return (
+                  <div
+                    key={field.id}
+                    className="flex items-start justify-between gap-4 rounded-md border p-3"
+                  >
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium leading-none">
+                        {field.label}
+                      </p>
                         <p className="text-xs text-muted-foreground">
                           {field.kind === "core"
                             ? "Core field"
@@ -255,27 +340,47 @@ export default function ConfigureLeadFieldsDialog({
                           <p className="text-xs text-muted-foreground">
                             {field.description}
                           </p>
-                        ) : null}
+                      ) : null}
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="flex flex-col items-end gap-2 text-xs">
+                        <label className="flex items-center gap-2">
+                          <span>Required</span>
+                          <Switch
+                            checked={isRequired}
+                            disabled={requiredToggleDisabled}
+                            onCheckedChange={(checked) =>
+                              handleToggleRequired(field.id, checked)
+                            }
+                            aria-label={
+                              isRequired
+                                ? `Mark ${field.label} optional`
+                                : `Mark ${field.label} required`
+                            }
+                          />
+                        </label>
+                        <label className="flex items-center gap-2">
+                          <span>Show by default</span>
+                          <Switch
+                            checked={isVisible}
+                            disabled={visibleToggleDisabled}
+                            onCheckedChange={(checked) =>
+                              handleToggleVisible(field.id, checked)
+                            }
+                            aria-label={
+                              isVisible
+                                ? `Hide ${field.label} by default`
+                                : `Show ${field.label} by default`
+                            }
+                          />
+                        </label>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <Switch
-                          checked={isRequired}
-                          disabled={disableToggle}
-                          onCheckedChange={(checked) =>
-                            handleToggle(field.id, checked)
-                          }
-                          aria-label={
-                            isRequired
-                              ? `Mark ${field.label} optional`
-                              : `Mark ${field.label} required`
-                          }
-                        />
-                        {field.kind === "custom" ? (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            type="button"
-                            onClick={() => handleRemoveField(field.id)}
+                      {field.kind === "custom" ? (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          type="button"
+                          onClick={() => handleRemoveField(field.id)}
                             disabled={removeField.isPending}
                             aria-label={`Remove ${field.label}`}
                           >
@@ -293,16 +398,21 @@ export default function ConfigureLeadFieldsDialog({
                     </div>
                   )
                 })}
-                {localRequired.length <= 1 ? (
-                  <p className="text-xs text-muted-foreground">
-                    Keep at least one field required.
-                  </p>
-                ) : null}
-                {removeField.error ? (
-                  <p className="text-sm text-destructive">
-                    {removeField.error instanceof Error
-                      ? removeField.error.message
-                      : String(removeField.error)}
+              {localRequired.length <= 1 ? (
+                <p className="text-xs text-muted-foreground">
+                  Keep at least one field required.
+                </p>
+              ) : null}
+              {localVisible.length <= 1 ? (
+                <p className="text-xs text-muted-foreground">
+                  Keep at least one field visible by default.
+                </p>
+              ) : null}
+              {removeField.error ? (
+                <p className="text-sm text-destructive">
+                  {removeField.error instanceof Error
+                    ? removeField.error.message
+                    : String(removeField.error)}
                   </p>
                 ) : null}
                 {updateConfig.error ? (

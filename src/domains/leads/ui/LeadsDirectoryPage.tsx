@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, type FC } from "react"
+import { useCallback, useMemo, useState, type FC } from "react"
 import {
   EntityDirectory,
   buildDefaultMenus,
@@ -28,9 +28,10 @@ type LeadRow = {
 }
 
 const leadIcon = <FileSpreadsheet className="size-7" />
-const leadMenus = buildLeadMenus()
-
-function buildLeadMenus() {
+function buildLeadMenus(
+  onOpenConfigureFields: () => void,
+  disableConfigureItem: boolean,
+) {
   const baseMenus = buildDefaultMenus(useLeadsUiStore)
   return baseMenus.map((menu) => {
     if (menu.id !== "edit") return menu
@@ -38,17 +39,14 @@ function buildLeadMenus() {
     const EditMenuContent: FC<MenuRenderCtx> = () => (
       <div className="w-56 p-1">
         <MenubarLabel>Edit</MenubarLabel>
-        <ConfigureLeadFieldsDialog
-          trigger={
-            <MenubarItem
-              className="flex items-center gap-2"
-              onSelect={(event) => event.preventDefault()}
-            >
-              <Settings2 className="size-4" aria-hidden />
-              Configure entity fields…
-            </MenubarItem>
-          }
-        />
+        <MenubarItem
+          className="flex items-center gap-2"
+          disabled={disableConfigureItem}
+          onSelect={onOpenConfigureFields}
+        >
+          <Settings2 className="size-4" aria-hidden />
+          Configure entity fields…
+        </MenubarItem>
       </div>
     )
 
@@ -64,11 +62,19 @@ const leadEntity = {
   title: "Leads",
   singular: "Lead",
   icon: leadIcon,
-  menus: leadMenus,
   uiStore: useLeadsUiStore,
 }
 
 export default function LeadsDirectoryPage() {
+  const [configureDialogOpen, setConfigureDialogOpen] = useState(false)
+  const handleOpenConfigureDialog = useCallback(() => {
+    setConfigureDialogOpen(true)
+  }, [])
+  const leadMenus = useMemo(
+    () => buildLeadMenus(handleOpenConfigureDialog, configureDialogOpen),
+    [handleOpenConfigureDialog, configureDialogOpen],
+  )
+
   const { data: leads, isLoading: leadsLoading, error: leadsError } = useLeadDirectory()
   const { data: users, isLoading: usersLoading, error: usersError } = useLeadOwners()
   const { data: fieldDefinitions } = useEntityFields("leads")
@@ -137,24 +143,33 @@ export default function LeadsDirectoryPage() {
   }, [definitions])
 
   return (
-    <EntityDirectory
-      entity={leadEntity}
-      rows={rows}
-      columns={columns}
-      getRowId={(row) => row.id}
-      isLoading={leadsLoading || usersLoading}
-      loadingMessage="Loading leads…"
-      error={leadsError || usersError}
-      navActions={
-        <>
-          <CreateLeadButton owners={users} ownersLoading={usersLoading} />
-          <ImportRecords
-            entity={leadEntity.title}
-            buttonText="Import"
-            buttonProps={{ className: "text-[13px]" }}
-          />
-        </>
-      }
-    />
+    <>
+      <ConfigureLeadFieldsDialog
+        open={configureDialogOpen}
+        onOpenChange={setConfigureDialogOpen}
+      />
+      <EntityDirectory
+        entity={{
+          ...leadEntity,
+          menus: leadMenus,
+        }}
+        rows={rows}
+        columns={columns}
+        getRowId={(row) => row.id}
+        isLoading={leadsLoading || usersLoading}
+        loadingMessage="Loading leads…"
+        error={leadsError || usersError}
+        navActions={
+          <>
+            <CreateLeadButton owners={users} ownersLoading={usersLoading} />
+            <ImportRecords
+              entity={leadEntity.title}
+              buttonText="Import"
+              buttonProps={{ className: "text-[13px]" }}
+            />
+          </>
+        }
+      />
+    </>
   )
 }

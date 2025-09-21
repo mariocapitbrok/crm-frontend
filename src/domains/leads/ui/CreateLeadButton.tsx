@@ -33,7 +33,9 @@ import {
   coreLeadFieldDefinitions,
   createDefaultLeadValues,
   getDefaultRequiredLeadFieldIds,
+  getDefaultVisibleLeadFieldIds,
   resolveLeadRequiredFields,
+  resolveLeadVisibleFields,
   type LeadFieldDefinition,
   type LeadFormValues,
 } from "../domain/leadSchemas"
@@ -198,28 +200,38 @@ export default function CreateLeadButton({
       kind: field.kind,
       defaultRequired:
         field.defaultRequired ?? (field.kind === "core" && field.requiredBySystem),
+      defaultVisible: field.defaultVisible ?? true,
     }))
   }, [fetchedDefinitions])
   const defaultRequired = useMemo(
     () => getDefaultRequiredLeadFieldIds(allDefinitions),
     [allDefinitions],
   )
+  const defaultVisible = useMemo(
+    () => getDefaultVisibleLeadFieldIds(allDefinitions),
+    [allDefinitions],
+  )
 
   const { data: fieldConfig, isFetching: configFetching } =
     useEntityFieldConfig(entityKey, {
       requiredFieldIds: defaultRequired,
+      visibleFieldIds: defaultVisible,
     })
 
   const requiredFieldIds = useMemo(() => {
     return resolveLeadRequiredFields(fieldConfig?.requiredFieldIds, allDefinitions)
   }, [fieldConfig?.requiredFieldIds, allDefinitions])
 
-  const requiredDefinitions = useMemo(() => {
+  const visibleFieldIds = useMemo(() => {
+    return resolveLeadVisibleFields(fieldConfig?.visibleFieldIds, allDefinitions)
+  }, [fieldConfig?.visibleFieldIds, allDefinitions])
+
+  const visibleDefinitions = useMemo(() => {
     const byId = new Map(allDefinitions.map((def) => [def.id, def]))
-    return requiredFieldIds
+    return visibleFieldIds
       .map((id) => byId.get(id))
       .filter((def): def is LeadFieldDefinition => Boolean(def))
-  }, [allDefinitions, requiredFieldIds])
+  }, [allDefinitions, visibleFieldIds])
 
   const formSchema = useMemo(
     () => buildLeadFormSchema(allDefinitions, requiredFieldIds),
@@ -243,7 +255,7 @@ export default function CreateLeadButton({
       renderForm={(form) => (
         <LeadFormFields
           form={form}
-          definitions={requiredDefinitions}
+          definitions={visibleDefinitions}
           ownerOptions={ownerOptions}
           ownersLoading={ownersLoading}
         />

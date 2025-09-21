@@ -14,7 +14,7 @@ export type ResolvedFieldConfig = FieldConfig & {
 
 export function useEntityFieldConfig(
   entity: EntityKey,
-  defaults: { requiredFieldIds: string[] },
+  defaults: { requiredFieldIds: string[]; visibleFieldIds: string[] },
 ) {
   const api = useApi()
   return useQuery({
@@ -25,12 +25,20 @@ export function useEntityFieldConfig(
         return {
           entity,
           requiredFieldIds: [...defaults.requiredFieldIds],
+          visibleFieldIds: [...defaults.visibleFieldIds],
           updatedAt: null,
           updatedBy: null,
           isFallback: true,
         }
       }
-      return { ...result, isFallback: false }
+      const resolved: FieldConfig = {
+        ...result,
+        visibleFieldIds:
+          result.visibleFieldIds && result.visibleFieldIds.length > 0
+            ? result.visibleFieldIds
+            : [...defaults.visibleFieldIds],
+      }
+      return { ...resolved, isFallback: false }
     },
     staleTime: 5 * 60 * 1000,
   })
@@ -48,4 +56,3 @@ export function useUpdateEntityFieldConfig(entity: EntityKey) {
     },
   })
 }
-

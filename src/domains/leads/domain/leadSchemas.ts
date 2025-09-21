@@ -11,6 +11,7 @@ export type LeadFieldDefinition = {
   autoComplete?: string
   kind: "core" | "custom"
   defaultRequired?: boolean
+  defaultVisible?: boolean
 }
 
 export const coreLeadFieldDefinitions: LeadFieldDefinition[] = [
@@ -22,6 +23,7 @@ export const coreLeadFieldDefinitions: LeadFieldDefinition[] = [
     autoComplete: "given-name",
     kind: "core",
     defaultRequired: true,
+    defaultVisible: true,
   },
   {
     id: "lastname",
@@ -31,6 +33,7 @@ export const coreLeadFieldDefinitions: LeadFieldDefinition[] = [
     autoComplete: "family-name",
     kind: "core",
     defaultRequired: true,
+    defaultVisible: true,
   },
   {
     id: "company",
@@ -40,6 +43,7 @@ export const coreLeadFieldDefinitions: LeadFieldDefinition[] = [
     autoComplete: "organization",
     kind: "core",
     defaultRequired: true,
+    defaultVisible: true,
   },
   {
     id: "email",
@@ -49,6 +53,7 @@ export const coreLeadFieldDefinitions: LeadFieldDefinition[] = [
     autoComplete: "email",
     kind: "core",
     defaultRequired: true,
+    defaultVisible: true,
   },
   {
     id: "assigned_user_id",
@@ -57,6 +62,7 @@ export const coreLeadFieldDefinitions: LeadFieldDefinition[] = [
     dataType: "user",
     kind: "core",
     defaultRequired: false,
+    defaultVisible: true,
   },
 ]
 
@@ -65,6 +71,14 @@ export function getDefaultRequiredLeadFieldIds(
 ): string[] {
   return definitions
     .filter((def) => def.defaultRequired)
+    .map((def) => def.id)
+}
+
+export function getDefaultVisibleLeadFieldIds(
+  definitions: LeadFieldDefinition[] = coreLeadFieldDefinitions,
+): string[] {
+  return definitions
+    .filter((def) => def.defaultVisible ?? true)
     .map((def) => def.id)
 }
 
@@ -90,7 +104,30 @@ export function resolveLeadRequiredFields(
 ): string[] {
   const fallback = getDefaultRequiredLeadFieldIds(definitions)
   const sanitized = candidate ? sanitizeLeadFieldIds(candidate, definitions) : []
-  return sanitized.length > 0 ? sanitized : fallback
+  if (sanitized.length === 0) {
+    return fallback
+  }
+  const merged = [...sanitized]
+  fallback.forEach((id) => {
+    if (!merged.includes(id)) merged.push(id)
+  })
+  return merged
+}
+
+export function resolveLeadVisibleFields(
+  candidate: string[] | null | undefined,
+  definitions: LeadFieldDefinition[],
+): string[] {
+  const fallback = getDefaultVisibleLeadFieldIds(definitions)
+  const sanitized = candidate ? sanitizeLeadFieldIds(candidate, definitions) : []
+  if (sanitized.length === 0) {
+    return fallback
+  }
+  const merged = [...sanitized]
+  fallback.forEach((id) => {
+    if (!merged.includes(id)) merged.push(id)
+  })
+  return merged
 }
 
 type FieldValidators = {
