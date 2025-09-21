@@ -1,5 +1,5 @@
-import { LeadDirectoryPage } from "@/domains/leads"
+import { LeadsDirectoryPage } from "@/domains/leads"
 
 export default function LeadsPage() {
-  return <LeadDirectoryPage />
+  return <LeadsDirectoryPage />
 }

@@ -34,7 +34,7 @@ const leadEntity = {
   uiStore: useLeadsUiStore,
 }
 
-export default function LeadDirectoryPage() {
+export default function LeadsDirectoryPage() {
   const { data: leads, isLoading: leadsLoading, error: leadsError } = useLeadDirectory()
   const { data: users, isLoading: usersLoading, error: usersError } = useLeadOwners()
 

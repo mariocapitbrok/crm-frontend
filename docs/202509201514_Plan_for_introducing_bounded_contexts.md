@@ -18,7 +18,7 @@
 
 ## 4. Refactor Pages into Context Shells
 
-- Replace the current route components with thin shells that simply render a context-specific feature component (e.g., `<LeadDirectoryPage />`) imported from `src/domains/leads/ui`. This removes the ad-hoc logic presently embedded in `src/app/leads/page.tsx` and ensures all business behaviour lives inside the context package.
+- Replace the current route components with thin shells that simply render a context-specific feature component (e.g., `<LeadsDirectoryPage />`) imported from `src/domains/leads/ui`. This removes the ad-hoc logic presently embedded in `src/app/leads/page.tsx` and ensures all business behaviour lives inside the context package.
 - During the migration, keep route-level components delegating to both old and new implementations behind feature flags to allow gradual rollout.
 
 ## 5. Define Explicit Integration Contracts
