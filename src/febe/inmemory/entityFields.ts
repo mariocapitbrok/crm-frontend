@@ -5,16 +5,16 @@ import type {
   EntityFieldService,
   UpdateFieldInput,
 } from "../entityFields"
+import type { EntityFieldDefinition as SeedFieldDefinition } from "@/domains/entities/domain/entityFieldSchemas"
 import type { EntityKey } from "@/domains/entityKeys"
-import {
-  coreLeadFieldDefinitions,
-  type LeadFieldDefinition,
-} from "@/domains/leads/domain/leadSchemas"
+import { coreLeadFieldDefinitions } from "@/domains/leads/domain/leadSchemas"
+import { coreContactFieldDefinitions } from "@/domains/contacts/domain/contactFieldSchemas"
 
-const coreSeeds: Record<EntityKey, LeadFieldDefinition[]> = {
+const coreSeeds: Record<EntityKey, SeedFieldDefinition[]> = {
   leads: coreLeadFieldDefinitions,
-  contacts: [],
+  contacts: coreContactFieldDefinitions,
   deals: [],
+  organizations: [],
 }
 
 type StoredField = EntityFieldDefinition & { entity: EntityKey }
@@ -39,7 +39,7 @@ function ensureTenantStore(tenantId: string): TenantStore {
   return store.get(tenantId)!
 }
 
-function seedToField(entity: EntityKey, def: LeadFieldDefinition): StoredField {
+function seedToField(entity: EntityKey, def: SeedFieldDefinition): StoredField {
   const now = new Date().toISOString()
   return {
     id: def.id,

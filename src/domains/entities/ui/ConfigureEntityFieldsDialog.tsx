@@ -30,34 +30,51 @@ import {
 import { Switch } from "@/components/ui/switch"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import {
-  coreLeadFieldDefinitions,
-  getDefaultRequiredLeadFieldIds,
-  getDefaultVisibleLeadFieldIds,
-  resolveLeadRequiredFields,
-  resolveLeadVisibleFields,
-  sanitizeLeadFieldIds,
-} from "../domain/leadSchemas"
+  getDefaultRequiredFieldIds,
+  getDefaultVisibleFieldIds,
+  resolveRequiredFields,
+  resolveVisibleFields,
+  sanitizeFieldIds,
+  type EntityFieldDefinition,
+} from "@/domains/entities/domain/entityFieldSchemas"
 import {
   useCreateEntityField,
   useEntityFieldConfig,
   useEntityFields,
   useRemoveEntityField,
   useUpdateEntityFieldConfig,
-  type EntityFieldDefinition,
+  type EntityFieldDefinition as UiEntityFieldDefinition,
 } from "@/domains/entities/ui"
+import type { EntityKey } from "@/domains/entityKeys"
 import type { FieldConfigUpdateInput } from "@/febe/fieldConfig"
-
-const entityKey = "leads" as const
 
 function arraysEqual(a: string[], b: string[]) {
   if (a.length !== b.length) return false
   return a.every((value, index) => value === b[index])
 }
 
-type ConfigureLeadFieldsDialogProps = {
+type ConfigureEntityFieldsDialogCopy = {
+  title: string
+  description: string
+  requiredHeading: string
+  requiredDescription: string
+  requiredLabel: string
+  showByDefaultLabel: string
+  addHeading: string
+  addDescription: string
+  addButtonLabel: string
+  cancelLabel: string
+  saveLabel: string
+}
+
+type ConfigureEntityFieldsDialogProps = {
+  entityKey: EntityKey
+  entityLabel: string
+  baseDefinitions: EntityFieldDefinition[]
   trigger?: ReactElement<{ disabled?: boolean }>
   open?: boolean
   onOpenChange?: (open: boolean) => void
+  copy?: Partial<ConfigureEntityFieldsDialogCopy>
 }
 
 const createFieldTypes = [
@@ -68,11 +85,36 @@ const createFieldTypes = [
 
 type CreateFieldType = (typeof createFieldTypes)[number]["value"]
 
-export default function ConfigureLeadFieldsDialog({
+const defaultCopy = (
+  entityLabel: string,
+): ConfigureEntityFieldsDialogCopy => {
+  const lower = entityLabel.toLowerCase()
+  return {
+    title: "Configure entity fields",
+    description: `Manage which fields appear in the ${lower} creation form and mark them as required.`,
+    requiredHeading: "Required fields",
+    requiredDescription:
+      "System fields cannot be deleted. Keep at least one field required.",
+    requiredLabel: "Required",
+    showByDefaultLabel: "Show by default",
+    addHeading: "Add custom field",
+    addDescription:
+      "Custom fields are optional by default. You can mark them required above after creation.",
+    addButtonLabel: "Add field",
+    cancelLabel: "Cancel",
+    saveLabel: "Save",
+  }
+}
+
+export default function ConfigureEntityFieldsDialog({
+  entityKey,
+  entityLabel,
+  baseDefinitions,
   trigger,
   open: openProp,
   onOpenChange,
-}: ConfigureLeadFieldsDialogProps) {
+  copy,
+}: ConfigureEntityFieldsDialogProps) {
   const [internalOpen, setInternalOpen] = useState(false)
   const isControlled = openProp !== undefined
   const open = isControlled ? openProp : internalOpen
@@ -90,9 +132,13 @@ export default function ConfigureLeadFieldsDialog({
   const { data: fetchedFields, isFetching: fieldsFetching } =
     useEntityFields(entityKey)
 
-  const definitions = useMemo(() => {
-    if (!fetchedFields) return coreLeadFieldDefinitions
-    return fetchedFields.map((field: EntityFieldDefinition) => ({
+  const copyText = useMemo(() => {
+    return { ...defaultCopy(entityLabel), ...copy }
+  }, [copy, entityLabel])
+
+  const definitions = useMemo<EntityFieldDefinition[]>(() => {
+    if (!fetchedFields) return baseDefinitions
+    return fetchedFields.map((field: UiEntityFieldDefinition) => ({
       id: field.id,
       label: field.label,
       description: field.description,
@@ -104,7 +150,7 @@ export default function ConfigureLeadFieldsDialog({
         field.defaultRequired ?? (field.kind === "core" && field.requiredBySystem),
       defaultVisible: field.defaultVisible ?? true,
     }))
-  }, [fetchedFields])
+  }, [baseDefinitions, fetchedFields])
   const sortedDefinitions = useMemo(() => {
     return [...definitions].sort((a, b) => {
       if (a.kind !== b.kind) {
@@ -120,12 +166,12 @@ export default function ConfigureLeadFieldsDialog({
   )
 
   const defaultRequired = useMemo(
-    () => getDefaultRequiredLeadFieldIds(sortedDefinitions),
+    () => getDefaultRequiredFieldIds(sortedDefinitions),
     [sortedDefinitions],
   )
 
   const defaultVisible = useMemo(
-    () => getDefaultVisibleLeadFieldIds(sortedDefinitions),
+    () => getDefaultVisibleFieldIds(sortedDefinitions),
     [sortedDefinitions],
   )
 
@@ -136,11 +182,11 @@ export default function ConfigureLeadFieldsDialog({
   const updateConfig = useUpdateEntityFieldConfig(entityKey)
 
   const remoteRequired = useMemo(() => {
-    return resolveLeadRequiredFields(config?.requiredFieldIds, sortedDefinitions)
+    return resolveRequiredFields(config?.requiredFieldIds, sortedDefinitions)
   }, [config?.requiredFieldIds, sortedDefinitions])
 
   const remoteVisible = useMemo(() => {
-    return resolveLeadVisibleFields(config?.visibleFieldIds, sortedDefinitions)
+    return resolveVisibleFields(config?.visibleFieldIds, sortedDefinitions)
   }, [config?.visibleFieldIds, sortedDefinitions])
 
   const [localRequired, setLocalRequired] = useState<string[]>(remoteRequired)
@@ -148,7 +194,7 @@ export default function ConfigureLeadFieldsDialog({
 
   useEffect(() => {
     setLocalRequired((current) => {
-      const sanitized = sanitizeLeadFieldIds(current, sortedDefinitions)
+      const sanitized = sanitizeFieldIds(current, sortedDefinitions)
       return arraysEqual(current, sanitized) ? current : sanitized
     })
   }, [sortedDefinitions])
@@ -161,7 +207,7 @@ export default function ConfigureLeadFieldsDialog({
 
   useEffect(() => {
     setLocalVisible((current) => {
-      const sanitized = sanitizeLeadFieldIds(current, sortedDefinitions)
+      const sanitized = sanitizeFieldIds(current, sortedDefinitions)
       return arraysEqual(current, sanitized) ? current : sanitized
     })
   }, [sortedDefinitions])
@@ -364,21 +410,17 @@ export default function ConfigureLeadFieldsDialog({
       ) : null}
       <DialogContent className="max-w-lg sm:max-w-xl max-h-[80vh] overflow-hidden">
         <DialogHeader>
-          <DialogTitle>Configure entity fields</DialogTitle>
-          <DialogDescription>
-            Manage which fields appear in the lead creation form and mark them as
-            required.
-          </DialogDescription>
+          <DialogTitle>{copyText.title}</DialogTitle>
+          <DialogDescription>{copyText.description}</DialogDescription>
         </DialogHeader>
 
         <ScrollArea className="max-h-[calc(80vh-10rem)] pr-1">
           <div className="space-y-6 pr-2">
             <section className="space-y-4">
               <div className="space-y-1">
-                <h3 className="text-sm font-medium">Required fields</h3>
+                <h3 className="text-sm font-medium">{copyText.requiredHeading}</h3>
                 <p className="text-xs text-muted-foreground">
-                  System fields cannot be deleted. Keep at least one field
-                  required.
+                  {copyText.requiredDescription}
                 </p>
               </div>
 
@@ -432,7 +474,7 @@ export default function ConfigureLeadFieldsDialog({
                     <div className="flex items-center gap-3">
                       <div className="flex flex-col items-end gap-2 text-xs">
                         <label className="flex items-center gap-2">
-                          <span>Required</span>
+                          <span>{copyText.requiredLabel}</span>
                           <Switch
                             checked={isRequired}
                             disabled={requiredToggleDisabled}
@@ -447,7 +489,7 @@ export default function ConfigureLeadFieldsDialog({
                           />
                         </label>
                         <label className="flex items-center gap-2">
-                          <span>Show by default</span>
+                          <span>{copyText.showByDefaultLabel}</span>
                           <Switch
                             checked={isVisible}
                             disabled={visibleToggleDisabled}
@@ -514,10 +556,9 @@ export default function ConfigureLeadFieldsDialog({
 
             <section className="space-y-4">
               <div className="space-y-1">
-                <h3 className="text-sm font-medium">Add custom field</h3>
+                <h3 className="text-sm font-medium">{copyText.addHeading}</h3>
                 <p className="text-xs text-muted-foreground">
-                  Custom fields are optional by default. You can mark them required
-                  above after creation.
+                  {copyText.addDescription}
                 </p>
               </div>
               <div className="grid gap-3 sm:grid-cols-[2fr,1fr]">
@@ -576,7 +617,7 @@ export default function ConfigureLeadFieldsDialog({
                 ) : (
                   <Plus className="mr-2 size-4" aria-hidden />
                 )}
-                Add field
+                {copyText.addButtonLabel}
               </Button>
             </section>
           </div>
@@ -598,13 +639,13 @@ export default function ConfigureLeadFieldsDialog({
             {closePending ? (
               <Loader2 className="mr-2 size-4 animate-spin" aria-hidden />
             ) : null}
-            Cancel
+            {copyText.cancelLabel}
           </Button>
           <Button type="button" onClick={handleSave} disabled={disableSave}>
             {updateConfig.isPending ? (
               <Loader2 className="mr-2 size-4 animate-spin" aria-hidden />
             ) : null}
-            Save
+            {copyText.saveLabel}
           </Button>
         </DialogFooter>
       </DialogContent>
