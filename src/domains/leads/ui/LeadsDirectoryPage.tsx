@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo } from "react"
-import EntityDirectory from "@/components/EntityDirectory"
+import { EntityDirectory } from "@/components/entity-directory"
 import { buildDefaultMenus } from "@/components/entity-menu"
 import { type EntityColumn } from "@/components/EntityTable"
 import { FileSpreadsheet } from "lucide-react"

@@ -145,7 +145,7 @@ export function getEntityConfig(key: EntityKey): EntityConfig {
 Usage in a page:
 
 ```ts
-import EntityNavBar from "@/components/EntityNavBar"
+import { EntityNavBar } from "@/components/entity-directory"
 import EntityMenu from "@/components/EntityMenu"
 import { getEntityConfig } from "@/entities/registry"
 
