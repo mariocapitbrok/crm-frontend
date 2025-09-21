@@ -123,11 +123,7 @@ export function resolveLeadVisibleFields(
   if (sanitized.length === 0) {
     return fallback
   }
-  const merged = [...sanitized]
-  fallback.forEach((id) => {
-    if (!merged.includes(id)) merged.push(id)
-  })
-  return merged
+  return sanitized
 }
 
 type FieldValidators = {
