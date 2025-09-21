@@ -13,6 +13,7 @@ export type LeadRecord = {
   company: string
   email: string
   assigned_user_id?: number
+  [key: string]: unknown
 }
 
 export function useLeadOwners() {
