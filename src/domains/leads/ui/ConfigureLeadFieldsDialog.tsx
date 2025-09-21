@@ -7,7 +7,7 @@ import {
   useState,
   type ReactElement,
 } from "react"
-import { Loader2 } from "lucide-react"
+import { Loader2, Plus, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -19,26 +19,33 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import {
-  defaultRequiredLeadFieldIds,
-  leadFieldDefinitions,
+  coreLeadFieldDefinitions,
+  getDefaultRequiredLeadFieldIds,
   resolveLeadRequiredFields,
-  type LeadFieldId,
+  sanitizeLeadFieldIds,
 } from "../domain/leadSchemas"
 import {
+  useCreateEntityField,
   useEntityFieldConfig,
+  useEntityFields,
+  useRemoveEntityField,
   useUpdateEntityFieldConfig,
+  type EntityFieldDefinition,
 } from "@/domains/entities/ui"
 
 const entityKey = "leads" as const
-const orderedFieldIds = leadFieldDefinitions.map((field) => field.id)
 
-function normalizeOrder(ids: LeadFieldId[]): LeadFieldId[] {
-  return orderedFieldIds.filter((id) => ids.includes(id))
-}
-
-function arraysEqual(a: LeadFieldId[], b: LeadFieldId[]) {
+function arraysEqual(a: string[], b: string[]) {
   if (a.length !== b.length) return false
   return a.every((value, index) => value === b[index])
 }
@@ -47,56 +54,130 @@ type ConfigureLeadFieldsDialogProps = {
   trigger: ReactElement<{ disabled?: boolean }>
 }
 
+const createFieldTypes = [
+  { value: "text", label: "Text" },
+  { value: "email", label: "Email" },
+  { value: "number", label: "Number" },
+] as const
+
+type CreateFieldType = (typeof createFieldTypes)[number]["value"]
+
 export default function ConfigureLeadFieldsDialog({
   trigger,
 }: ConfigureLeadFieldsDialogProps) {
   const [open, setOpen] = useState(false)
-  const { data, isFetching } = useEntityFieldConfig(entityKey, {
-    requiredFieldIds: defaultRequiredLeadFieldIds,
-  })
-  const mutation = useUpdateEntityFieldConfig(entityKey)
 
-  const triggerDisabled = trigger.props.disabled ?? false
+  const { data: fetchedFields, isFetching: fieldsFetching } =
+    useEntityFields(entityKey)
 
-  const remoteRequired = useMemo(() => {
-    return normalizeOrder(
-      resolveLeadRequiredFields(data?.requiredFieldIds ?? null),
-    )
-  }, [data?.requiredFieldIds])
+  const definitions = useMemo(() => {
+    if (!fetchedFields) return coreLeadFieldDefinitions
+    return fetchedFields.map((field: EntityFieldDefinition) => ({
+      id: field.id,
+      label: field.label,
+      description: field.description,
+      placeholder: field.placeholder,
+      dataType: field.dataType,
+      autoComplete: field.autoComplete,
+      kind: field.kind,
+      defaultRequired:
+        field.defaultRequired ?? (field.kind === "core" && field.requiredBySystem),
+    }))
+  }, [fetchedFields])
+  const sortedDefinitions = useMemo(() => {
+    return [...definitions].sort((a, b) => {
+      if (a.kind !== b.kind) {
+        return a.kind === "core" ? -1 : 1
+      }
+      return a.label.localeCompare(b.label)
+    })
+  }, [definitions])
 
-  const [localRequired, setLocalRequired] = useState<LeadFieldId[]>(
-    remoteRequired,
+  const allowedIds = useMemo(
+    () => sortedDefinitions.map((def) => def.id),
+    [sortedDefinitions],
   )
 
+  const defaultRequired = useMemo(
+    () => getDefaultRequiredLeadFieldIds(sortedDefinitions),
+    [sortedDefinitions],
+  )
+
+  const { data: config, isFetching: configFetching } = useEntityFieldConfig(
+    entityKey,
+    { requiredFieldIds: defaultRequired },
+  )
+  const updateConfig = useUpdateEntityFieldConfig(entityKey)
+
+  const remoteRequired = useMemo(() => {
+    return resolveLeadRequiredFields(config?.requiredFieldIds, sortedDefinitions)
+  }, [config?.requiredFieldIds, sortedDefinitions])
+
+  const [localRequired, setLocalRequired] = useState<string[]>(remoteRequired)
+
   useEffect(() => {
-    setLocalRequired((current) =>
-      arraysEqual(current, remoteRequired) ? current : remoteRequired,
-    )
+    setLocalRequired((current) => {
+      const sanitized = sanitizeLeadFieldIds(current, sortedDefinitions)
+      return arraysEqual(current, sanitized) ? current : sanitized
+    })
+  }, [sortedDefinitions])
+
+  useEffect(() => {
+    setLocalRequired(remoteRequired)
   }, [remoteRequired])
 
+  const triggerDisabled = trigger.props.disabled ?? false
   const removingLocked = localRequired.length <= 1
   const disableSave =
-    mutation.isPending || arraysEqual(localRequired, remoteRequired)
+    updateConfig.isPending || arraysEqual(localRequired, remoteRequired)
 
-  const handleToggle = (fieldId: LeadFieldId, nextValue: boolean) => {
+  const handleToggle = (fieldId: string, nextValue: boolean) => {
     setLocalRequired((current) => {
       if (nextValue) {
         const merged = current.includes(fieldId)
           ? current
           : [...current, fieldId]
-        return normalizeOrder(merged)
+        return allowedIds.filter((id) => merged.includes(id))
       }
       if (current.length <= 1) return current
-      return current.filter((id) => id !== fieldId)
+      const filtered = current.filter((id) => id !== fieldId)
+      return filtered.length > 0 ? filtered : current
     })
   }
 
   const handleSave = async () => {
-    await mutation.mutateAsync({
-      requiredFieldIds: localRequired,
-    })
+    await updateConfig.mutateAsync({ requiredFieldIds: localRequired })
     setOpen(false)
   }
+
+  const createField = useCreateEntityField(entityKey)
+  const removeField = useRemoveEntityField(entityKey)
+  const [newFieldLabel, setNewFieldLabel] = useState("")
+  const [newFieldType, setNewFieldType] = useState<CreateFieldType>("text")
+  const [removeTarget, setRemoveTarget] = useState<string | null>(null)
+
+  const handleAddField = async () => {
+    if (!newFieldLabel.trim()) return
+    await createField.mutateAsync({
+      label: newFieldLabel.trim(),
+      dataType: newFieldType,
+    })
+    setNewFieldLabel("")
+    setNewFieldType("text")
+  }
+
+  const handleRemoveField = async (fieldId: string) => {
+    setRemoveTarget(fieldId)
+    try {
+      await removeField.mutateAsync(fieldId)
+      setLocalRequired((current) => current.filter((id) => id !== fieldId))
+    } finally {
+      setRemoveTarget(null)
+    }
+  }
+
+  const creationDisabled =
+    createField.isPending || !newFieldLabel.trim() || fieldsFetching
 
   return (
     <Dialog
@@ -110,75 +191,183 @@ export default function ConfigureLeadFieldsDialog({
     >
       <DialogTrigger asChild>
         {cloneElement(trigger, {
-          disabled: mutation.isPending || triggerDisabled,
+          disabled:
+            updateConfig.isPending || createField.isPending || triggerDisabled,
         })}
       </DialogTrigger>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-lg sm:max-w-xl max-h-[80vh] overflow-hidden">
         <DialogHeader>
           <DialogTitle>Configure entity fields</DialogTitle>
           <DialogDescription>
-            Pick which fields stay required when teammates create leads.
+            Manage which fields appear in the lead creation form and mark them as
+            required.
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4">
-          {leadFieldDefinitions.map((field) => {
-            const isRequired = localRequired.includes(field.id)
-            const disableToggle =
-              mutation.isPending || (isRequired && removingLocked)
-            return (
-              <div
-                key={field.id}
-                className="flex items-center justify-between gap-4"
-              >
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    {field.label}
-                  </p>
+
+        <div className="max-h-[calc(80vh-10rem)] overflow-y-auto pr-2 space-y-6">
+          <section className="space-y-4">
+            <div className="space-y-1">
+              <h3 className="text-sm font-medium">Required fields</h3>
+              <p className="text-xs text-muted-foreground">
+                System fields cannot be deleted. Keep at least one field
+                required.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              {sortedDefinitions.map((field) => {
+                  const isRequired = localRequired.includes(field.id)
+                  const disableToggle =
+                    updateConfig.isPending ||
+                    configFetching ||
+                    fieldsFetching ||
+                    (isRequired && removingLocked)
+
+                  const isRemoving =
+                    removeTarget === field.id && removeField.isPending
+
+                  return (
+                    <div
+                      key={field.id}
+                      className="flex items-start justify-between gap-4 rounded-md border p-3"
+                    >
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium leading-none">
+                          {field.label}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {field.kind === "core"
+                            ? "Core field"
+                            : "Custom field"}
+                        </p>
+                        {field.description ? (
+                          <p className="text-xs text-muted-foreground">
+                            {field.description}
+                          </p>
+                        ) : null}
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Switch
+                          checked={isRequired}
+                          disabled={disableToggle}
+                          onCheckedChange={(checked) =>
+                            handleToggle(field.id, checked)
+                          }
+                          aria-label={
+                            isRequired
+                              ? `Mark ${field.label} optional`
+                              : `Mark ${field.label} required`
+                          }
+                        />
+                        {field.kind === "custom" ? (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            type="button"
+                            onClick={() => handleRemoveField(field.id)}
+                            disabled={removeField.isPending}
+                            aria-label={`Remove ${field.label}`}
+                          >
+                            {isRemoving ? (
+                              <Loader2
+                                className="size-4 animate-spin"
+                                aria-hidden
+                              />
+                            ) : (
+                              <Trash2 className="size-4" aria-hidden />
+                            )}
+                          </Button>
+                        ) : null}
+                      </div>
+                    </div>
+                  )
+                })}
+                {localRequired.length <= 1 ? (
                   <p className="text-xs text-muted-foreground">
-                    {isRequired
-                      ? "Required and visible in the create form."
-                      : "Optional and hidden by default."}
+                    Keep at least one field required.
                   </p>
-                  {field.description ? (
-                    <p className="text-xs text-muted-foreground">
-                      {field.description}
-                    </p>
-                  ) : null}
-                </div>
-                <Switch
-                  checked={isRequired}
-                  disabled={disableToggle || isFetching}
-                  onCheckedChange={(checked) => handleToggle(field.id, checked)}
-                  aria-label={
-                    isRequired
-                      ? `Mark ${field.label} optional`
-                      : `Mark ${field.label} required`
-                  }
-                />
-              </div>
-            )
-          })}
-          {localRequired.length <= 1 ? (
-            <p className="text-xs text-muted-foreground">
-              Keep at least one field required.
-            </p>
-          ) : null}
-          {mutation.error ? (
-            <p className="text-sm text-destructive">
-              {mutation.error instanceof Error
-                ? mutation.error.message
-                : String(mutation.error)}
-            </p>
-          ) : null}
+                ) : null}
+                {removeField.error ? (
+                  <p className="text-sm text-destructive">
+                    {removeField.error instanceof Error
+                      ? removeField.error.message
+                      : String(removeField.error)}
+                  </p>
+                ) : null}
+                {updateConfig.error ? (
+                  <p className="text-sm text-destructive">
+                    {updateConfig.error instanceof Error
+                      ? updateConfig.error.message
+                      : String(updateConfig.error)}
+                  </p>
+              ) : null}
+            </div>
+          </section>
+
+          <section className="space-y-4">
+            <div className="space-y-1">
+              <h3 className="text-sm font-medium">Add custom field</h3>
+              <p className="text-xs text-muted-foreground">
+                Custom fields are optional by default. You can mark them required
+                above after creation.
+              </p>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-[2fr,1fr]">
+              <Input
+                placeholder="Label"
+                value={newFieldLabel}
+                onChange={(event) => setNewFieldLabel(event.target.value)}
+                disabled={createField.isPending}
+              />
+              <Select
+                value={newFieldType}
+                onValueChange={(value) =>
+                  setNewFieldType(value as CreateFieldType)
+                }
+                disabled={createField.isPending}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Field type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {createFieldTypes.map((type) => (
+                    <SelectItem key={type.value} value={type.value}>
+                      {type.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            {createField.error ? (
+              <p className="text-sm text-destructive">
+                {createField.error instanceof Error
+                  ? createField.error.message
+                  : String(createField.error)}
+              </p>
+            ) : null}
+            <Button
+              type="button"
+              onClick={handleAddField}
+              disabled={creationDisabled}
+            >
+              {createField.isPending ? (
+                <Loader2 className="mr-2 size-4 animate-spin" aria-hidden />
+              ) : (
+                <Plus className="mr-2 size-4" aria-hidden />
+              )}
+              Add field
+            </Button>
+          </section>
         </div>
-        <DialogFooter className="gap-2">
+
+        <DialogFooter className="gap-2 border-t pt-4">
           <DialogClose asChild>
-            <Button variant="ghost" type="button" disabled={mutation.isPending}>
+            <Button variant="ghost" type="button" disabled={updateConfig.isPending}>
               Cancel
             </Button>
           </DialogClose>
           <Button type="button" onClick={handleSave} disabled={disableSave}>
-            {mutation.isPending ? (
+            {updateConfig.isPending ? (
               <Loader2 className="mr-2 size-4 animate-spin" aria-hidden />
             ) : null}
             Save

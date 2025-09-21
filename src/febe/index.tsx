@@ -2,13 +2,16 @@
 
 import * as React from "react"
 import type { FieldConfigService } from "./fieldConfig"
+import type { EntityFieldService } from "./entityFields"
 import type { SavedViewsService } from "./savedViews"
 import { createInMemoryFieldConfig } from "./inmemory/fieldConfig"
+import { createInMemoryEntityFields } from "./inmemory/entityFields"
 import { createInMemorySavedViews } from "./inmemory/savedViews"
 
 export type Api = {
   savedViews: SavedViewsService
   fieldConfig: FieldConfigService
+  entityFields: EntityFieldService
 }
 
 const ApiContext = React.createContext<Api | null>(null)
@@ -21,12 +24,14 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
       return {
         savedViews: createInMemorySavedViews(),
         fieldConfig: createInMemoryFieldConfig(),
+        entityFields: createInMemoryEntityFields(),
       }
     }
     // Future: Http adapter goes here
     return {
       savedViews: createInMemorySavedViews(),
       fieldConfig: createInMemoryFieldConfig(),
+      entityFields: createInMemoryEntityFields(),
     }
   }, [apiMode])
 

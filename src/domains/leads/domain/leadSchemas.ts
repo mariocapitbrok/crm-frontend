@@ -1,154 +1,236 @@
 import { z } from "zod"
 
-export const leadFieldIds = [
-  "firstname",
-  "lastname",
-  "email",
-  "company",
-  "assigned_user_id",
-] as const
-
-export type LeadFieldId = (typeof leadFieldIds)[number]
+export type LeadFieldDataType = "text" | "email" | "number" | "user"
 
 export type LeadFieldDefinition = {
-  id: LeadFieldId
+  id: string
   label: string
   description?: string
   placeholder?: string
-  inputType: "text" | "email" | "select"
+  dataType: LeadFieldDataType
   autoComplete?: string
-  defaultRequired: boolean
+  kind: "core" | "custom"
+  defaultRequired?: boolean
 }
 
-export const leadFieldDefinitions: LeadFieldDefinition[] = [
+export const coreLeadFieldDefinitions: LeadFieldDefinition[] = [
   {
     id: "firstname",
     label: "First name",
     placeholder: "Jamie",
-    inputType: "text",
+    dataType: "text",
     autoComplete: "given-name",
+    kind: "core",
     defaultRequired: true,
   },
   {
     id: "lastname",
     label: "Last name",
     placeholder: "Doe",
-    inputType: "text",
+    dataType: "text",
     autoComplete: "family-name",
+    kind: "core",
     defaultRequired: true,
   },
   {
     id: "company",
     label: "Company",
     placeholder: "Acme Inc.",
-    inputType: "text",
+    dataType: "text",
     autoComplete: "organization",
+    kind: "core",
     defaultRequired: true,
   },
   {
     id: "email",
     label: "Email",
     placeholder: "jamie@acme.com",
-    inputType: "email",
+    dataType: "email",
     autoComplete: "email",
+    kind: "core",
     defaultRequired: true,
   },
   {
     id: "assigned_user_id",
     label: "Owner",
     description: "Assign a teammate to follow up",
-    inputType: "select",
+    dataType: "user",
+    kind: "core",
     defaultRequired: false,
   },
 ]
 
-export const leadFieldDefinitionMap = Object.fromEntries(
-  leadFieldDefinitions.map((def) => [def.id, def]),
-) as Record<LeadFieldId, LeadFieldDefinition>
-
-export const defaultRequiredLeadFieldIds = leadFieldDefinitions
-  .filter((def) => def.defaultRequired)
-  .map((def) => def.id)
-
-type SchemaShape = {
-  [K in LeadFieldId]: {
-    required: z.ZodTypeAny
-    optional: z.ZodTypeAny
-  }
+export function getDefaultRequiredLeadFieldIds(
+  definitions: LeadFieldDefinition[] = coreLeadFieldDefinitions,
+): string[] {
+  return definitions
+    .filter((def) => def.defaultRequired)
+    .map((def) => def.id)
 }
 
-const schemaShape: SchemaShape = {
-  firstname: {
-    required: z.string().trim().min(1, "First name is required"),
-    optional: z.string().trim(),
-  },
-  lastname: {
-    required: z.string().trim().min(1, "Last name is required"),
-    optional: z.string().trim(),
-  },
-  email: {
-    required: z
-      .string()
-      .trim()
-      .min(1, "Email is required")
-      .email("Enter a valid email"),
-    optional: z.string().trim().email("Enter a valid email"),
-  },
-  company: {
-    required: z.string().trim().min(1, "Company is required"),
-    optional: z.string().trim(),
-  },
-  assigned_user_id: {
-    required: z.number("Owner is required").int().positive(),
-    optional: z.number().int().positive().optional(),
-  },
-}
-
-const optionalEmail = z
-  .preprocess((value) => {
-    if (typeof value === "string" && value.trim() === "") {
-      return undefined
-    }
-    return value
-  }, z.string().trim().email("Enter a valid email"))
-  .optional()
-
-schemaShape.email.optional = optionalEmail
-
-export function sanitizeLeadFieldIds(ids: string[]): LeadFieldId[] {
-  const seen = new Set<LeadFieldId>()
+export function sanitizeLeadFieldIds(
+  ids: string[],
+  definitions: LeadFieldDefinition[],
+): string[] {
+  const allowed = new Set(definitions.map((def) => def.id))
+  const seen = new Set<string>()
+  const result: string[] = []
   ids.forEach((id) => {
-    if (leadFieldIds.includes(id as LeadFieldId)) {
-      seen.add(id as LeadFieldId)
+    if (allowed.has(id) && !seen.has(id)) {
+      seen.add(id)
+      result.push(id)
     }
   })
-  return Array.from(seen)
+  return result
 }
 
 export function resolveLeadRequiredFields(
-  candidate?: string[] | null,
-): LeadFieldId[] {
-  const sanitized = candidate ? sanitizeLeadFieldIds(candidate) : []
-  return sanitized.length > 0 ? sanitized : defaultRequiredLeadFieldIds
+  candidate: string[] | null | undefined,
+  definitions: LeadFieldDefinition[],
+): string[] {
+  const fallback = getDefaultRequiredLeadFieldIds(definitions)
+  const sanitized = candidate ? sanitizeLeadFieldIds(candidate, definitions) : []
+  return sanitized.length > 0 ? sanitized : fallback
 }
 
-export function buildLeadFormSchema(requiredFields: LeadFieldId[]) {
-  const requiredSet = new Set<LeadFieldId>(requiredFields)
-  const shape = leadFieldIds.reduce<Record<string, z.ZodTypeAny>>(
-    (acc, id) => {
-      acc[id] = requiredSet.has(id)
-        ? schemaShape[id].required
-        : schemaShape[id].optional
-      return acc
+type FieldValidators = {
+  required: z.ZodTypeAny
+  optional: z.ZodTypeAny
+}
+
+function optionalString(base: z.ZodString) {
+  return z.preprocess(
+    (value) => {
+      if (typeof value === "string") {
+        const trimmed = value.trim()
+        return trimmed === "" ? undefined : trimmed
+      }
+      return value
     },
-    {},
+    base.optional(),
   )
+}
+
+function validatorsFor(definition: LeadFieldDefinition): FieldValidators {
+  const label = definition.label
+  switch (definition.dataType) {
+    case "email": {
+      const base = z
+        .string({
+          required_error: `${label} is required`,
+        })
+        .trim()
+        .email("Enter a valid email")
+      return {
+        required: base.min(1, `${label} is required`),
+        optional: optionalString(base),
+      }
+    }
+    case "number": {
+      const required = z
+        .coerce
+        .number({
+          required_error: `${label} is required`,
+          invalid_type_error: `${label} must be a number`,
+        })
+        .refine((value) => !Number.isNaN(value), `${label} must be a number`)
+
+      const optional = z.preprocess(
+        (value) => {
+          if (value === "" || value === null || value === undefined) {
+            return undefined
+          }
+          return value
+        },
+        z
+          .coerce.number({
+            invalid_type_error: `${label} must be a number`,
+          })
+          .refine((value) => !Number.isNaN(value), `${label} must be a number`)
+          .optional(),
+      )
+
+      return { required, optional }
+    }
+    case "user": {
+      const required = z
+        .coerce
+        .number({
+          required_error: `${label} is required`,
+          invalid_type_error: `${label} is required`,
+        })
+        .int()
+        .positive(`${label} is required`)
+
+      const optional = z.preprocess(
+        (value) => {
+          if (value === "" || value === null || value === undefined) {
+            return undefined
+          }
+          return value
+        },
+        z
+          .coerce.number({
+            invalid_type_error: `${label} is required`,
+          })
+          .int()
+          .positive(`${label} is required`)
+          .optional(),
+      )
+
+      return { required, optional }
+    }
+    case "text":
+    default: {
+      const base = z
+        .string({
+          required_error: `${label} is required`,
+        })
+        .trim()
+      return {
+        required: base.min(1, `${label} is required`),
+        optional: optionalString(base),
+      }
+    }
+  }
+}
+
+export function buildLeadFormSchema(
+  definitions: LeadFieldDefinition[],
+  requiredFieldIds: string[],
+) {
+  const defById = new Map(definitions.map((def) => [def.id, def]))
+  const requiredSet = new Set(
+    requiredFieldIds.filter((id) => defById.has(id)),
+  )
+  const shape: Record<string, z.ZodTypeAny> = {}
+  definitions.forEach((def) => {
+    const validators = validatorsFor(def)
+    shape[def.id] = requiredSet.has(def.id)
+      ? validators.required
+      : validators.optional
+  })
   return z.object(shape)
 }
 
-export const leadCreateSchema = buildLeadFormSchema(
-  defaultRequiredLeadFieldIds,
-)
+export type LeadFormValues = {
+  firstname?: string
+  lastname?: string
+  email?: string
+  company?: string
+  assigned_user_id?: number
+  [key: string]: unknown
+}
 
-export type LeadFormValues = z.infer<typeof leadCreateSchema>
-export type LeadCreateInput = LeadFormValues
+export function createDefaultLeadValues(
+  definitions: LeadFieldDefinition[],
+): Record<string, unknown> {
+  return definitions.reduce<Record<string, unknown>>((acc, def) => {
+    if (def.dataType === "number" || def.dataType === "user") {
+      acc[def.id] = undefined
+    } else {
+      acc[def.id] = ""
+    }
+    return acc
+  }, {})
+}
