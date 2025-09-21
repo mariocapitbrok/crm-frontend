@@ -11,6 +11,8 @@ import { useContactDirectory, type ContactRecord } from "../application/queries"
 import { useOrganizationDirectory } from "@/domains/organizations/application/queries"
 import { useIdentityUsers } from "@/domains/identity/application/users"
 import { useContactsUiStore } from "./store"
+import CreateContactButton from "./CreateContactButton"
+import ImportRecords from "@/domains/entities/ui/EntityDirectory/ImportRecords"
 
 type ContactRow = {
   id: number
@@ -145,6 +147,21 @@ export default function ContactsDirectoryPage() {
       isLoading={contactsLoading || usersLoading || orgsLoading}
       loadingMessage="Loading contacts…"
       error={contactsError || usersError || orgsError}
+      navActions={
+        <>
+          <CreateContactButton
+            accounts={orgs}
+            owners={users}
+            accountsLoading={orgsLoading}
+            ownersLoading={usersLoading}
+          />
+          <ImportRecords
+            entity={contactEntity.title}
+            buttonText="Import"
+            buttonProps={{ className: "text-[13px]" }}
+          />
+        </>
+      }
     />
   )
 }

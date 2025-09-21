@@ -13,6 +13,8 @@ import {
   type LeadRecord,
 } from "../application/queries"
 import { useLeadsUiStore } from "./store"
+import CreateLeadButton from "./CreateLeadButton"
+import ImportRecords from "@/domains/entities/ui/EntityDirectory/ImportRecords"
 
 type LeadRow = {
   id: number
@@ -141,6 +143,16 @@ export default function LeadsDirectoryPage() {
       isLoading={leadsLoading || usersLoading}
       loadingMessage="Loading leads…"
       error={leadsError || usersError}
+      navActions={
+        <>
+          <CreateLeadButton owners={users} ownersLoading={usersLoading} />
+          <ImportRecords
+            entity={leadEntity.title}
+            buttonText="Import"
+            buttonProps={{ className: "text-[13px]" }}
+          />
+        </>
+      }
     />
   )
 }

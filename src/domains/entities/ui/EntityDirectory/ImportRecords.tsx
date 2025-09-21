@@ -1,6 +1,6 @@
 "use client"
 
-import { ReactNode } from "react"
+import { ReactNode, useId } from "react"
 import { Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -31,6 +31,7 @@ export default function ImportRecords({
 }: ImportRecordsProps) {
   const label = buttonText ?? "Import"
   const title = `${label} ${entity}`
+  const descriptionId = useId()
 
   return (
     <Dialog>
@@ -40,10 +41,10 @@ export default function ImportRecords({
           {label}
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent aria-describedby={descriptionId}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription className="sr-only">
+          <DialogDescription id={descriptionId} className="sr-only">
             Import data for {entity}. Choose a file and confirm to begin the import process.
           </DialogDescription>
         </DialogHeader>

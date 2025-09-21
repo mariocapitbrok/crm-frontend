@@ -58,6 +58,9 @@ export function SavedViewPicker({
   const [renameOpen, setRenameOpen] = React.useState(false)
   const [renameValue, setRenameValue] = React.useState("")
 
+  const saveDescriptionId = React.useId()
+  const renameDescriptionId = React.useId()
+
   const active = views.find((v) => v.id === activeViewId) || null
 
   const handleSaveNew = async () => {
@@ -138,10 +141,15 @@ export function SavedViewPicker({
               <Plus className="size-4" />
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-sm">
+          <DialogContent
+            className="max-w-sm"
+            aria-describedby={saveDescriptionId}
+          >
             <DialogHeader>
               <DialogTitle>Save View</DialogTitle>
-              <DialogDescription>Give this view a name.</DialogDescription>
+              <DialogDescription id={saveDescriptionId}>
+                Give this view a name.
+              </DialogDescription>
             </DialogHeader>
             <div className="flex items-center gap-2">
               <Input
@@ -207,10 +215,15 @@ export function SavedViewPicker({
               <Edit className="size-4" />
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-sm">
+          <DialogContent
+            className="max-w-sm"
+            aria-describedby={renameDescriptionId}
+          >
             <DialogHeader>
               <DialogTitle>Rename View</DialogTitle>
-              <DialogDescription>Change the name of this view.</DialogDescription>
+              <DialogDescription id={renameDescriptionId}>
+                Change the name of this view.
+              </DialogDescription>
             </DialogHeader>
             <div className="flex items-center gap-2">
               <Input

@@ -69,6 +69,8 @@ export type EntityDirectoryProps<Row> = {
   loadingMessage: string
   error?: unknown
   tableProps?: TableExtras<Row>
+  navMenu?: ReactNode
+  navActions?: ReactNode
 }
 
 export default function EntityDirectory<Row>({
@@ -80,6 +82,8 @@ export default function EntityDirectory<Row>({
   loadingMessage,
   error,
   tableProps,
+  navMenu,
+  navActions,
 }: EntityDirectoryProps<Row>) {
   const headerLayout = entity.uiStore((s: EntityUiState) => s.headerLayout)
   const setHeaderLayout = entity.uiStore(
@@ -116,7 +120,7 @@ export default function EntityDirectory<Row>({
 
   if (isLoading) {
     return (
-      <EntityShell entity={entity}>
+      <EntityShell entity={entity} menu={navMenu} actions={navActions}>
         <div className="p-4 text-sm text-muted-foreground">{loadingMessage}</div>
       </EntityShell>
     )
@@ -124,7 +128,7 @@ export default function EntityDirectory<Row>({
 
   if (errorMessage) {
     return (
-      <EntityShell entity={entity}>
+      <EntityShell entity={entity} menu={navMenu} actions={navActions}>
         <div className="p-4 text-sm text-red-600">{errorMessage}</div>
       </EntityShell>
     )
@@ -161,7 +165,7 @@ export default function EntityDirectory<Row>({
       }
 
   return (
-    <EntityShell entity={entity}>
+    <EntityShell entity={entity} menu={navMenu} actions={navActions}>
       <EntityTable
         key={`${entity.key}-${tableRev}`}
         data={rows}
@@ -274,10 +278,12 @@ function EntityShell({
   entity,
   children,
   menu,
+  actions,
 }: {
   entity: EntityDescriptor
   children: ReactNode
   menu?: ReactNode
+  actions?: ReactNode
 }) {
   return (
     <div className="flex flex-col gap-3">
@@ -289,6 +295,7 @@ function EntityShell({
             <EntityMenu uiStore={entity.uiStore} menus={entity.menus} />
           )
         }
+        actions={actions}
         entitySingular={entity.singular}
         entityPlural={entity.title}
       />
