@@ -17,16 +17,8 @@ export const contactCreateSchema = z.object({
       "Phone number looks too short",
     ),
   title: z.string().trim().optional(),
-  account_id: z
-    .number({ invalid_type_error: "Select a valid account" })
-    .int()
-    .positive()
-    .optional(),
-  assigned_user_id: z
-    .number({ invalid_type_error: "Select a valid owner" })
-    .int()
-    .positive()
-    .optional(),
+  account_id: z.number().int().positive().optional(),
+  assigned_user_id: z.number().int().positive().optional(),
 })
 
 export type ContactCreateInput = z.infer<typeof contactCreateSchema>

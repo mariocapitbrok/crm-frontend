@@ -23,13 +23,14 @@ import {
   type LeadOwner,
 } from "../application/queries"
 import { leadCreateSchema, type LeadCreateInput } from "../domain/leadSchemas"
+import type { DefaultValues } from "react-hook-form"
 
 type CreateLeadButtonProps = {
   owners?: LeadOwner[] | null
   ownersLoading?: boolean
 }
 
-const defaultValues: Partial<LeadCreateInput> = {
+const defaultValues: DefaultValues<LeadCreateInput> = {
   firstname: "",
   lastname: "",
   email: "",
@@ -53,7 +54,7 @@ export default function CreateLeadButton({
   }, [owners])
 
   return (
-    <AddRecord
+    <AddRecord<LeadCreateInput>
       entity="Lead"
       schema={leadCreateSchema}
       defaultValues={defaultValues}

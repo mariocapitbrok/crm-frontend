@@ -25,6 +25,7 @@ import {
 } from "../application/queries"
 import type { OrganizationRecord } from "@/domains/organizations/application/queries"
 import type { IdentityUser } from "@/domains/identity/application/users"
+import type { DefaultValues } from "react-hook-form"
 
 type CreateContactButtonProps = {
   accounts?: OrganizationRecord[] | null
@@ -33,7 +34,7 @@ type CreateContactButtonProps = {
   ownersLoading?: boolean
 }
 
-const defaultValues: Partial<ContactCreateInput> = {
+const defaultValues: DefaultValues<ContactCreateInput> = {
   firstname: "",
   lastname: "",
   email: "",
@@ -69,7 +70,7 @@ export default function CreateContactButton({
   }, [owners])
 
   return (
-    <AddRecord
+    <AddRecord<ContactCreateInput>
       entity="Contact"
       schema={contactCreateSchema}
       defaultValues={defaultValues}

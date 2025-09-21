@@ -9,13 +9,15 @@ import {
   useState,
 } from "react"
 import { Plus, Loader2 } from "lucide-react"
-import { z, ZodTypeAny } from "zod"
+import { type ZodType } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
-  DeepPartial,
+  DefaultValues,
+  FieldValues,
   SubmitHandler,
   UseFormReturn,
   useForm,
+  type Resolver,
 } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import {
@@ -30,25 +32,25 @@ import {
 } from "@/components/ui/dialog"
 import { Form } from "@/components/ui/form"
 
-type AddRecordSubmitHelpers<TValues> = {
+type AddRecordSubmitHelpers<TValues extends FieldValues> = {
   close: () => void
-  reset: (values?: DeepPartial<TValues>) => void
+  reset: (values?: DefaultValues<TValues>) => void
   form: UseFormReturn<TValues>
 }
 
-type AddRecordRenderForm<TValues> = (
+type AddRecordRenderForm<TValues extends FieldValues> = (
   form: UseFormReturn<TValues>,
 ) => ReactNode
 
-type BaseAddRecordProps<TSchema extends ZodTypeAny> = {
+type BaseAddRecordProps<TValues extends FieldValues> = {
   entity: string
-  schema?: TSchema
-  renderForm?: AddRecordRenderForm<z.infer<TSchema>>
+  schema?: ZodType<TValues, TValues>
+  renderForm?: AddRecordRenderForm<TValues>
   onSubmit?: (
-    values: z.infer<TSchema>,
-    helpers: AddRecordSubmitHelpers<z.infer<TSchema>>,
+    values: TValues,
+    helpers: AddRecordSubmitHelpers<TValues>,
   ) => Promise<void> | void
-  defaultValues?: DeepPartial<z.infer<TSchema>>
+  defaultValues?: DefaultValues<TValues>
   buttonText?: string
   submitLabel?: string
   cancelLabel?: string
@@ -58,7 +60,7 @@ type BaseAddRecordProps<TSchema extends ZodTypeAny> = {
   buttonProps?: Omit<ComponentProps<typeof Button>, "children">
   open?: boolean
   onOpenChange?: (open: boolean) => void
-  onSuccess?: (values: z.infer<TSchema>) => void
+  onSuccess?: (values: TValues) => void
   onError?: (error: unknown) => void
   autoCloseOnSuccess?: boolean
   autoResetOnClose?: boolean
@@ -66,9 +68,10 @@ type BaseAddRecordProps<TSchema extends ZodTypeAny> = {
   children?: ReactNode
 }
 
-export type AddRecordProps<TSchema extends ZodTypeAny> = BaseAddRecordProps<TSchema>
+export type AddRecordProps<TValues extends FieldValues = FieldValues> =
+  BaseAddRecordProps<TValues>
 
-export default function AddRecord<TSchema extends ZodTypeAny>({
+export default function AddRecord<TValues extends FieldValues = FieldValues>({
   entity,
   schema,
   renderForm,
@@ -89,13 +92,20 @@ export default function AddRecord<TSchema extends ZodTypeAny>({
   autoResetOnClose = true,
   renderAfterForm,
   children,
-}: AddRecordProps<TSchema>) {
+}: AddRecordProps<TValues>) {
   const [internalOpen, setInternalOpen] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
 
   const isControlled = open !== undefined
   const dialogOpen = isControlled ? open : internalOpen
-  const isConfigured = Boolean(schema && renderForm && onSubmit)
+
+  const configuration = useMemo(
+    () =>
+      schema && renderForm && onSubmit
+        ? { renderForm, onSubmit }
+        : null,
+    [onSubmit, renderForm, schema],
+  )
 
   const label = buttonText ?? `Add ${entity}`
   const dialogTitle = title ?? label
@@ -114,17 +124,33 @@ export default function AddRecord<TSchema extends ZodTypeAny>({
     [isControlled, onOpenChange],
   )
 
-  type FormValues = z.infer<TSchema>
+  const formResolver = useMemo<Resolver<TValues> | undefined>(
+    () =>
+      schema
+        ? (zodResolver(schema) as unknown as Resolver<TValues>)
+        : undefined,
+    [schema],
+  )
 
-  const form = useForm<FormValues>({
-    resolver: schema ? zodResolver(schema) : undefined,
-    defaultValues: defaultValues as DeepPartial<FormValues> | undefined,
+  const form = useForm<TValues>({
+    resolver: formResolver,
+    defaultValues,
     mode: "onSubmit",
   })
 
   const resetToDefault = useCallback(
-    (values?: DeepPartial<FormValues>) => {
-      form.reset(values ?? (defaultValues as DeepPartial<FormValues> | undefined))
+    (values?: DefaultValues<TValues>) => {
+      if (values) {
+        form.reset(values)
+        return
+      }
+
+      if (defaultValues) {
+        form.reset(defaultValues)
+        return
+      }
+
+      form.reset()
     },
     [form, defaultValues],
   )
@@ -133,17 +159,17 @@ export default function AddRecord<TSchema extends ZodTypeAny>({
     (nextOpen: boolean) => {
       baseHandleOpenChange(nextOpen)
 
-      if (!nextOpen && autoResetOnClose && isConfigured) {
+      if (!nextOpen && autoResetOnClose && configuration) {
         resetToDefault()
         setSubmitError(null)
       }
     },
-    [autoResetOnClose, baseHandleOpenChange, isConfigured, resetToDefault],
+    [autoResetOnClose, baseHandleOpenChange, configuration, resetToDefault],
   )
 
   const closeDialog = useCallback(() => handleOpenChange(false), [handleOpenChange])
 
-  const submitHelpers = useMemo<AddRecordSubmitHelpers<FormValues>>(
+  const submitHelpers = useMemo<AddRecordSubmitHelpers<TValues>>(
     () => ({
       close: closeDialog,
       reset: resetToDefault,
@@ -152,16 +178,16 @@ export default function AddRecord<TSchema extends ZodTypeAny>({
     [closeDialog, form, resetToDefault],
   )
 
-  const handleValidSubmit = useCallback<SubmitHandler<FormValues>>(
+  const handleValidSubmit = useCallback<SubmitHandler<TValues>>(
     async (values) => {
-      if (!isConfigured || !onSubmit) {
+      if (!configuration) {
         return
       }
 
       setSubmitError(null)
 
       try {
-        await onSubmit(values, submitHelpers)
+        await configuration.onSubmit(values, submitHelpers)
         onSuccess?.(values)
 
         if (autoCloseOnSuccess) {
@@ -182,18 +208,17 @@ export default function AddRecord<TSchema extends ZodTypeAny>({
       autoCloseOnSuccess,
       autoResetOnClose,
       closeDialog,
-      isConfigured,
       onError,
-      onSubmit,
       onSuccess,
       resetToDefault,
       submitHelpers,
+      configuration,
     ],
   )
 
-  const isSubmitting = form.formState.isSubmitting && isConfigured
+  const isSubmitting = form.formState.isSubmitting && Boolean(configuration)
 
-  if (!isConfigured) {
+  if (!configuration) {
     return (
       <Dialog open={dialogOpen} onOpenChange={baseHandleOpenChange}>
         <DialogTrigger asChild>
@@ -249,7 +274,7 @@ export default function AddRecord<TSchema extends ZodTypeAny>({
             onSubmit={form.handleSubmit(handleValidSubmit)}
             className="space-y-6"
           >
-            {renderForm(form)}
+            {configuration.renderForm(form)}
 
             {submitError ? (
               <p role="alert" className="text-sm text-destructive">
